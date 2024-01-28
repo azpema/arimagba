@@ -1,0 +1,121 @@
+#include <iostream>
+#include "opcode.hpp"
+#include <unordered_map>
+
+class DataProcessing : public OpCode {
+    public:
+        uint16_t I;
+        // Only if I = 0
+        uint16_t Shift;
+        uint16_t Rm;
+        // Only if I = 1
+        uint16_t Rotate;
+        uint16_t Imm;
+
+        uint16_t S;
+        uint16_t Rn;
+        uint16_t Rd;
+        uint16_t operand2;
+        uint16_t dataOpCode;
+    private:
+        const static uint32_t IMMEDIATE_OPERAND_MASK = 0b00000010000000000000000000000000; 
+        const static uint32_t IMMEDIATE_OPERAND_SHIFT = 25; 
+
+        const static uint32_t OPCODE_MASK = 0b00000001111000000000000000000000;
+        const static uint32_t OPCODE_SHIFT = 21;
+
+        const static uint32_t SET_CONDITION_MASK = 0b00000000000100000000000000000000;
+        const static uint32_t SET_CONDITION_SHIFT = 20;
+
+        const static uint32_t RN_MASK = 0b00000000000011110000000000000000;
+        const static uint32_t RN_SHIFT = 16;
+
+        const static uint32_t RD_MASK = 0b00000000000000001111000000000000;
+        const static uint32_t RD_SHIFT = 12;
+
+        const static uint32_t OPERAND2_MASK = 0b00000000000000000000111111111111;
+        const static uint32_t OPERAND2_SHIFT = 0;
+
+        // Only when I=0 (Shift)
+        const static uint32_t OPERAND2_SHIFT_MASK = 0b111111110000;
+        const static uint32_t OPERAND2_SHIFT_SHIFT = 4;
+
+        const static uint32_t OPERAND2_RM_MASK = 0b000000001111;
+        const static uint32_t OPERAND2_RM_SHIFT = 0;
+
+            // If shift ends with 0b0
+            const static uint16_t OPERAND2_SHIFT_AMOUNT_MASK = 0b11111000;
+            const static uint16_t OPERAND2_SHIFT_AMOUNT_SHIFT = 3;
+
+            const static uint16_t OPERAND2_SHIFT_TYPE_MASK = 0b00000110;
+            const static uint16_t OPERAND2_SHIFT_TYPE_SHIFT = 1;
+
+            // If shift ends with 0b1
+            const static uint16_t OPERAND2_SHIFT_RS_MASK = 0b11110000;
+            const static uint16_t OPERAND2_SHIFT_RST_SHIFT = 4;
+
+            //const static uint16_t OPERAND2_SHIFT_TYPE_MASK = 0b00000110;
+            //  const static uint16_t OPERAND2_SHIFT_TYPE_SHIFT = 1;
+
+        // Only when I=1 (Imm)
+        const static uint32_t OPERAND2_ROTATE_MASK = 0b111100000000;
+        const static uint32_t OPERAND2_ROTATE_SHIFT = 8;
+
+        const static uint32_t OPERAND2_IMM_MASK = 0b000011111111;
+        const static uint32_t OPERAND2_IMM_SHIFT = 0;
+
+        const static uint16_t OPCODE_AND_VAL = 0x0;
+        const static uint16_t OPCODE_EOR_VAL = 0x1;
+        const static uint16_t OPCODE_SUB_VAL = 0x2;
+        const static uint16_t OPCODE_RSB_VAL = 0x3;
+        const static uint16_t OPCODE_ADD_VAL = 0x4;
+        const static uint16_t OPCODE_ADC_VAL = 0x5;
+        const static uint16_t OPCODE_SBC_VAL = 0x6;
+        const static uint16_t OPCODE_RSC_VAL = 0x7;
+        const static uint16_t OPCODE_TST_VAL = 0x8;
+        const static uint16_t OPCODE_TEQ_VAL = 0x9;
+        const static uint16_t OPCODE_CMP_VAL = 0xA;
+        const static uint16_t OPCODE_CMN_VAL = 0xB;
+        const static uint16_t OPCODE_ORR_VAL = 0xC;
+        const static uint16_t OPCODE_MOV_VAL = 0xD;
+        const static uint16_t OPCODE_BIC_VAL = 0xE;
+        const static uint16_t OPCODE_MVN_VAL = 0xF;
+
+        std::unordered_map<uint16_t, std::string> dataOpCode2Mnemonic = {
+            {0x0, "and"},
+            {0x1, "eor"},
+            {0x2, "sub"},
+            {0x3, "rsb"},
+            {0x4, "add"},
+            {0x5, "adc"},
+            {0x6, "sbc"},
+            {0x7, "rsc"},
+            {0x8, "tst"},
+            {0x9, "teq"},
+            {0xA, "cmp"},
+            {0xB, "cmn"},
+            {0xC, "orr"},
+            {0xD, "mov"},
+            {0xE, "bic"},
+            {0xF, "mvn"}
+        }; 
+
+        std::unordered_map<uint16_t, std::string> SFlag2Mnemonic = {
+            {0, ""},
+            {1, "s"},
+        }; 
+
+        // https://alisdair.mcdiarmid.org/arm-immediate-value-encoding/
+        uint32_t getOperand2Rm();
+        uint32_t getOperand2Imm();
+
+	public:
+
+		DataProcessing(uint32_t op);
+        std::string toString();
+        std::string getOpCodeMnemonic();
+        std::string getRdMnemonic();
+        std::string getRnMnemonic();
+        uint32_t getOperand2();
+
+};
