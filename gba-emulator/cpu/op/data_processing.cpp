@@ -8,17 +8,18 @@ DataProcessing::DataProcessing(uint32_t op): OpCode::OpCode(op) {
     S = Utils::getRegBits(op, SET_CONDITION_MASK, SET_CONDITION_SHIFT);
     Rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
     Rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
-    operand2 = Utils::getRegBits(op, OPERAND2_MASK, OPERAND2_SHIFT);
 
     if(I == 0){
-        Shift = Utils::getRegBits(operand2, OPERAND2_SHIFT_MASK, OPERAND2_SHIFT_SHIFT);
-        Rm = Utils::getRegBits(operand2, OPERAND2_RM_MASK, OPERAND2_RM_SHIFT);
+        operand2 = new ShiftRm(Utils::getRegBits(op, OPERAND2_MASK, OPERAND2_SHIFT));
     }else if (I == 1){
-        Rotate = Utils::getRegBits(operand2, OPERAND2_ROTATE_MASK, OPERAND2_ROTATE_SHIFT);
-        Imm = Utils::getRegBits(operand2, OPERAND2_IMM_MASK, OPERAND2_IMM_SHIFT);
+        operand2 = new RotateImm(Utils::getRegBits(op, OPERAND2_MASK, OPERAND2_SHIFT));
     }else{
         std::cout << "ERROR: Invalid I field value" << std::endl;
     }
+}   
+
+DataProcessing::~DataProcessing() {
+    delete operand2;
 }   
 
 /*
@@ -33,14 +34,14 @@ std::string DataProcessing::toString(){
     // <opcode>{cond}{S} Rd,<Op2>
     case OPCODE_MOV_VAL:
     case OPCODE_MVN_VAL:
-        mnemonic += SFlag2Mnemonic[S] + " r" + std::to_string(Rd) + ",#" + Utils::toHexString(getOperand2());
+        mnemonic += SFlag2Mnemonic[S] + " r" + std::to_string(Rd) + "," + getOperand2Mnemonic();
         break;
     // <opcode>{cond} Rn,<Op2>
     case OPCODE_CMP_VAL:
     case OPCODE_CMN_VAL:
     case OPCODE_TEQ_VAL:
     case OPCODE_TST_VAL:
-        mnemonic += " r" + std::to_string(Rn) + ",#" +  Utils::toHexString(getOperand2());
+        mnemonic += " r" + std::to_string(Rn) + "," + getOperand2Mnemonic();
         break;
     // <opcode>{cond}{s} Rd,Rn,<Op2>
     case OPCODE_AND_VAL:
@@ -53,7 +54,7 @@ std::string DataProcessing::toString(){
     case OPCODE_RSC_VAL:
     case OPCODE_ORR_VAL:
     case OPCODE_BIC_VAL:
-        mnemonic += SFlag2Mnemonic[S] + " r" + std::to_string(Rd) + ",r" + std::to_string(Rn) + ",#" + Utils::toHexString(getOperand2());
+        mnemonic += SFlag2Mnemonic[S] + " r" + std::to_string(Rd) + ",r" + std::to_string(Rn) + "," + getOperand2Mnemonic();
         break;
 
     default:
@@ -77,9 +78,9 @@ std::string DataProcessing::getRnMnemonic(){
 }
 
 uint32_t DataProcessing::getOperand2Imm(){
-    if(I == 1)
-        return Utils::rotateRight(Imm, 2*Rotate);
-    else
+    if(I == 1){
+        //return Utils::rotateRight(Imm, 2*Rotate);
+    }else
         return -1;
 }
 
@@ -88,10 +89,15 @@ uint32_t DataProcessing::getOperand2Rm(){
     return -12345;
 }
 
-uint32_t DataProcessing::getOperand2(){
-    if(I==1)
-        return getOperand2Imm();
-    else
-        return getOperand2Rm();
+std::string DataProcessing::getOperand2Mnemonic(){
+    if(I == 0){
+        ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
+        return "r" + std::to_string(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " " + Utils::toHexString(shiftRm->getShiftAmount());
+    }else if(I == 1){
+        RotateImm* rotateImm = static_cast<RotateImm*>(operand2);
+        return "#" + Utils::toHexString(rotateImm->getOperandVal()); 
+    }else{
+        return "ERROR getOperand2Mnemonic Data_processing";
+    }
 }
 

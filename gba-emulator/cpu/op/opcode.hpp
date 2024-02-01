@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <unordered_map>
+#include "../../utils/utils.hpp"
+#include "fields/operand.hpp"
 
 class OpCode {
 	private:
@@ -106,13 +108,10 @@ class OpCode {
 			{0b1110, ""}  // (ignored), always
         }; 
 
-		
-
 		const static uint32_t BRANCH = 0b00001010000000000000000000000000;
 		const static uint32_t BRANCH_OFFSET = 0b00000000111111111111111111111111;
 		const static uint32_t BRANCH_LINK =   0b00000001000000000000000000000000;
 		const static uint32_t BRANCH_LINK_SHIFT = 24;
-
 
 };
 

@@ -103,9 +103,7 @@ int main()
 	}
 	*/
 
-	OpCode* op = cpu.decodeInstructionARM(0xe35e00a5);
-	std::cout << op->toString() << std::endl;	// cmp r14,#0xA5
-	delete op;
+	OpCode* op;
 
 	//op = cpu.decodeInstructionARM(0xF00FF32);
 	//std::cout << op->toString() << std::endl;	// cmp r14,#0xA5
@@ -124,33 +122,54 @@ int main()
 													   // #0x1C8 equals content of r15(pc)=0x0148 + 0x78 + 0x8
 	std::cout << otro4.toString() << std::endl;	// */
 
-	op = cpu.decodeInstructionARM(0xeaefe6f6); // PC = 0x08367650 OP= 0xEAEFE6F b #0x7f61230
-	std::cout << op->toString() << std::endl;	
-	delete op;
+	// op = cpu.decodeInstructionARM(0xeaefe6f6); // PC = 0x08367650 OP= 0xEAEFE6F b #0x7f61230
+	// std::cout << op->toString() << std::endl;	
+	// delete op;
 
-	op = cpu.decodeInstructionARM(0xea000018); // PC = 0x00000000 OP= 0xea000018 b #0x68 (104)
-	std::cout << op->toString() << std::endl;	
-	delete op;
+	// op = cpu.decodeInstructionARM(0xea000018); // PC = 0x00000000 OP= 0xea000018 b #0x68 (104)
+	// std::cout << op->toString() << std::endl;	
+	// delete op;
 
-	op = cpu.decodeInstructionARM(0xe12fff10); // PC = 0x000000B0 OP= 0xe12fff10 bx r0
-	std::cout << op->toString() << std::endl;
-	delete op;
+	// op = cpu.decodeInstructionARM(0xe12fff10); // PC = 0x000000B0 OP= 0xe12fff10 bx r0
+	// std::cout << op->toString() << std::endl;
+	// delete op;
 
-	op = cpu.decodeInstructionARM(0xe12FFF1E); // PC = 0x000000DC OP= 0xe12FFF1E bx r14
-	std::cout << op->toString() << std::endl;	
-	delete op;
+	// op = cpu.decodeInstructionARM(0xe12FFF1E); // PC = 0x000000DC OP= 0xe12FFF1E bx r14
+	// std::cout << op->toString() << std::endl;	
+	// delete op;
 
-	op = cpu.decodeInstructionARM(0xE59FD1A0); // 0000001C  E59FD1A0  ldr       sp,[pc,0x1A0]
-	std::cout << op->toString() << std::endl;	
-	delete op;
+	// op = cpu.decodeInstructionARM(0xE59FD1A0); // 0000001C  E59FD1A0  ldr       sp,[pc,0x1A0]
+	// std::cout << op->toString() << std::endl;	
+	// delete op;
 
-	op = cpu.decodeInstructionARM(0xE5DCE09C); // 00000034  E5DCE09C  ldrb      lr,[r12,0x9C]
-	std::cout << op->toString() << std::endl;	
-	delete op;
+	// op = cpu.decodeInstructionARM(0xE5DCE09C); // 00000034  E5DCE09C  ldrb      lr,[r12,0x9C]
+	// std::cout << op->toString() << std::endl;	
+	// delete op;
 	
-	op = cpu.decodeInstructionARM(0xE79BC10C); // 0000014C  E79BC10C  ldr       r12,[r11,r12,lsl 0x2]
+	// op = cpu.decodeInstructionARM(0xE79BC10C); // 0000014C  E79BC10C  ldr       r12,[r11,r12,lsl 0x2]
+	// std::cout << op->toString() << std::endl;	
+	// delete op;
+
+	// op = cpu.decodeInstructionARM(0x07F8D421); // 0000009C  07F8D421  ldrbeq    sp,[r8,r1,lsr 0x8]!
+	// std::cout << op->toString() << std::endl;	
+	// delete op;
+
+	// op = cpu.decodeInstructionARM(0x4552554B); // 000000A0  4552554B  ldrbmi    r5,[r2,-0x54B]
+	// std::cout << op->toString() << std::endl;	
+	// delete op;
+
+	op = cpu.decodeInstructionARM(0x51AEFF24); // 00000004  51AEFF24  movpl     pc,r4,lsr 0x1E
 	std::cout << op->toString() << std::endl;	
 	delete op;
+
+	op = cpu.decodeInstructionARM(0x21A29A69); // 00000008  21A29A69  movcs     r9,r9,ror 0x14
+	std::cout << op->toString() << std::endl;	
+	delete op;
+
+	std::unique_ptr<OpCode> op2{cpu.decodeInstructionARM(0x021ee080)};
+	std::cout << op2->toString() << std::endl;	// andeqs r14,r14,#0x80
+
+	
 
 	return 0;
 }

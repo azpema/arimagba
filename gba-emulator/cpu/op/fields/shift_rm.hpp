@@ -1,0 +1,44 @@
+#ifndef _OPCODE_FIELD_SHIFT_RM_
+#define _OPCODE_FIELD_SHIFT_RM_
+
+#include <iostream>
+#include "operand.hpp"
+#include "../opcode.hpp"
+#include "../../../utils/utils.hpp"
+
+class ShiftRm : public Operand {
+
+    private:
+        uint16_t Shift, Rm, shiftType, shiftAmount, shiftReg;
+        enum Type {AMOUNT, REGISTER};
+        enum Type _type;
+
+        const static uint32_t SHIFT_MASK = 0b111111110000;
+        const static uint32_t SHIFT_SHIFT = 4;
+
+        const static uint32_t RM_MASK = 0b000000001111;
+        const static uint32_t RM_SHIFT = 0;
+
+        // If shift ends with 0b0
+        const static uint16_t SHIFT_AMOUNT_MASK = 0b11111000;
+        const static uint16_t SHIFT_AMOUNT_SHIFT = 3;
+
+        const static uint16_t SHIFT_TYPE_MASK = 0b00000110;
+        const static uint16_t SHIFT_TYPE_SHIFT = 1;
+
+        // If shift ends with 0b1
+        const static uint16_t SHIFT_RS_MASK = 0b11110000;
+        const static uint16_t SHIFT_RS_SHIFT = 4;
+
+        const std::string shiftType2Mnemonic[4] = {"lsl", "lsr", "asr", "ror"};
+
+
+	public:
+		ShiftRm(uint16_t val);
+        std::string getShiftTypeMnemonic();
+        uint16_t getShiftAmount();
+        uint16_t getRm();
+
+};
+
+#endif

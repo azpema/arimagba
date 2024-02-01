@@ -3,11 +3,13 @@
 
 #include <iostream>
 #include "opcode.hpp"
-#include "../../utils/utils.hpp"
+#include "fields/shift_rm.hpp"
+#include "fields/imm.hpp"
 
 class SingleDataTransfer : public OpCode {
     public:
-        uint16_t I, P, U, B, W, L, Rn, Rd, offsetField, Imm, Shift, Rm;
+        uint16_t I, P, U, B, W, L, Rn, Rd;
+        Operand *offsetField;
 
     private:
         const static uint32_t I_MASK = 0b00000010000000000000000000000000; 
@@ -18,7 +20,7 @@ class SingleDataTransfer : public OpCode {
 
         const static uint32_t U_MASK = 0b00000000100000000000000000000000; 
         const static uint32_t U_SHIFT = 23;
-        std::string UFlag2Mnemonic[2] = {"-", "+"};
+        std::string UFlag2Mnemonic[2] = {"-", ""};
         std::string getUFlagMnemonic();
 
         const static uint32_t B_MASK = 0b00000000010000000000000000000000; 
@@ -46,14 +48,9 @@ class SingleDataTransfer : public OpCode {
         const static uint32_t OFFSET_MASK = 0b00000000000000000000111111111111; 
         const static uint32_t OFFSET_SHIFT = 0;
 
-        // I == 1
-        const static uint32_t SHIFT_MASK = 0b111111110000;
-        const static uint32_t SHIFT_SHIFT = 4;
-        const static uint32_t RM_MASK = 0b000000001111;
-        const static uint32_t RM_SHIFT = 0;
-
 	public:
 		SingleDataTransfer(uint32_t op);
+        ~SingleDataTransfer();
         std::string toString();
 };
 

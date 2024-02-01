@@ -1,23 +1,16 @@
 #include <iostream>
 #include "opcode.hpp"
+#include "fields/operand.hpp"
+#include "fields/shift_rm.hpp"
+#include "fields/imm.hpp"
+#include "fields/rotate_imm.hpp"
 #include <unordered_map>
 
 class DataProcessing : public OpCode {
-    public:
-        uint16_t I;
-        // Only if I = 0
-        uint16_t Shift;
-        uint16_t Rm;
-        // Only if I = 1
-        uint16_t Rotate;
-        uint16_t Imm;
-
-        uint16_t S;
-        uint16_t Rn;
-        uint16_t Rd;
-        uint16_t operand2;
-        uint16_t dataOpCode;
     private:
+        uint16_t I, S, Rn, Rd, dataOpCode;
+        Operand *operand2;
+
         const static uint32_t IMMEDIATE_OPERAND_MASK = 0b00000010000000000000000000000000; 
         const static uint32_t IMMEDIATE_OPERAND_SHIFT = 25; 
 
@@ -36,33 +29,6 @@ class DataProcessing : public OpCode {
         const static uint32_t OPERAND2_MASK = 0b00000000000000000000111111111111;
         const static uint32_t OPERAND2_SHIFT = 0;
 
-        // Only when I=0 (Shift)
-        const static uint32_t OPERAND2_SHIFT_MASK = 0b111111110000;
-        const static uint32_t OPERAND2_SHIFT_SHIFT = 4;
-
-        const static uint32_t OPERAND2_RM_MASK = 0b000000001111;
-        const static uint32_t OPERAND2_RM_SHIFT = 0;
-
-            // If shift ends with 0b0
-            const static uint16_t OPERAND2_SHIFT_AMOUNT_MASK = 0b11111000;
-            const static uint16_t OPERAND2_SHIFT_AMOUNT_SHIFT = 3;
-
-            const static uint16_t OPERAND2_SHIFT_TYPE_MASK = 0b00000110;
-            const static uint16_t OPERAND2_SHIFT_TYPE_SHIFT = 1;
-
-            // If shift ends with 0b1
-            const static uint16_t OPERAND2_SHIFT_RS_MASK = 0b11110000;
-            const static uint16_t OPERAND2_SHIFT_RST_SHIFT = 4;
-
-            //const static uint16_t OPERAND2_SHIFT_TYPE_MASK = 0b00000110;
-            //  const static uint16_t OPERAND2_SHIFT_TYPE_SHIFT = 1;
-
-        // Only when I=1 (Imm)
-        const static uint32_t OPERAND2_ROTATE_MASK = 0b111100000000;
-        const static uint32_t OPERAND2_ROTATE_SHIFT = 8;
-
-        const static uint32_t OPERAND2_IMM_MASK = 0b000011111111;
-        const static uint32_t OPERAND2_IMM_SHIFT = 0;
 
         const static uint16_t OPCODE_AND_VAL = 0x0;
         const static uint16_t OPCODE_EOR_VAL = 0x1;
@@ -110,12 +76,13 @@ class DataProcessing : public OpCode {
         uint32_t getOperand2Imm();
 
 	public:
-
 		DataProcessing(uint32_t op);
+        ~DataProcessing();
         std::string toString();
         std::string getOpCodeMnemonic();
         std::string getRdMnemonic();
         std::string getRnMnemonic();
+        std::string getOperand2Mnemonic();
         uint32_t getOperand2();
 
 };
