@@ -3,6 +3,9 @@
 #include "op/branch.hpp"
 #include "op/branch_and_exchange.hpp"
 #include "op/single_data_transfer.hpp"
+#include "op/block_data_transfer.hpp"
+#include "op/psr_transfer_mrs.hpp"
+#include "op/psr_transfer_msr.hpp"
 #include <iostream>
 
 ARM7TDMI::ARM7TDMI() {
@@ -13,7 +16,7 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op) {
 	if(OpCode::isBranchAndExchange(op)){
 		return new BranchAndExchange(op);
 	}else if (OpCode::isBlockDataTransfer(op)) {
-		std::cout << "ldm/stm" << std::endl;
+		return new BlockDataTransfer(op);
 	}else if(OpCode::isBranch(op)){
 		return new Branch(op);
 	}else if(OpCode::isSoftwareInterrupt(op)){
@@ -33,9 +36,9 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op) {
 	}else if(OpCode::isHalfwordDataTransferImmediate(op)){
 		std::cout << "@nose2" << std::endl;
 	}else if(OpCode::isPSRTransferMRS(op)){
-		std::cout << "mrs" << std::endl; 
+		return new PSRTransferMRS(op);
 	}else if(OpCode::isPSRTransferMSR(op)){
-		std::cout << "msr" << std::endl;
+		return new PSRTransferMSR(op);
 	}else if(OpCode::isDataProcessing(op)){
 		return new DataProcessing(op);
 	}else{

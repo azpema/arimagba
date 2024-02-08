@@ -12,6 +12,5 @@ std::string Branch::getLinkFlagMnemonic(){
 }
 
 std::string Branch::toString(){
-    std::cout << std::bitset<32>(realOffset) << std::endl;
-    return "b" + getLinkFlagMnemonic() + getCondFieldMnemonic() + " pc" + std::to_string(realOffset);
+    return "b" + getLinkFlagMnemonic() + getCondFieldMnemonic() + " pc+" + Utils::toHexString(realOffset);
 }

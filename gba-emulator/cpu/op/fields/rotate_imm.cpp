@@ -7,6 +7,6 @@ RotateImm::RotateImm(uint16_t val) : Operand::Operand(val, OperandType::ROTATE_I
     operandVal = Utils::rotateRight(imm, 2*rotate);
 }
 
-uint16_t RotateImm::getOperandVal(){
+uint32_t RotateImm::getOperandVal(){
     return operandVal;
 }

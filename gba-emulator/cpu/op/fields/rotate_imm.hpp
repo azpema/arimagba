@@ -9,7 +9,8 @@
 class RotateImm : public Operand {
 
     private:
-        uint16_t rotate, imm, operandVal;
+        uint16_t rotate, imm;
+        uint32_t operandVal;
 
         const static uint32_t ROTATE_MASK = 0b111100000000;
         const static uint32_t ROTATE_SHIFT = 8;
@@ -19,7 +20,7 @@ class RotateImm : public Operand {
 
 	public:
 		RotateImm(uint16_t val);
-        uint16_t getOperandVal();
+        uint32_t getOperandVal();
 };
 
 #endif

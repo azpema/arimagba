@@ -11,6 +11,7 @@
                 "${fileDirname}\\*.cpp",
                 "${fileDirname}\\cpu\\*.cpp",
                 "${fileDirname}\\cpu\\op\\*.cpp",
+                "${fileDirname}\\cpu\\op\\fields\\*.cpp",
                 "${fileDirname}\\cpu\\registers\\*.cpp",
                 "${fileDirname}\\utils\\*.cpp",
                 "-o",

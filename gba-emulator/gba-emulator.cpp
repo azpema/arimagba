@@ -93,16 +93,6 @@ int main()
 	std::cout << otro.getOpCodeMnemonic() << std::endl; // sub
 	*/
 
-	/*std::cout << "First BIOS instructions" << std::endl;
-	BIOS bios = BIOS("files/bios.bin");
-	uint32_t op;
-	for(size_t i = 0; i < 10*4; i +=4 ){
-		op = bios.readWord(i);
-		std::cout << "0x" << std::hex << std::uppercase << op << std::dec << std::endl;
-		cpu.decodeInstructionARM(op);
-	}
-	*/
-
 	OpCode* op;
 
 	//op = cpu.decodeInstructionARM(0xF00FF32);
@@ -158,17 +148,30 @@ int main()
 	// std::cout << op->toString() << std::endl;	
 	// delete op;
 
-	op = cpu.decodeInstructionARM(0x51AEFF24); // 00000004  51AEFF24  movpl     pc,r4,lsr 0x1E
-	std::cout << op->toString() << std::endl;	
-	delete op;
+	// op = cpu.decodeInstructionARM(0x51AEFF24); // 00000004  51AEFF24  movpl     pc,r4,lsr 0x1E
+	// std::cout << op->toString() << std::endl;	
+	// delete op;
 
-	op = cpu.decodeInstructionARM(0x21A29A69); // 00000008  21A29A69  movcs     r9,r9,ror 0x14
-	std::cout << op->toString() << std::endl;	
-	delete op;
+	// op = cpu.decodeInstructionARM(0x21A29A69); // 00000008  21A29A69  movcs     r9,r9,ror 0x14
+	// std::cout << op->toString() << std::endl;	
+	// delete op;
 
-	std::unique_ptr<OpCode> op2{cpu.decodeInstructionARM(0x021ee080)};
-	std::cout << op2->toString() << std::endl;	// andeqs r14,r14,#0x80
+	// std::unique_ptr<OpCode> op2{cpu.decodeInstructionARM(0x021ee080)};
+	// std::cout << op2->toString() << std::endl;	// andeqs r14,r14,#0x80
 
+	uint32_t insCount = 40;
+	BIOS bios = BIOS("files/bios.bin");
+	uint32_t ins;
+	uint32_t pc = 0;
+	for(size_t i = 0; i < insCount*4; i +=4 ){
+		ins = bios.readWord(i);
+		op = cpu.decodeInstructionARM(ins);
+		std::cout << Utils::toHexString(pc, 8) << "     ";
+		std::cout << Utils::toHexString(ins, 8) << "     ";
+		std::cout << op->toString() << std::endl;
+		pc += 4;
+		delete op;
+	}
 	
 
 	return 0;
