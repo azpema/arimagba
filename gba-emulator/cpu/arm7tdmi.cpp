@@ -6,6 +6,10 @@
 #include "op/block_data_transfer.hpp"
 #include "op/psr_transfer_mrs.hpp"
 #include "op/psr_transfer_msr.hpp"
+#include "op/psr_transfer_msr_full.hpp"
+// TODO
+//#include "op/psr_transfer_flag_bits.hpp"
+#include "op/undefined.hpp"
 #include <iostream>
 
 ARM7TDMI::ARM7TDMI() {
@@ -22,7 +26,7 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op) {
 	}else if(OpCode::isSoftwareInterrupt(op)){
 		std::cout << "swi" << std::endl;
 	}else if(OpCode::isUndefined(op)){
-		std::cout << "undef" << std::endl;
+		return new Undefined(op);
 	}else if(OpCode::isSingleDataTransfer(op)){
 		return new SingleDataTransfer(op);
 	}else if(OpCode::isSingleDataSwap(op)){
@@ -38,11 +42,18 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op) {
 	}else if(OpCode::isPSRTransferMRS(op)){
 		return new PSRTransferMRS(op);
 	}else if(OpCode::isPSRTransferMSR(op)){
-		return new PSRTransferMSR(op);
+		if(PSRTransferMSR::isFullTransfer(op)){
+			return new PSRTransferMSRFull(op);
+		}else if(PSRTransferMSR::isFlagBitsTransfer(op)){
+			//return new PSRTransferMSRFlagBits(op);
+		}else{
+			std::cerr << "ERROR: Unrecognized PSR Transfer MSR format" << std::endl;
+		}
 	}else if(OpCode::isDataProcessing(op)){
 		return new DataProcessing(op);
 	}else{
-		std::cout << "ERROR: Unrecognized instruction" << std::endl;
+		//std::cout << "ERROR: Unrecognized instruction" << std::endl;
+		return nullptr;
 	}
 }
 

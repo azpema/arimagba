@@ -159,7 +159,7 @@ int main()
 	// std::unique_ptr<OpCode> op2{cpu.decodeInstructionARM(0x021ee080)};
 	// std::cout << op2->toString() << std::endl;	// andeqs r14,r14,#0x80
 
-	uint32_t insCount = 40;
+	uint32_t insCount = 200;
 	BIOS bios = BIOS("files/bios.bin");
 	uint32_t ins;
 	uint32_t pc = 0;
@@ -168,9 +168,15 @@ int main()
 		op = cpu.decodeInstructionARM(ins);
 		std::cout << Utils::toHexString(pc, 8) << "     ";
 		std::cout << Utils::toHexString(ins, 8) << "     ";
-		std::cout << op->toString() << std::endl;
+		if(op != nullptr){
+			std::cout << op->toString() << std::endl;
+			delete op;
+		}else{
+			std::cout << "Unrecognized" << std::endl;
+		}
+
 		pc += 4;
-		delete op;
+
 	}
 	
 

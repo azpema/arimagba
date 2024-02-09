@@ -10,8 +10,9 @@ class OpCode {
 	private:
 		uint32_t opcode = 0;
 		uint16_t cond = 0;
-	public:
+	protected:
 		OpCode(uint32_t op);
+	public:
 		virtual std::string toString() = 0;
 		
 		// Branch and Exchange
