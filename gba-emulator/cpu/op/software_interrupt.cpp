@@ -1,0 +1,10 @@
+#include "software_interrupt.hpp"
+
+
+SoftwareInterrupt::SoftwareInterrupt(uint32_t op): OpCode::OpCode(op) {
+    comment = Utils::getRegBits(op, COMMENT_FIELD_MASK, COMMENT_FIELD_SHIFT);
+}   
+
+std::string SoftwareInterrupt::toString(){
+    return "swi";
+}
