@@ -41,7 +41,7 @@ std::string SingleDataTransfer::getLFlagMnemonic(){
 
 std::string SingleDataTransfer::toString(){
     std::string base = getLFlagMnemonic() + getBFlagMnemonic() + getCondFieldMnemonic() \
-            + " r" + std::to_string(Rd) + ",";
+            + " " + getRegMnemonic(Rd) + ",";
     std::string writeBack = getWFlagMnemonic();
     std::string address = "";
 
@@ -50,18 +50,30 @@ std::string SingleDataTransfer::toString(){
         // Offset is an immediate value
         if(I == 0){
             Imm* imm = static_cast<Imm*>(offsetField);
-            address = "[r" + std::to_string(Rn) + "," + getUFlagMnemonic() + Utils::toHexString(imm->getImmVal()) + "]" + writeBack;
+            address = "[" + getRegMnemonic(Rn) + "," + getUFlagMnemonic() + Utils::toHexString(imm->getImmVal()) + "]" + writeBack;
         // Offset is a register
         }else if(I == 1){
             ShiftRm* shiftRm = static_cast<ShiftRm*>(offsetField);
-            address += "[r" + std::to_string(Rn) + ",r" + std::to_string(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + \
-                        " " + getUFlagMnemonic() + Utils::toHexString(shiftRm->getShiftAmount()) + "]" + writeBack;
+            address += "[" + getRegMnemonic(Rn) + "," + getUFlagMnemonic() + getRegMnemonic(shiftRm->getRm()) + "," + \
+                       shiftRm->getShiftTypeMnemonic() + " " + Utils::toHexString(shiftRm->getShiftAmount()) + "]" + writeBack;
+        }else{
+            std::cerr << "ERROR: SingleDataTransfer P=1" << std::endl;
         }
         
         
     // Postindexing; add offset after transfer
     }else if(P == 0){
-        address = "TODO P=0";
+        address = "[" + getRegMnemonic(Rn) + "],";
+        if(I == 0){
+            Imm* imm = static_cast<Imm*>(offsetField);
+            address += getUFlagMnemonic() + Utils::toHexString(imm->getImmVal());
+        }else if(I == 1){
+            ShiftRm* shiftRm = static_cast<ShiftRm*>(offsetField);
+            address += getUFlagMnemonic() + getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " " + \
+                       Utils::toHexString(shiftRm->getShiftAmount());
+        }else{
+            std::cerr << "ERROR: SingleDataTransfer P=0" << std::endl;
+        }
     }
 
     return base + address;

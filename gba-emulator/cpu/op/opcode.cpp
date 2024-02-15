@@ -1,6 +1,9 @@
 #include "opcode.hpp"
 #include "../../utils/utils.hpp"
 
+const std::string OpCode::reg2Mnemonic[16] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
+                                              "r8", "r9", "r10", "r11", "r12", "sp", "lr", "pc"};
+
 OpCode::OpCode(uint32_t op) {
     opcode = op;
 }
@@ -76,4 +79,8 @@ uint32_t OpCode::getCondField(){
 
 std::string OpCode::getCondFieldMnemonic(){
 	return condCode2Suffix[getCondField()];
+}
+
+std::string OpCode::getRegMnemonic(uint16_t reg){
+    return reg2Mnemonic[reg];
 }

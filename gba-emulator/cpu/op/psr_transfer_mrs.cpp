@@ -11,5 +11,5 @@ std::string PSRTransferMRS::getPSRMnemonic(){
 }
 
 std::string PSRTransferMRS::toString(){
-    return "mrs" + getCondFieldMnemonic() + " r" + std::to_string(Rd) + "," + getPSRMnemonic();
+    return "mrs" + getCondFieldMnemonic() + " " + getRegMnemonic(Rd) + "," + getPSRMnemonic();
 }

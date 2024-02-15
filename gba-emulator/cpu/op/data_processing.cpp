@@ -34,14 +34,14 @@ std::string DataProcessing::toString(){
     // <opcode>{cond}{S} Rd,<Op2>
     case OPCODE_MOV_VAL:
     case OPCODE_MVN_VAL:
-        mnemonic += SFlag2Mnemonic[S] + " r" + std::to_string(Rd) + "," + getOperand2Mnemonic();
+        mnemonic += SFlag2Mnemonic[S] + " " + getRegMnemonic(Rd) + "," + getOperand2Mnemonic();
         break;
     // <opcode>{cond} Rn,<Op2>
     case OPCODE_CMP_VAL:
     case OPCODE_CMN_VAL:
     case OPCODE_TEQ_VAL:
     case OPCODE_TST_VAL:
-        mnemonic += " r" + std::to_string(Rn) + "," + getOperand2Mnemonic();
+        mnemonic += " " + getRegMnemonic(Rn) + "," + getOperand2Mnemonic();
         break;
     // <opcode>{cond}{s} Rd,Rn,<Op2>
     case OPCODE_AND_VAL:
@@ -54,7 +54,7 @@ std::string DataProcessing::toString(){
     case OPCODE_RSC_VAL:
     case OPCODE_ORR_VAL:
     case OPCODE_BIC_VAL:
-        mnemonic += SFlag2Mnemonic[S] + " r" + std::to_string(Rd) + ",r" + std::to_string(Rn) + "," + getOperand2Mnemonic();
+        mnemonic += SFlag2Mnemonic[S] + " " + getRegMnemonic(Rd) + "," + getRegMnemonic(Rn) + "," + getOperand2Mnemonic();
         break;
 
     default:
@@ -70,18 +70,12 @@ std::string DataProcessing::getOpCodeMnemonic(){
 }
 
 std::string DataProcessing::getRdMnemonic(){
-    return "r" + std::to_string(Rd);
+    return getRegMnemonic(Rd);
+
 }
 
 std::string DataProcessing::getRnMnemonic(){
-    return "r" + std::to_string(Rn);
-}
-
-uint32_t DataProcessing::getOperand2Imm(){
-    if(I == 1){
-        //return Utils::rotateRight(Imm, 2*Rotate);
-    }else
-        return -1;
+    return getRegMnemonic(Rn);
 }
 
 uint32_t DataProcessing::getOperand2Rm(){
@@ -92,7 +86,7 @@ uint32_t DataProcessing::getOperand2Rm(){
 std::string DataProcessing::getOperand2Mnemonic(){
     if(I == 0){
         ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
-        return "r" + std::to_string(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " " + Utils::toHexString(shiftRm->getShiftAmount());
+        return getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " " + Utils::toHexString(shiftRm->getShiftAmount());
     }else if(I == 1){
         RotateImm* rotateImm = static_cast<RotateImm*>(operand2);
         return "#" + Utils::toHexString(rotateImm->getOperandVal()); 

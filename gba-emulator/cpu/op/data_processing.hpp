@@ -73,7 +73,6 @@ class DataProcessing : public OpCode {
 
         // https://alisdair.mcdiarmid.org/arm-immediate-value-encoding/
         uint32_t getOperand2Rm();
-        uint32_t getOperand2Imm();
 
 	public:
 		DataProcessing(uint32_t op);

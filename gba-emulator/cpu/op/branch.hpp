@@ -29,7 +29,7 @@ class Branch : public OpCode {
         std::string getLinkFlagMnemonic();
 
 	public:
-		Branch(uint32_t op);
+		Branch(uint32_t op, uint32_t pc);
         std::string toString();
 
 };

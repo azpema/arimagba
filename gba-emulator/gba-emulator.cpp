@@ -159,13 +159,13 @@ int main()
 	// std::unique_ptr<OpCode> op2{cpu.decodeInstructionARM(0x021ee080)};
 	// std::cout << op2->toString() << std::endl;	// andeqs r14,r14,#0x80
 
-	uint32_t insCount = 200;
+	uint32_t insCount = 800;
 	BIOS bios = BIOS("files/bios.bin");
 	uint32_t ins;
 	uint32_t pc = 0;
 	for(size_t i = 0; i < insCount*4; i +=4 ){
 		ins = bios.readWord(i);
-		op = cpu.decodeInstructionARM(ins);
+		op = cpu.decodeInstructionARM(ins, pc);
 		std::cout << Utils::toHexString(pc, 8) << "     ";
 		std::cout << Utils::toHexString(ins, 8) << "     ";
 		if(op != nullptr){

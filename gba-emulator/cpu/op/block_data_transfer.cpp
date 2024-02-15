@@ -28,7 +28,7 @@ std::string BlockDataTransfer::getRegisterListMnemonic(){
     std::string regs = "{";
     bool addComma = false;
     for(size_t i = 0; i < registerListVec.size(); i++){
-        regs += "r" + std::to_string(registerListVec[i]);
+        regs += getRegMnemonic(registerListVec[i]);
         if(i < registerListVec.size() - 1)
             regs += ",";
     }
@@ -41,6 +41,6 @@ std::string BlockDataTransfer::getOpAddressingModeMnemonic(){
 }
 
 std::string BlockDataTransfer::toString(){
-    return getOpAddressingModeMnemonic() + getCondFieldMnemonic() + " r" + std::to_string(Rn) + getWFlagMnemonic() + "," + getRegisterListMnemonic() + getSFlagMnemonic();
+    return getOpAddressingModeMnemonic() + getCondFieldMnemonic() + " " + getRegMnemonic(Rn) + getWFlagMnemonic() + "," + getRegisterListMnemonic() + getSFlagMnemonic();
 }
 

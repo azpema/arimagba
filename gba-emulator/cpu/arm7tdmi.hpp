@@ -46,7 +46,7 @@ class ARM7TDMI {
 		CPSR cpsr = CPSR();
 
 	public:
-		OpCode* decodeInstructionARM(uint32_t op);
+		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
 
 		uint32_t getCPSR();
 		void setNFlag(bool val);

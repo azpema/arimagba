@@ -1,10 +1,10 @@
 #include "branch.hpp"
 #include <bitset>
 
-Branch::Branch(uint32_t op): OpCode::OpCode(op) {
+Branch::Branch(uint32_t op, uint32_t pc): OpCode::OpCode(op) {
     L = Utils::getRegBits(op, LINK_MASK, LINK_SHIFT);
     offsetField = Utils::getRegBits(op, OFFSET_MASK, OFFSET_SHIFT);
-    realOffset = static_cast<int32_t>(Utils::twosComplementExtendSignTo(offsetField, 24, 32) << 2) + 8;
+    realOffset = static_cast<int32_t>(Utils::twosComplementExtendSignTo(offsetField, 24, 32) << 2) + pc + 8;
 }   
 
 std::string Branch::getLinkFlagMnemonic(){
@@ -12,5 +12,5 @@ std::string Branch::getLinkFlagMnemonic(){
 }
 
 std::string Branch::toString(){
-    return "b" + getLinkFlagMnemonic() + getCondFieldMnemonic() + " pc+" + Utils::toHexString(realOffset);
+    return "b" + getLinkFlagMnemonic() + getCondFieldMnemonic() + " " + Utils::toHexString(realOffset);
 }

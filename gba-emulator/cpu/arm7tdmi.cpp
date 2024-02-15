@@ -7,24 +7,25 @@
 #include "op/psr_transfer_mrs.hpp"
 #include "op/psr_transfer_msr.hpp"
 #include "op/psr_transfer_msr_full.hpp"
-// TODO
-//#include "op/psr_transfer_flag_bits.hpp"
+#include "op/psr_transfer_msr_flag_bits.hpp"
 #include "op/undefined.hpp"
+#include "op/software_interrupt.hpp"
+#include "op/multiply_accumulate.hpp"
 #include <iostream>
 
 ARM7TDMI::ARM7TDMI() {
 
 }
 
-OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op) {
+OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 	if(OpCode::isBranchAndExchange(op)){
 		return new BranchAndExchange(op);
 	}else if (OpCode::isBlockDataTransfer(op)) {
 		return new BlockDataTransfer(op);
 	}else if(OpCode::isBranch(op)){
-		return new Branch(op);
+		return new Branch(op, pc);
 	}else if(OpCode::isSoftwareInterrupt(op)){
-		std::cout << "swi" << std::endl;
+		return new SoftwareInterrupt(op);
 	}else if(OpCode::isUndefined(op)){
 		return new Undefined(op);
 	}else if(OpCode::isSingleDataTransfer(op)){
@@ -32,7 +33,7 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op) {
 	}else if(OpCode::isSingleDataSwap(op)){
 		std::cout << "swp" << std::endl;
 	}else if(OpCode::isMultiply(op)){
-		std::cout << "mul/mla" << std::endl;
+		return new MultiplyAccumulate(op);
 	}else if(OpCode::isMultiplyLong(op)){
 		std::cout << "mull/mlal" << std::endl;
 	}else if(OpCode::isHalfwordDataTransferRegister(op)){
@@ -45,7 +46,7 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op) {
 		if(PSRTransferMSR::isFullTransfer(op)){
 			return new PSRTransferMSRFull(op);
 		}else if(PSRTransferMSR::isFlagBitsTransfer(op)){
-			//return new PSRTransferMSRFlagBits(op);
+			return new PSRTransferMSRFlagBits(op);
 		}else{
 			std::cerr << "ERROR: Unrecognized PSR Transfer MSR format" << std::endl;
 		}
@@ -55,6 +56,7 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op) {
 		//std::cout << "ERROR: Unrecognized instruction" << std::endl;
 		return nullptr;
 	}
+	return nullptr;
 }
 
 uint32_t ARM7TDMI::getCPSR(){

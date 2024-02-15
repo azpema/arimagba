@@ -8,11 +8,12 @@
 class Operand {
     protected:
         uint16_t val;
-        enum OperandType {SHIFT_RM, ROTATE_IMM, IMM};
-        OperandType _type;
-
+        
 	public:
+        enum OperandType {SHIFT_RM, ROTATE_IMM, IMM, RM};
+        OperandType _type;
 		Operand(uint16_t val, OperandType _type);
+
 };
 
 #endif

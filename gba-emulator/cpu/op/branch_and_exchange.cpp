@@ -7,5 +7,5 @@ BranchAndExchange::BranchAndExchange(uint32_t op): OpCode::OpCode(op) {
 
 
 std::string BranchAndExchange::toString(){
-    return "bx" + getCondFieldMnemonic() + " r" + std::to_string(Rn);
+    return "bx" + getCondFieldMnemonic() + " " + getRegMnemonic(Rn);
 }
