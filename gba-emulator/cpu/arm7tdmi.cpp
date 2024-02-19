@@ -11,6 +11,9 @@
 #include "op/undefined.hpp"
 #include "op/software_interrupt.hpp"
 #include "op/multiply_accumulate.hpp"
+#include "op/multiply_accumulate_long.hpp"
+#include "op/single_data_swap.hpp"
+#include "op/halfword_data_transfer_register.hpp"
 #include <iostream>
 
 ARM7TDMI::ARM7TDMI() {
@@ -31,13 +34,13 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 	}else if(OpCode::isSingleDataTransfer(op)){
 		return new SingleDataTransfer(op);
 	}else if(OpCode::isSingleDataSwap(op)){
-		std::cout << "swp" << std::endl;
+		return new SingleDataSwap(op);
 	}else if(OpCode::isMultiply(op)){
 		return new MultiplyAccumulate(op);
 	}else if(OpCode::isMultiplyLong(op)){
-		std::cout << "mull/mlal" << std::endl;
+		return new MultiplyAccumulateLong(op);
 	}else if(OpCode::isHalfwordDataTransferRegister(op)){
-		std::cout << "@nose1" << std::endl;
+		return new HalfwordDataTransferRegister(op);
 	}else if(OpCode::isHalfwordDataTransferImmediate(op)){
 		std::cout << "@nose2" << std::endl;
 	}else if(OpCode::isPSRTransferMRS(op)){

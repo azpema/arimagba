@@ -159,7 +159,7 @@ int main()
 	// std::unique_ptr<OpCode> op2{cpu.decodeInstructionARM(0x021ee080)};
 	// std::cout << op2->toString() << std::endl;	// andeqs r14,r14,#0x80
 
-	uint32_t insCount = 800;
+	uint32_t insCount = 8000;
 	BIOS bios = BIOS("files/bios.bin");
 	uint32_t ins;
 	uint32_t pc = 0;
