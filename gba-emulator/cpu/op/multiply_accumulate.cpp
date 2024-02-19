@@ -19,7 +19,7 @@ std::string MultiplyAccumulate::getOpMnemonic(){
 
 std::string MultiplyAccumulate::toString(){
     std::string mnemonic = getOpMnemonic() + getCondFieldMnemonic() + getSFlagMnemonic() + " " + \
-                           getRegMnemonic(rd) + " " + getRegMnemonic(rm) + " " + getRegMnemonic(rs);
+                           getRegMnemonic(rd) + "," + getRegMnemonic(rm) + "," + getRegMnemonic(rs);
     if(a == 1)
         mnemonic += " " + getRegMnemonic(rn);
     return mnemonic;
