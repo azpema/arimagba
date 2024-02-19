@@ -7,11 +7,10 @@
 #include "fields/imm.hpp"
 
 class SingleDataTransfer : public OpCode {
-    public:
+    private:
         uint16_t I, P, U, B, W, L, Rn, Rd;
         Operand *offsetField;
 
-    private:
         const static uint32_t I_MASK = 0b00000010000000000000000000000000; 
         const static uint32_t I_SHIFT = 25;
 
