@@ -159,12 +159,12 @@ int main()
 	// std::unique_ptr<OpCode> op2{cpu.decodeInstructionARM(0x021ee080)};
 	// std::cout << op2->toString() << std::endl;	// andeqs r14,r14,#0x80
 
-	uint32_t insCount = 8000;
+	/*uint32_t insCount = 8000;
 	BIOS bios = BIOS("files/bios.bin");
-	uint32_t ins;
-	uint32_t pc = 0;
-	for(size_t i = 0; i < insCount*4; i +=4 ){
-		ins = bios.readWord(i);
+	int64_t ins;
+	int pc = 0;
+	ins = bios.readWord(pc);
+	while(ins != -1){
 		op = cpu.decodeInstructionARM(ins, pc);
 		std::cout << Utils::toHexString(pc, 8) << "     ";
 		std::cout << Utils::toHexString(ins, 8) << "     ";
@@ -176,9 +176,31 @@ int main()
 		}
 
 		pc += 4;
+		ins = bios.readWord(pc);
+		std::cout << ins << std::endl;
+	}
+	std::cout << ins << std::endl;*/
+
+	ThumbOpCode* thumbOp;
+
+	uint32_t insCount = 8000;
+	BIOS bios = BIOS("files/bios.bin");
+	uint16_t ins;
+	int pc = 0;
+	ins = bios.readHalfWord(pc);
+	for(size_t i=0; i<insCount; i++){
+		std::cout << Utils::toHexString(pc, 4) << "     ";
+		std::cout << Utils::toHexString(ins, 4) << "     ";
+
+		thumbOp = cpu.decodeInstructionThumb(ins, pc);
+
+		if(thumbOp != nullptr){
+			std::cout << thumbOp->toString() << std::endl;
+			delete thumbOp;
+		}
+		pc += 2;
+		ins = bios.readHalfWord(pc);
 
 	}
-	
-
 	return 0;
 }
