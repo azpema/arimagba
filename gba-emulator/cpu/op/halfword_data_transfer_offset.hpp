@@ -1,0 +1,29 @@
+#ifndef _OPCODE_HALFWORD_DATA_TRANSFER_OFFSET_ 
+#define _OPCODE_HALFWORD_DATA_TRANSFER_OFFSET_ 
+
+#include <iostream>
+#include "halfword_data_transfer.hpp"
+#include "../../utils/utils.hpp"
+
+class HalfwordDataTransferOffset : public HalfwordDataTransfer {
+    private:
+        uint16_t offsetHi, offsetLo, offsetVal;
+
+        const static uint32_t OFFSETHI_FLAG_MASK = 0b00000000000000000000111100000000; 
+        const static uint32_t OFFSETHI_FLAG_SHIFT = 8;
+
+        const static uint32_t OFFSETLO_FLAG_MASK = 0b00000000000000000000000000001111; 
+        const static uint32_t OFFSETLO_FLAG_SHIFT = 0;
+
+        uint16_t getOffsetVal();
+
+    public:
+        HalfwordDataTransferOffset(uint32_t op);
+        std::string toString();
+
+};
+
+
+
+
+#endif
