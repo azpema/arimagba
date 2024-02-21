@@ -57,7 +57,7 @@ bool OpCode::isHalfwordDataTransferRegister(uint32_t op){
     return checkOpCode(op, HALFWORD_DATA_TRANSFER_REG_MASK, HALFWORD_DATA_TRANSFER_REG_FORMAT);
 }
 
-bool OpCode::isHalfwordDataTransferImmediate(uint32_t op){
+bool OpCode::isHalfwordDataTransferOffset(uint32_t op){
     return checkOpCode(op, HALFWORD_DATA_TRANSFER_IMM_MASK, HALFWORD_DATA_TRANSFER_IMM_FORMAT);
 }
 

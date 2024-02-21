@@ -111,7 +111,7 @@ class OpCode {
 		static bool isMultiply(uint32_t op);
 		static bool isMultiplyLong(uint32_t op);
 		static bool isHalfwordDataTransferRegister(uint32_t op);
-		static bool isHalfwordDataTransferImmediate(uint32_t op);
+		static bool isHalfwordDataTransferOffset(uint32_t op);
 		static bool isPSRTransferMRS(uint32_t op);
 		static bool isPSRTransferMSR(uint32_t op);
 		static bool isDataProcessing(uint32_t op);
