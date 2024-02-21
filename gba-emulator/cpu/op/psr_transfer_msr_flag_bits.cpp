@@ -10,7 +10,7 @@ PSRTransferMSRFlagBits::PSRTransferMSRFlagBits(uint32_t op): PSRTransferMSR::PSR
     }else if (I == 1){
         sourceOperand = new RotateImm(Utils::getRegBits(op, SOURCE_OPERAND_MASK, SOURCE_OPERAND_SHIFT));
     }else{
-        std::cout << "ERROR: Invalid I field value" << std::endl;
+        std::cerr << "ERROR: Invalid I field value" << std::endl;
     }
 }
 
@@ -27,7 +27,7 @@ std::string PSRTransferMSRFlagBits::toString() {
         RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand);
         srcOper = "#" + Utils::toHexString(rotImm->getOperandVal());
     }else{
-        std::cerr << "ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type" << std::endl;
+        std::cerr << "ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " << sourceOperand->_type << std::endl;
     }
     
     return PSRTransferMSR::toString() + "," + srcOper;
