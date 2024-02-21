@@ -1,6 +1,7 @@
 #include <iostream>
 #include "registers/cpsr.hpp"
 #include "op/opcode.hpp"
+#include "op/thumb/thumb_opcode.hpp"
 
 class ARM7TDMI {
 	public:
@@ -47,6 +48,7 @@ class ARM7TDMI {
 
 	public:
 		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
+		ThumbOpCode* decodeInstructionThumb(uint16_t op, uint32_t pc);
 
 		uint32_t getCPSR();
 		void setNFlag(bool val);

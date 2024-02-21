@@ -14,6 +14,10 @@
 #include "op/multiply_accumulate_long.hpp"
 #include "op/single_data_swap.hpp"
 #include "op/halfword_data_transfer_register.hpp"
+#include "op/halfword_data_transfer_offset.hpp"
+// Thumb
+#include "op/thumb/move_comp_add_sub_imm.hpp"
+
 #include <iostream>
 
 ARM7TDMI::ARM7TDMI() {
@@ -41,8 +45,8 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 		return new MultiplyAccumulateLong(op);
 	}else if(OpCode::isHalfwordDataTransferRegister(op)){
 		return new HalfwordDataTransferRegister(op);
-	}else if(OpCode::isHalfwordDataTransferImmediate(op)){
-		std::cout << "@nose2" << std::endl;
+	}else if(OpCode::isHalfwordDataTransferOffset(op)){
+		return new HalfwordDataTransferOffset(op);
 	}else if(OpCode::isPSRTransferMRS(op)){
 		return new PSRTransferMRS(op);
 	}else if(OpCode::isPSRTransferMSR(op)){
@@ -55,6 +59,52 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 		}
 	}else if(OpCode::isDataProcessing(op)){
 		return new DataProcessing(op);
+	}else{
+		//std::cout << "ERROR: Unrecognized instruction" << std::endl;
+		return nullptr;
+	}
+	return nullptr;
+}
+
+ThumbOpCode* ARM7TDMI::decodeInstructionThumb(uint16_t op, uint32_t pc) {
+	if(ThumbOpCode::isSoftwareInterrupt(op)){
+		std::cout << "swi" << std::endl;
+	}else if (ThumbOpCode::isAddOffsetToSP(op)) {
+		std::cout << "add sp" << std::endl;
+	}else if(ThumbOpCode::isPushPopRegisters(op)) {
+		std::cout << "push/pop" << std::endl;
+	}else if(ThumbOpCode::isALUOperations(op)) {
+		std::cout << "alu op" << std::endl;
+	}else if(ThumbOpCode::isHiRegisterBranchExchange(op)) {
+		std::cout << "alu hi bx" << std::endl;
+	}else if(ThumbOpCode::isPCRelativeLoad(op)) {
+		std::cout << "ldr pc" << std::endl;
+	}else if(ThumbOpCode::isLoadStoreRegisterOffset(op)) {
+		std::cout << "ldr/str regi" << std::endl;
+	}else if(ThumbOpCode::isLoadStoreSignExtended(op)) {
+		std::cout << "ldr/str sign extended" << std::endl;
+	}else if(ThumbOpCode::isUnconditionalBranch(op)) {
+		std::cout << "b" << std::endl;
+	}else if(ThumbOpCode::isAddSubtract(op)) {
+		std::cout << "add/sub" << std::endl;
+	}else if(ThumbOpCode::isLoadStoreHalfword(op)) {
+		std::cout << "ldr/str halfword" << std::endl;
+	}else if(ThumbOpCode::isSPLoadStore(op)) {
+		std::cout << "ldr/str sp" << std::endl;
+	}else if(ThumbOpCode::isLoadAddress(op)) {
+		std::cout << "load address" << std::endl;
+	}else if(ThumbOpCode::isMultipleLoadStore(op)) {
+		std::cout << "ldmia/stmia" << std::endl;
+	}else if(ThumbOpCode::isConditionalBranch(op)) {
+		std::cout << "b cond" << std::endl;
+	}else if(ThumbOpCode::isLongBranchWithLink(op)) {
+		std::cout << "bl" << std::endl;
+	}else if(ThumbOpCode::isMoveShiftedRegister(op)) {
+		std::cout << "lsl/lsr/asr" << std::endl;
+	}else if(ThumbOpCode::isMoveCompAddSubImm(op)) {
+		return new MoveCompAddSubImm(op);
+	}else if(ThumbOpCode::isLoadStoreImmOffset(op)) {
+		std::cout << "ldr/str imm" << std::endl;
 	}else{
 		//std::cout << "ERROR: Unrecognized instruction" << std::endl;
 		return nullptr;
