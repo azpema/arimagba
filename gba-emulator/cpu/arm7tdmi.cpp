@@ -17,6 +17,12 @@
 #include "op/halfword_data_transfer_offset.hpp"
 // Thumb
 #include "op/thumb/move_comp_add_sub_imm.hpp"
+#include "op/thumb/move_shifted_register.hpp"
+#include "op/thumb/add_subtract.hpp"
+#include "op/thumb/alu_operations.hpp"
+#include "op/thumb/hi_register_branch_exchange.hpp"
+#include "op/thumb/pc_relative_load.hpp"
+#include "op/thumb/load_store_register_offset.hpp"
 
 #include <iostream>
 
@@ -74,19 +80,19 @@ ThumbOpCode* ARM7TDMI::decodeInstructionThumb(uint16_t op, uint32_t pc) {
 	}else if(ThumbOpCode::isPushPopRegisters(op)) {
 		std::cout << "push/pop" << std::endl;
 	}else if(ThumbOpCode::isALUOperations(op)) {
-		std::cout << "alu op" << std::endl;
+		return new ALUOperations(op);
 	}else if(ThumbOpCode::isHiRegisterBranchExchange(op)) {
-		std::cout << "alu hi bx" << std::endl;
+		return new HiRegisterBranchExchange(op);
 	}else if(ThumbOpCode::isPCRelativeLoad(op)) {
-		std::cout << "ldr pc" << std::endl;
+		return new PCRelativeLoad(op);
 	}else if(ThumbOpCode::isLoadStoreRegisterOffset(op)) {
-		std::cout << "ldr/str regi" << std::endl;
+		return new LoadStoreRegisterOffset(op);
 	}else if(ThumbOpCode::isLoadStoreSignExtended(op)) {
 		std::cout << "ldr/str sign extended" << std::endl;
 	}else if(ThumbOpCode::isUnconditionalBranch(op)) {
 		std::cout << "b" << std::endl;
 	}else if(ThumbOpCode::isAddSubtract(op)) {
-		std::cout << "add/sub" << std::endl;
+		return new AddSubtract(op);
 	}else if(ThumbOpCode::isLoadStoreHalfword(op)) {
 		std::cout << "ldr/str halfword" << std::endl;
 	}else if(ThumbOpCode::isSPLoadStore(op)) {
@@ -100,7 +106,7 @@ ThumbOpCode* ARM7TDMI::decodeInstructionThumb(uint16_t op, uint32_t pc) {
 	}else if(ThumbOpCode::isLongBranchWithLink(op)) {
 		std::cout << "bl" << std::endl;
 	}else if(ThumbOpCode::isMoveShiftedRegister(op)) {
-		std::cout << "lsl/lsr/asr" << std::endl;
+		return new MoveShiftedRegister(op);
 	}else if(ThumbOpCode::isMoveCompAddSubImm(op)) {
 		return new MoveCompAddSubImm(op);
 	}else if(ThumbOpCode::isLoadStoreImmOffset(op)) {
