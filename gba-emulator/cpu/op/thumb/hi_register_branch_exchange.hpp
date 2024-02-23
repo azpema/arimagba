@@ -1,0 +1,37 @@
+#ifndef _THUMB_OPCODE_HI_REGISTER_BRANCH_EXCHANGE_
+#define _THUMB_OPCODE_HI_REGISTER_BRANCH_EXCHANGE_
+
+#include <iostream>
+#include "thumb_opcode.hpp"
+#include "../opcode.hpp"
+#include "../../../utils/utils.hpp"
+
+class HiRegisterBranchExchange : public ThumbOpCode {
+    private:
+        uint16_t opField, h1, h2, rsHs, rdHd, rs, rd;
+
+        const static uint16_t OP_MASK = 0b0000001100000000;
+        const static uint16_t OP_SHIFT = 8;
+
+        const static uint16_t H1_MASK = 0b0000000010000000;
+        const static uint16_t H1_SHIFT = 7;
+
+        const static uint16_t H2_MASK = 0b0000000001000000;
+        const static uint16_t H2_SHIFT = 6;
+
+        const static uint16_t RS_HS_MASK = 0b0000000000111000;
+        const static uint16_t RS_HS_SHIFT = 3;
+
+        const static uint16_t RD_HD_MASK = 0b0000000000000111;
+        const static uint16_t RD_HD_SHIFT = 0;
+
+        std::string op2Mnemonic[4] = {"add", "cmp", "mov", "bx"};
+        std::string getOpMnemonic();
+
+	public:
+		HiRegisterBranchExchange(uint16_t op);
+        std::string toString();
+
+};
+
+#endif
