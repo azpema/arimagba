@@ -1,6 +1,6 @@
 #include "psr_transfer_msr_flag_bits.hpp"
-#include "fields/rotate_imm.hpp"
-#include "fields/rm.hpp"
+#include "../fields/rotate_imm.hpp"
+#include "../fields/rm.hpp"
 
 PSRTransferMSRFlagBits::PSRTransferMSRFlagBits(uint32_t op): PSRTransferMSR::PSRTransferMSR(op) {
     I = Utils::getRegBits(op, I_MASK, I_SHIFT);

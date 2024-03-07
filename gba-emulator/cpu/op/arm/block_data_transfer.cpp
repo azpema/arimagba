@@ -1,6 +1,5 @@
 #include "block_data_transfer.hpp"
 
-
 BlockDataTransfer::BlockDataTransfer(uint32_t op): OpCode::OpCode(op) {
     P = Utils::getRegBits(op, P_MASK, P_SHIFT);
     U = Utils::getRegBits(op, U_MASK, U_SHIFT);

@@ -2,8 +2,8 @@
 #define _OPCODE_UNDEFINED_ 
 
 #include <iostream>
-#include "opcode.hpp"
-#include "../../utils/utils.hpp"
+#include "../opcode.hpp"
+#include "../../../utils/utils.hpp"
 
 class Undefined : public OpCode {
 	public:

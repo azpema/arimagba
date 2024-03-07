@@ -2,7 +2,7 @@
 #define _OPCODE_SINGLE_DATA_SWAP_
 
 #include <iostream>
-#include "opcode.hpp"
+#include "../opcode.hpp"
 
 class SingleDataSwap : public OpCode {
     private:

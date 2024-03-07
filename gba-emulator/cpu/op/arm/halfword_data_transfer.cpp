@@ -1,5 +1,5 @@
 #include "halfword_data_transfer.hpp"
-#include "opcode.hpp"
+#include "../opcode.hpp"
 
 HalfwordDataTransfer::HalfwordDataTransfer(uint32_t op): OpCode::OpCode(op) {
     p = Utils::getRegBits(op, P_FLAG_MASK, P_FLAG_SHIFT);

@@ -2,9 +2,9 @@
 #define _OPCODE_SINGLE_DATA_TRANSFER_
 
 #include <iostream>
-#include "opcode.hpp"
-#include "fields/shift_rm.hpp"
-#include "fields/imm.hpp"
+#include "../opcode.hpp"
+#include "../fields/shift_rm.hpp"
+#include "../fields/imm.hpp"
 
 class SingleDataTransfer : public OpCode {
     private:

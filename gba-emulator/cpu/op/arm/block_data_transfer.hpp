@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include "opcode.hpp"
+#include "../opcode.hpp"
 
 
 class BlockDataTransfer : public OpCode {

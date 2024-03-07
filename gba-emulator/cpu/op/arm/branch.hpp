@@ -2,8 +2,8 @@
 #define _OPCODE_BRANCH_ 
 
 #include <iostream>
-#include "opcode.hpp"
-#include "../../utils/utils.hpp"
+#include "../opcode.hpp"
+#include "../../../utils/utils.hpp"
 
 /*
 * Branch instructions contain a signed 2’s complement 24 bit offset. This is shifted left
@@ -11,6 +11,8 @@
 * specify a branch of +/- 32Mbytes. The branch offset must take account of the prefetch
 * operation, which causes the PC to be 2 words (8 bytes) ahead of the current instruction
 */
+
+namespace ARM{
 
 class Branch : public OpCode {
     public:
@@ -33,5 +35,7 @@ class Branch : public OpCode {
         std::string toString();
 
 };
+
+}
 
 #endif

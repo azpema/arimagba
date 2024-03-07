@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "halfword_data_transfer.hpp"
-#include "../../utils/utils.hpp"
+#include "../../../utils/utils.hpp"
 
 class HalfwordDataTransferOffset : public HalfwordDataTransfer {
     private:

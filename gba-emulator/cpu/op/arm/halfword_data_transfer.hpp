@@ -1,27 +1,14 @@
-#ifndef _OPCODE_HALFWORD_DATA_TRANSFER_REGISTER_ 
-#define _OPCODE_HALFWORD_DATA_TRANSFER_REGISTER_ 
+#ifndef _OPCODE_HALFWORD_DATA_TRANSFER_ 
+#define _OPCODE_HALFWORD_DATA_TRANSFER_
 
 #include <iostream>
-#include "halfword_data_transfer.hpp"
-#include "../../utils/utils.hpp"
+#include "../opcode.hpp"
+#include "../../../utils/utils.hpp"
 
-class HalfwordDataTransferRegister : public HalfwordDataTransfer {
-    private:
-        uint16_t rm;
-
-        const static uint32_t RM_FLAG_MASK = 0b00000000000000000000000000001111; 
-        const static uint32_t RM_FLAG_SHIFT = 0;
-
-    public:
-        HalfwordDataTransferRegister(uint32_t op);
-        std::string toString();
-
-};
-
-
-/*class HalfwordDataTransferRegister : public OpCode {
-    private:
-        //uint16_t p, u, w, l, rn, rd, offsetHi, s, h, rm;
+class HalfwordDataTransfer : public OpCode {
+    protected:
+        uint16_t p, u, w, l, rn, rd, s, h;
+        HalfwordDataTransfer(uint32_t op);
 
         const static uint32_t P_FLAG_MASK = 0b00000001000000000000000000000000; 
         const static uint32_t P_FLAG_SHIFT = 24;
@@ -55,16 +42,12 @@ class HalfwordDataTransferRegister : public HalfwordDataTransfer {
         std::string hFlag2Mnemonic[2] = {"b", "h"};
         std::string getHFlagMnemonic();
 
-        const static uint32_t RM_FLAG_MASK = 0b00000000000000000000000000001111; 
-        const static uint32_t RM_FLAG_SHIFT = 0;
-
         std::string op2Mnemonic[2] = {"str", "ldr"};
         std::string getOpMnemonic();
 
-	public:
-		HalfwordDataTransferRegister(uint32_t op);
-        std::string toString();
+    public:
+        virtual std::string toString() = 0;
+};
 
-};*/
 
 #endif

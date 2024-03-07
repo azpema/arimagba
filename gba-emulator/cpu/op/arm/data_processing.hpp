@@ -1,9 +1,9 @@
 #include <iostream>
-#include "opcode.hpp"
-#include "fields/operand.hpp"
-#include "fields/shift_rm.hpp"
-#include "fields/imm.hpp"
-#include "fields/rotate_imm.hpp"
+#include "../opcode.hpp"
+#include "../fields/operand.hpp"
+#include "../fields/shift_rm.hpp"
+#include "../fields/imm.hpp"
+#include "../fields/rotate_imm.hpp"
 #include <unordered_map>
 
 class DataProcessing : public OpCode {

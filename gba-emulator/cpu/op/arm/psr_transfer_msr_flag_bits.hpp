@@ -2,10 +2,10 @@
 #define _OPCODE_PSR_TRANSFER_MSR_FLAG_BITS_ 
 
 #include <iostream>
-#include "opcode.hpp"
+#include "../opcode.hpp"
 #include "psr_transfer_msr.hpp"
-#include "fields/operand.hpp"
-#include "../../utils/utils.hpp"
+#include "../fields/operand.hpp"
+#include "../../../utils/utils.hpp"
 
 class PSRTransferMSRFlagBits : public PSRTransferMSR {
     private:

@@ -41,7 +41,7 @@ std::string Utils::toHexString(uint32_t val, uint32_t paddingNum){
     return stream.str();
 }
 
-uint32_t Utils::twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint32_t toBits){
+int32_t Utils::twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint32_t toBits){
     if(fromBits >= toBits){
         std::cout << "ERROR: extend sign" << std::endl;
     }
@@ -59,4 +59,20 @@ uint32_t Utils::twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint
     }
 
 }
+
+int16_t Utils::TEST(uint16_t val, uint32_t fromBits){
+    uint32_t sign = (val >> (fromBits - 1)) & 0x1;
+    if(sign == 0)
+        return val;
+    else{
+        uint32_t orVal = 0x1;
+        for(size_t i=0; i<16-fromBits-1; i++){
+            orVal = (orVal << 1) | 1;
+        }
+        orVal <<= fromBits;
+        return val | orVal;
+    }
+
+}
+
 

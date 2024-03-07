@@ -2,8 +2,8 @@
 #define _OPCODE_PSR_TRANSFER_MSR_ 
 
 #include <iostream>
-#include "opcode.hpp"
-#include "../../utils/utils.hpp"
+#include "../opcode.hpp"
+#include "../../../utils/utils.hpp"
 
 class PSRTransferMSR : public OpCode {
     private:

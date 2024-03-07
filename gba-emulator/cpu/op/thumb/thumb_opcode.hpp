@@ -19,7 +19,8 @@ class ThumbOpCode {
 
 		// Push/pop registers
 		const static uint16_t PUSH_POP_REGISTERS_MASK = 0b1111011000000000;
-		const static uint16_t PUSH_POP_REGISTERS_FORMAT = 0b101101000000000;
+
+		const static uint16_t PUSH_POP_REGISTERS_FORMAT = 0b1011010000000000;
 
 		// ALU operations
 		const static uint16_t ALU_OPERATIONS_MASK = 0b1111110000000000;

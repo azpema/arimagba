@@ -4,7 +4,6 @@
 #include "gba-emulator.h"
 #include "gamepak.hpp"
 #include "cpu/arm7tdmi.hpp"
-#include "cpu/op/data_processing.hpp"
 #include "utils/utils.hpp"
 #include "bios.hpp"
 #include <bitset>
@@ -182,7 +181,7 @@ int main()
 	std::cout << ins << std::endl;*/
 
 	ThumbOpCode* thumbOp;
-
+	
 	uint32_t insCount = 8000;
 	BIOS bios = BIOS("files/bios.bin");
 	uint16_t ins;
@@ -197,7 +196,10 @@ int main()
 		if(thumbOp != nullptr){
 			std::cout << thumbOp->toString() << std::endl;
 			delete thumbOp;
+		}else{
+			std::cout << "nola??" << std::endl;
 		}
+
 		pc += 2;
 		ins = bios.readHalfWord(pc);
 
