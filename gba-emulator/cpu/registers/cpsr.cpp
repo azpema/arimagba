@@ -1,8 +1,22 @@
 #include "cpsr.hpp"
 #include "../../utils/utils.hpp"
+/* https://problemkaputt.de/gbatek.htm#armcpuexceptions
+   Reset
+   Forces PC=VVVV0000h, and forces control bits of CPSR to T=0 (ARM state),
+   F=1 and I=1 (disable FIQ and IRQ), and M4-0=10011b (Supervisor mode).
+
+
+*/ 
 
 CPSR::CPSR() {
+    reset();
+}
+
+void CPSR::reset(){
     this->value = 0;
+    this->setTFlag(false);
+    this->setFFlag(true);
+    this->setIFlag(true);
     this->setMode(Supervisor);
 }
 
@@ -23,6 +37,18 @@ void CPSR::setCPSRFlags(CPSR::Flag flag, bool val){
 
     case CPSR::Flag::V:
         Utils::setRegBits(value, V_FLAG_MASK, val << V_FLAG_SHIFT);
+        break;
+
+    case CPSR::Flag::I:
+        Utils::setRegBits(value, I_FLAG_MASK, val << I_FLAG_SHIFT);
+        break;
+
+    case CPSR::Flag::F:
+        Utils::setRegBits(value, F_FLAG_MASK, val << F_FLAG_SHIFT);
+        break;
+
+    case CPSR::Flag::T:
+        Utils::setRegBits(value, T_FLAG_MASK, val << T_FLAG_SHIFT);
         break;
     
     default:
@@ -75,4 +101,12 @@ void CPSR::setTFlag(bool val){
 
 void CPSR::setMode(Mode mode){
     Utils::setRegBits(value, MODE_FLAG_MASK, mode);
+}
+
+bool CPSR::isThumbMode(){
+    uint8_t mode = Utils::getRegBits(value, T_FLAG_MASK, T_FLAG_SHIFT);
+    if(mode == 1)
+        return true;
+    else 
+        return false;
 }

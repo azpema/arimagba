@@ -51,6 +51,7 @@ class SingleDataTransfer : public OpCode {
 		SingleDataTransfer(uint32_t op);
         ~SingleDataTransfer();
         std::string toString();
+        void do_execute(ARM7TDMI &cpu);
 };
 
 #endif

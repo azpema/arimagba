@@ -78,6 +78,8 @@ class DataProcessing : public OpCode {
 		DataProcessing(uint32_t op);
         ~DataProcessing();
         std::string toString();
+        void do_execute(ARM7TDMI &cpu);
+
         std::string getOpCodeMnemonic();
         std::string getRdMnemonic();
         std::string getRnMnemonic();

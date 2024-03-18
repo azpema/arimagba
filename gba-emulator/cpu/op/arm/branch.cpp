@@ -14,5 +14,15 @@ std::string Branch::getLinkFlagMnemonic(){
 }
 
 std::string Branch::toString(){
-    return "b" + getLinkFlagMnemonic() + getCondFieldMnemonic() + " " + Utils::toHexString(realOffset);
+    return "b" + getLinkFlagMnemonic() + getCondFieldMnemonic() + " #" + Utils::toHexString(realOffset);
+}
+
+
+void Branch::do_execute(ARM7TDMI &cpu){
+    uint32_t oldPC = cpu.getPC();
+    cpu.setPC(realOffset);
+
+    if(L == 1){
+        cpu.setLR(oldPC);
+    }
 }

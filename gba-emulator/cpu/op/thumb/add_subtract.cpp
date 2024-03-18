@@ -17,7 +17,14 @@ std::string AddSubtract::toString(){
     if(i == 0){
         mnemonic += OpCode::getRegMnemonic(rnOffset3);
     }else if(i == 1){
-        mnemonic += "#" + Utils::toHexString(rnOffset3, 4);
+        // https://github.com/rust-console/gbatek-gbaonly/blob/gh-pages/index.md#thumb2-addsubtract
+        // Pseudo/alias opcode with Imm=0:
+        if(opField == 0 && rnOffset3 == 0){
+            mnemonic = "mov " + OpCode::getRegMnemonic(rd) + "," + OpCode::getRegMnemonic(rs);
+        }else {
+            mnemonic += "#" + Utils::toHexString(rnOffset3, 4);
+
+        }
     }else{
         std::cerr << "ERROR: Thumb Add/subtract invalid opcode field" << std::endl;
     }

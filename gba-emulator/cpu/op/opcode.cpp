@@ -8,6 +8,11 @@ OpCode::OpCode(uint32_t op) {
     opcode = op;
 }
 
+void OpCode::execute(ARM7TDMI &cpu) {
+    // Execute only if conditions are met
+    do_execute(cpu);
+}
+
  /*std::string OpCode::toString(){
     return "";
  }*/

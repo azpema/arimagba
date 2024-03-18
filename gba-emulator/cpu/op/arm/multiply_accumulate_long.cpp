@@ -27,3 +27,7 @@ std::string MultiplyAccumulateLong::toString(){
             getRegMnemonic(rdLo) + "," + getRegMnemonic(rdHi) + "," + getRegMnemonic(rm) + "," + \
             getRegMnemonic(rs);
 }
+
+void MultiplyAccumulateLong::do_execute(ARM7TDMI &cpu){
+
+}

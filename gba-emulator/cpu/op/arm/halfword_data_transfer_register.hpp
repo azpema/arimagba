@@ -15,7 +15,7 @@ class HalfwordDataTransferRegister : public HalfwordDataTransfer {
     public:
         HalfwordDataTransferRegister(uint32_t op);
         std::string toString();
-
+        void do_execute(ARM7TDMI &cpu);
 };
 
 

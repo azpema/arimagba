@@ -7,3 +7,7 @@ PSRTransferMSRFull::PSRTransferMSRFull(uint32_t op): PSRTransferMSR::PSRTransfer
 std::string PSRTransferMSRFull::toString() {
     return PSRTransferMSR::toString() + "," + getRegMnemonic(Rm);
 }
+
+void PSRTransferMSRFull::do_execute(ARM7TDMI &cpu){
+
+}

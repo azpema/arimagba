@@ -55,7 +55,7 @@ std::string SingleDataTransfer::toString(){
         }else if(I == 1){
             ShiftRm* shiftRm = static_cast<ShiftRm*>(offsetField);
             address += "[" + getRegMnemonic(Rn) + "," + getUFlagMnemonic() + getRegMnemonic(shiftRm->getRm()) + "," + \
-                       shiftRm->getShiftTypeMnemonic() + " " + Utils::toHexString(shiftRm->getShiftAmount()) + "]" + writeBack;
+                       shiftRm->getShiftTypeMnemonic() + " #" + Utils::toHexString(shiftRm->getShiftAmount()) + "]" + writeBack;
         }else{
             std::cerr << "ERROR: SingleDataTransfer P=1" << std::endl;
         }
@@ -69,7 +69,7 @@ std::string SingleDataTransfer::toString(){
             address += getUFlagMnemonic() + Utils::toHexString(imm->getImmVal());
         }else if(I == 1){
             ShiftRm* shiftRm = static_cast<ShiftRm*>(offsetField);
-            address += getUFlagMnemonic() + getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " " + \
+            address += getUFlagMnemonic() + getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + \
                        Utils::toHexString(shiftRm->getShiftAmount());
         }else{
             std::cerr << "ERROR: SingleDataTransfer P=0" << std::endl;
@@ -77,4 +77,8 @@ std::string SingleDataTransfer::toString(){
     }
 
     return base + address;
+}
+
+void SingleDataTransfer::do_execute(ARM7TDMI &cpu){
+
 }

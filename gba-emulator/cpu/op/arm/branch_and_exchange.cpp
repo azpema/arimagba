@@ -9,3 +9,7 @@ BranchAndExchange::BranchAndExchange(uint32_t op): OpCode::OpCode(op) {
 std::string BranchAndExchange::toString(){
     return "bx" + getCondFieldMnemonic() + " " + getRegMnemonic(Rn);
 }
+
+void BranchAndExchange::do_execute(ARM7TDMI &cpu){
+
+}

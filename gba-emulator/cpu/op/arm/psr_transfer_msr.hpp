@@ -27,6 +27,7 @@ class PSRTransferMSR : public OpCode {
 	protected:
         PSRTransferMSR(uint32_t op);
         std::string toString();
+        void do_execute(ARM7TDMI &cpu);
     public:
         static bool isFullTransfer(uint32_t op);
         static bool isFlagBitsTransfer(uint32_t op);

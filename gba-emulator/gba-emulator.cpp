@@ -8,6 +8,9 @@
 #include "bios.hpp"
 #include <bitset>
 
+void decodeAllInstructionsThumb(ARM7TDMI &cpu);
+void decodeAllInstructionsArm(ARM7TDMI &cpu);
+
 int main()
 {
 	/*
@@ -18,79 +21,7 @@ int main()
 	*/
 
 	ARM7TDMI cpu = ARM7TDMI();
-	/*
-	std::cout << "CPSR: " << std::bitset<32>(cpu.getCPSR()) << std::endl;
 
-	cpu.setNFlag(true);
-	std::cout << "CPSR: " << std::bitset<32>(cpu.getCPSR()) << std::endl;
-
-	cpu.setZFlag(true);
-	std::cout << "CPSR: " << std::bitset<32>(cpu.getCPSR()) << std::endl;
-
-	cpu.setCFlag(true);
-	std::cout << "CPSR: " << std::bitset<32>(cpu.getCPSR()) << std::endl;
-
-	cpu.setVFlag(true);
-	std::cout << "CPSR: " << std::bitset<32>(cpu.getCPSR()) << std::endl;
-
-	cpu.setZFlag(false);
-	std::cout << "CPSR: " << std::bitset<32>(cpu.getCPSR()) << std::endl;
-
-	cpu.setCFlag(false);
-	std::cout << "CPSR: " << std::bitset<32>(cpu.getCPSR()) << std::endl;
-	*/
-	/*
-	std::cout << "Mode: " << cpu.getModeString() << std::endl;
-
-	cpu.setMode(CPSR::Mode::User);
-	std::cout << "Mode: " << cpu.getModeString() << std::endl;
-
-	OpCode op = OpCode(0xea000018);
-	std::cout << "OP: " << op.getCondFieldMnemonic() << std::endl; // al
-	
-	op = OpCode(0x11a020a2);
-	std::cout << "OP: " << op.getCondFieldMnemonic() << std::endl; // ne
-
-	op = OpCode(0x0e32402b);
-	std::cout << "OP: " << op.getCondFieldMnemonic() << std::endl; // eq
-	*/
-
-	/*
-	cpu.decodeInstructionARM(0xea000018);
-	cpu.decodeInstructionARM(0xe59fd1a0);
-	cpu.decodeInstructionARM(0xe92d5000);
-	cpu.decodeInstructionARM(0xe14fc000);
-	cpu.decodeInstructionARM(0xe10fe000);
-	cpu.decodeInstructionARM(0xe92d5000);
-	cpu.decodeInstructionARM(0xe3a0c302);
-	cpu.decodeInstructionARM(0xe5dce09c);
-	cpu.decodeInstructionARM(0xe35e00a5);
-	cpu.decodeInstructionARM(0x1a000004);
-	std::cout << "WAIT" << std::endl;
-	cpu.decodeInstructionARM(0x05dce0b4);
-	cpu.decodeInstructionARM(0x021ee080);
-	cpu.decodeInstructionARM(0xe28fe004);
-	cpu.decodeInstructionARM(0x159ff220);
-	cpu.decodeInstructionARM(0x059ff220);
-	cpu.decodeInstructionARM(0xe59fd164);
-	cpu.decodeInstructionARM(0xe8bd5000);
-	cpu.decodeInstructionARM(0xe169f00c);
-	cpu.decodeInstructionARM(0xe8bd5000);
-	cpu.decodeInstructionARM(0xe25ef004);
-
-	DataProcessing otro = DataProcessing(0xa303);
-
-	std::cout << otro.getOpCodeMnemonic() << " " << otro.getRdMnemonic() << " #" << std::hex << otro.getOperand2Imm() << std::dec << std::endl; // add
-
-	otro = DataProcessing(0xe35e00a5);
-	std::cout << otro.getOpCodeMnemonic() << std::endl; // cmp
-
-	otro = DataProcessing(0xe28fe004);
-	std::cout << otro.getOpCodeMnemonic() << std::endl; // add
-
-	otro = DataProcessing(0xe25ef004);
-	std::cout << otro.getOpCodeMnemonic() << std::endl; // sub
-	*/
 
 	OpCode* op;
 
@@ -111,49 +42,6 @@ int main()
 													   // #0x1C8 equals content of r15(pc)=0x0148 + 0x78 + 0x8
 	std::cout << otro4.toString() << std::endl;	// */
 
-	// op = cpu.decodeInstructionARM(0xeaefe6f6); // PC = 0x08367650 OP= 0xEAEFE6F b #0x7f61230
-	// std::cout << op->toString() << std::endl;	
-	// delete op;
-
-	// op = cpu.decodeInstructionARM(0xea000018); // PC = 0x00000000 OP= 0xea000018 b #0x68 (104)
-	// std::cout << op->toString() << std::endl;	
-	// delete op;
-
-	// op = cpu.decodeInstructionARM(0xe12fff10); // PC = 0x000000B0 OP= 0xe12fff10 bx r0
-	// std::cout << op->toString() << std::endl;
-	// delete op;
-
-	// op = cpu.decodeInstructionARM(0xe12FFF1E); // PC = 0x000000DC OP= 0xe12FFF1E bx r14
-	// std::cout << op->toString() << std::endl;	
-	// delete op;
-
-	// op = cpu.decodeInstructionARM(0xE59FD1A0); // 0000001C  E59FD1A0  ldr       sp,[pc,0x1A0]
-	// std::cout << op->toString() << std::endl;	
-	// delete op;
-
-	// op = cpu.decodeInstructionARM(0xE5DCE09C); // 00000034  E5DCE09C  ldrb      lr,[r12,0x9C]
-	// std::cout << op->toString() << std::endl;	
-	// delete op;
-	
-	// op = cpu.decodeInstructionARM(0xE79BC10C); // 0000014C  E79BC10C  ldr       r12,[r11,r12,lsl 0x2]
-	// std::cout << op->toString() << std::endl;	
-	// delete op;
-
-	// op = cpu.decodeInstructionARM(0x07F8D421); // 0000009C  07F8D421  ldrbeq    sp,[r8,r1,lsr 0x8]!
-	// std::cout << op->toString() << std::endl;	
-	// delete op;
-
-	// op = cpu.decodeInstructionARM(0x4552554B); // 000000A0  4552554B  ldrbmi    r5,[r2,-0x54B]
-	// std::cout << op->toString() << std::endl;	
-	// delete op;
-
-	// op = cpu.decodeInstructionARM(0x51AEFF24); // 00000004  51AEFF24  movpl     pc,r4,lsr 0x1E
-	// std::cout << op->toString() << std::endl;	
-	// delete op;
-
-	// op = cpu.decodeInstructionARM(0x21A29A69); // 00000008  21A29A69  movcs     r9,r9,ror 0x14
-	// std::cout << op->toString() << std::endl;	
-	// delete op;
 
 	// std::unique_ptr<OpCode> op2{cpu.decodeInstructionARM(0x021ee080)};
 	// std::cout << op2->toString() << std::endl;	// andeqs r14,r14,#0x80
@@ -180,7 +68,7 @@ int main()
 	}
 	std::cout << ins << std::endl;*/
 
-	ThumbOpCode* thumbOp;
+	/*ThumbOpCode* thumbOp;
 	
 	uint32_t insCount = 8000;
 	BIOS bios = BIOS("files/bios.bin");
@@ -194,7 +82,13 @@ int main()
 		thumbOp = cpu.decodeInstructionThumb(ins, pc);
 
 		if(thumbOp != nullptr){
-			std::cout << thumbOp->toString() << std::endl;
+				// Special case: Only THUMB instruction composed of 2 
+			if(thumbOp->_type == ThumbOpCode::OpCodeEnum::LONG_BRANCH_WITH_LINK){
+
+			}else{
+				std::cout << thumbOp->toString() << std::endl;
+			}
+			
 			delete thumbOp;
 		}else{
 			std::cout << "nola??" << std::endl;
@@ -203,6 +97,77 @@ int main()
 		pc += 2;
 		ins = bios.readHalfWord(pc);
 
-	}
+	}*/
+
+	//decodeAllInstructionsThumb(cpu);
+	
+	//decodeAllInstructionsArm(cpu);
+
+	cpu.executionLoop();
+
 	return 0;
+}
+
+void decodeAllInstructionsArm(ARM7TDMI &cpu){
+	OpCode* op;
+	int64_t ins;
+	int pc = 0;
+
+	while((ins = cpu.fetchInstructionArm(pc)) != -1){
+		if(ins == -1){
+			return;
+		}
+		std::cout << Utils::toHexString(pc, 4) << "     ";
+		std::cout << Utils::toHexString(ins, 8) << "     ";
+
+		if(pc == 0x31c){
+			std::cout << "HEMEN" << std::endl;
+		}
+
+		op = cpu.decodeInstructionARM(ins, pc);
+
+		if(op != nullptr){
+			std::cout << op->toString() << std::endl;
+			delete op;
+		} else{
+			std::cout << "Unknown" << std::endl;
+		}
+
+		pc += 4;
+	}
+}
+
+void decodeAllInstructionsThumb(ARM7TDMI &cpu){
+	ThumbOpCode* thumbOp;
+	int64_t ins;
+	int pc = 0;
+
+	while((ins = cpu.fetchInstructionThumb(pc)) != -1){
+		if(ins == -1){
+			return;
+		}
+		std::cout << Utils::toHexString(pc, 4) << "     ";
+		std::cout << Utils::toHexString(ins, 4) << "     ";
+
+		if(pc == 0x2B4){
+			std::cout << "HEMEN" << std::endl;
+		}
+
+		thumbOp = cpu.decodeInstructionThumb(ins, pc);
+
+		if(thumbOp != nullptr){
+			// Special case: Only THUMB instruction composed of 2 
+			if(thumbOp->_type == ThumbOpCode::OpCodeEnum::LONG_BRANCH_WITH_LINK){
+				std::cout << "NOSE" << std::endl;
+			}else{
+				std::cout << thumbOp->toString() << std::endl;
+			}
+			
+			delete thumbOp;
+		} else{
+			std::cout << "Unknown" << std::endl;
+		}
+
+		pc += 2;
+	}
 }

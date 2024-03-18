@@ -24,3 +24,7 @@ std::string MultiplyAccumulate::toString(){
         mnemonic += " " + getRegMnemonic(rn);
     return mnemonic;
 }
+
+void MultiplyAccumulate::do_execute(ARM7TDMI &cpu){
+
+}

@@ -9,3 +9,7 @@ SoftwareInterrupt::SoftwareInterrupt(uint32_t op): OpCode::OpCode(op) {
 std::string SoftwareInterrupt::toString(){
     return "swi";
 }
+
+void SoftwareInterrupt::do_execute(ARM7TDMI &cpu){
+
+}

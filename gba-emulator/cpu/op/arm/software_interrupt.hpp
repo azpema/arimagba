@@ -11,6 +11,7 @@ class SoftwareInterrupt : public OpCode {
 	public:
 		SoftwareInterrupt(uint32_t op);
         std::string toString();
+        void do_execute(ARM7TDMI &cpu);
     private:
         uint32_t comment;
         const static uint32_t COMMENT_FIELD_MASK = 0b00000000111111111111111111111111;

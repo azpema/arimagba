@@ -12,8 +12,8 @@
 * operation, which causes the PC to be 2 words (8 bytes) ahead of the current instruction
 */
 
-namespace ARM{
-
+namespace ARM {
+ 
 class Branch : public OpCode {
     public:
         uint16_t L;
@@ -33,7 +33,7 @@ class Branch : public OpCode {
 	public:
 		Branch(uint32_t op, uint32_t pc);
         std::string toString();
-
+        void do_execute(ARM7TDMI &cpu);
 };
 
 }

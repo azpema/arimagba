@@ -1,7 +1,13 @@
+#ifndef _ARM7TDMI_ 
+#define _ARM7TDMI_ 
+
+class OpCode;
+
 #include <iostream>
 #include "registers/cpsr.hpp"
 #include "op/opcode.hpp"
 #include "op/thumb/thumb_opcode.hpp"
+#include "../bios.hpp"
 
 class ARM7TDMI {
 	public:
@@ -38,13 +44,15 @@ class ARM7TDMI {
 
 		By convention, r13 is used as the Stack Pointer (SP).
 		*/
-		uint32_t registers[16] = { 0 };
+		
+		uint32_t reg[16];
 
 
-
-		uint32_t SPSR = 0;
+		uint32_t spsr;
 		// Program Status Register
-		CPSR cpsr = CPSR();
+		CPSR cpsr;
+		BIOS bios;
+		const uint16_t REG_PC = 15;
 
 	public:
 		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
@@ -58,4 +66,17 @@ class ARM7TDMI {
 		void setMode(CPSR::Mode mode);
 		std::string getModeString();
 
-};
+		int64_t fetchInstructionThumb(uint32_t offset);
+		int64_t fetchInstructionArm(uint32_t offset);
+		void fetchNextInstruction();
+		//void executeNextInstruction();
+		void executionLoop();
+		void printStatus();
+
+		uint32_t getPC();
+		void setPC(uint32_t pc);
+
+		void setLR(uint32_t lr);
+};	
+
+#endif

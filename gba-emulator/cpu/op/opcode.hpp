@@ -1,12 +1,13 @@
 #ifndef _OPCODE_ 
 #define _OPCODE_ 
 
+class ARM7TDMI;
+
 #include <iostream>
 #include <unordered_map>
 #include "../../utils/utils.hpp"
 #include "fields/operand.hpp"
-
-
+#include "../arm7tdmi.hpp"
 
 class OpCode {
 	private:
@@ -96,10 +97,15 @@ class OpCode {
 		const static uint32_t BRANCH_OFFSET = 0b00000000111111111111111111111111;
 		const static uint32_t BRANCH_LINK =   0b00000001000000000000000000000000;
 		const static uint32_t BRANCH_LINK_SHIFT = 24;
+
+		virtual void do_execute(ARM7TDMI &cpu) = 0;
+
 	protected:
 		OpCode(uint32_t op);
+
 	public:
 		virtual std::string toString() = 0;
+		void execute(ARM7TDMI &cpu);
 
 		static bool isBranchAndExchange(uint32_t op);
 		static bool isBlockDataTransfer(uint32_t op);

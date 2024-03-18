@@ -16,6 +16,7 @@ class PSRTransferMSRFull : public PSRTransferMSR {
 	public:
 		PSRTransferMSRFull(uint32_t op);
         std::string toString();
+        void do_execute(ARM7TDMI &cpu);
 };
 
 #endif

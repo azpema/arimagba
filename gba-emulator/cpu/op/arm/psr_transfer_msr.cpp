@@ -20,3 +20,7 @@ bool PSRTransferMSR::isFlagBitsTransfer(uint32_t op){
 std::string PSRTransferMSR::toString(){
     return "msr" + getCondFieldMnemonic() + " " + getPSRMnemonic();
 }
+
+void PSRTransferMSR::do_execute(ARM7TDMI &cpu){
+
+}

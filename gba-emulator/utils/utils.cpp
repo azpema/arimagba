@@ -59,20 +59,3 @@ int32_t Utils::twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint3
     }
 
 }
-
-int16_t Utils::TEST(uint16_t val, uint32_t fromBits){
-    uint32_t sign = (val >> (fromBits - 1)) & 0x1;
-    if(sign == 0)
-        return val;
-    else{
-        uint32_t orVal = 0x1;
-        for(size_t i=0; i<16-fromBits-1; i++){
-            orVal = (orVal << 1) | 1;
-        }
-        orVal <<= fromBits;
-        return val | orVal;
-    }
-
-}
-
-

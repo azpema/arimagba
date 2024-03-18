@@ -13,3 +13,7 @@ std::string PSRTransferMRS::getPSRMnemonic(){
 std::string PSRTransferMRS::toString(){
     return "mrs" + getCondFieldMnemonic() + " " + getRegMnemonic(Rd) + "," + getPSRMnemonic();
 }
+
+void PSRTransferMRS::do_execute(ARM7TDMI &cpu){
+
+}

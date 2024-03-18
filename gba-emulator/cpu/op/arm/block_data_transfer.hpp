@@ -46,7 +46,7 @@ class BlockDataTransfer : public OpCode {
 		BlockDataTransfer(uint32_t op);
         //~BlockDataTransfer();
         std::string toString();
-
+        void do_execute(ARM7TDMI &cpu);
 };
 
 #endif

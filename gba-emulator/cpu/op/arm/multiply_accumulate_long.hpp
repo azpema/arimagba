@@ -41,6 +41,7 @@ class MultiplyAccumulateLong : public OpCode {
 	public:
 		MultiplyAccumulateLong(uint32_t op);
         std::string toString();
+        void do_execute(ARM7TDMI &cpu);
 };
 
 #endif

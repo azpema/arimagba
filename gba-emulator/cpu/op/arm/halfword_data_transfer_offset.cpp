@@ -17,7 +17,7 @@ std::string HalfwordDataTransferOffset::toString(){
     std::string address = "[" + getRegMnemonic(rn);
 
     if(p == 1){
-        address += "," + Utils::toHexString(getOffsetVal()) + "]" + getWFlagMnemonic();
+        address += "," + getUFlagMnemonic() + Utils::toHexString(getOffsetVal()) + "]" + getWFlagMnemonic();
     }else if(p == 0){
         address += "]," + getUFlagMnemonic() + Utils::toHexString(getOffsetVal());
     }else{
@@ -25,4 +25,8 @@ std::string HalfwordDataTransferOffset::toString(){
     }
 
     return base + address;
+}
+
+void HalfwordDataTransferOffset::do_execute(ARM7TDMI &cpu){
+
 }

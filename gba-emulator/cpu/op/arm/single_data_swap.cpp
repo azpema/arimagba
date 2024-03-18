@@ -12,9 +12,11 @@ std::string SingleDataSwap::getBFlagMnemonic(){
     return bFlag2Mnemonic[b];
 }
 
-
-
 std::string SingleDataSwap::toString(){
     return "swp" + getCondFieldMnemonic() + getBFlagMnemonic() + " " + getRegMnemonic(rd) + "," + \
             getRegMnemonic(rm) + ",[" + getRegMnemonic(rn) + "]";
+}
+
+void SingleDataSwap::do_execute(ARM7TDMI &cpu){
+
 }

@@ -47,6 +47,7 @@ class HalfwordDataTransfer : public OpCode {
 
     public:
         virtual std::string toString() = 0;
+        virtual void do_execute(ARM7TDMI &cpu) = 0;
 };
 
 

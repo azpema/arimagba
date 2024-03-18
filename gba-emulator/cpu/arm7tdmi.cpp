@@ -1,4 +1,6 @@
 #include "arm7tdmi.hpp"
+
+
 #include "op/arm/data_processing.hpp"
 #include "op/arm/branch.hpp"
 #include "op/arm/branch_and_exchange.hpp"
@@ -35,11 +37,17 @@
 #include "op/thumb/software_interrupt.hpp"
 #include "op/thumb/unconditional_branch.hpp"
 #include "op/thumb/conditional_branch.hpp"
+#include "op/thumb/long_branch_with_link.hpp"
 
 #include <iostream>
 
 ARM7TDMI::ARM7TDMI() {
-
+	spsr = 0;
+	cpsr = CPSR();
+	bios = BIOS(std::string("files/bios.bin"));
+	for(size_t i=0; i<16; i++){
+		reg[i] = 0;
+	}
 }
 
 OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
@@ -116,7 +124,7 @@ ThumbOpCode* ARM7TDMI::decodeInstructionThumb(uint16_t op, uint32_t pc) {
 	}else if(ThumbOpCode::isConditionalBranch(op)) {
 		return new Thumb::ConditionalBranch(op, pc);
 	}else if(ThumbOpCode::isLongBranchWithLink(op)) {
-		//std::cout << "bl" << std::endl;
+		return new Thumb::LongBranchWithLink(op, pc);
 	}else if(ThumbOpCode::isMoveShiftedRegister(op)) {
 		return new MoveShiftedRegister(op);
 	}else if(ThumbOpCode::isMoveCompAddSubImm(op)) {
@@ -156,4 +164,71 @@ void ARM7TDMI::setMode(CPSR::Mode mode){
 
 std::string ARM7TDMI::getModeString(){
 	return cpsr.getModeString();
+}
+
+int64_t ARM7TDMI::fetchInstructionThumb(uint32_t offset){
+	return bios.readHalfWord(offset);
+}
+
+int64_t ARM7TDMI::fetchInstructionArm(uint32_t offset){
+	return bios.readWord(offset);
+}
+
+/*void ARM7TDMI::fetchNextInstruction(){
+	uint32_t ins;
+	if(cpsr.isThumbMode()){
+		ins = bios.readHalfWord(reg[REG_PC]);
+		reg[REG_PC] += 2;
+	}else{
+		ins = bios.readWord(reg[REG_PC]);
+		reg[REG_PC] += 4;
+	}
+}*/
+
+uint32_t ARM7TDMI::getPC(){
+	return reg[15];
+}
+
+void ARM7TDMI::setPC(uint32_t pc){
+	reg[15] = pc;
+}
+
+void ARM7TDMI::setLR(uint32_t lr){
+	reg[14] = lr;
+}
+
+void ARM7TDMI::printStatus(){
+	std::cout << "<<<" << std::endl;
+	std::cout << "pc:   " << Utils::toHexString(getPC(), 8) << std::endl;
+	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << std::endl;
+	std::cout << "<<<" << std::endl;
+}
+
+/*void ARM7TDMI::executeOpArm(OpCode *op){
+	op->execute(); 
+}*/
+
+void ARM7TDMI::executionLoop(){
+	uint64_t ins;
+	OpCode *op;
+	int i=0;
+	while(i<2){
+		if(!cpsr.isThumbMode()){
+			// fetch
+			ins = bios.readWord(reg[15]);
+			if(ins == -1) return;
+
+			// decode
+			op = decodeInstructionARM(ins, reg[15]);
+			std::cout << op->toString() << std::endl;
+
+			// execute
+			printStatus();
+			op->execute(*this);
+		}else{
+
+		}
+		i++;
+	}
+	
 }

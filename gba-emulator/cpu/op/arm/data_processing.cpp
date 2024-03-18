@@ -86,7 +86,7 @@ uint32_t DataProcessing::getOperand2Rm(){
 std::string DataProcessing::getOperand2Mnemonic(){
     if(I == 0){
         ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
-        return getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " " + Utils::toHexString(shiftRm->getShiftAmount());
+        return getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + Utils::toHexString(shiftRm->getShiftAmount());
     }else if(I == 1){
         RotateImm* rotateImm = static_cast<RotateImm*>(operand2);
         return "#" + Utils::toHexString(rotateImm->getOperandVal()); 
@@ -95,3 +95,6 @@ std::string DataProcessing::getOperand2Mnemonic(){
     }
 }
 
+void DataProcessing::do_execute(ARM7TDMI &cpu){
+
+}

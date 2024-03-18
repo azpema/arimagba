@@ -9,7 +9,10 @@ ConditionalBranch::ConditionalBranch(uint16_t op, uint32_t pc): ThumbOpCode::Thu
     offsetVal = pc + Utils::twosComplementExtendSignTo(sOffset8 << 1, 9, 16) + 4;
 }
 
+std::string ConditionalBranch::getCondMnemonic(){
+    return cond2Mnemonic[cond];
+}
 
 std::string ConditionalBranch::toString(){
-    return "b #" + Utils::toHexString(offsetVal);
+    return "b" + getCondMnemonic() +   " #" + Utils::toHexString(offsetVal);
 }

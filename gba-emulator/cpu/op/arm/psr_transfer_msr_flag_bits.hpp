@@ -22,6 +22,7 @@ class PSRTransferMSRFlagBits : public PSRTransferMSR {
         ~PSRTransferMSRFlagBits();
 
         std::string toString();
+        void do_execute(ARM7TDMI &cpu);
 };
 
 #endif

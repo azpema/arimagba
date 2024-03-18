@@ -1,3 +1,6 @@
+#ifndef _CPSR_ 
+#define _CPSR_ 
+
 #include <iostream>
 #include <unordered_map>
 
@@ -11,36 +14,36 @@ class CPSR {
 		uint32_t value = 0;
 
         // Condition code flags
-        const uint32_t N_FLAG_MASK = 0b10000000000000000000000000000000;
-        const uint32_t N_FLAG_SHIFT = 31;
-        const uint32_t Z_FLAG_MASK = 0b01000000000000000000000000000000;
-        const uint32_t Z_FLAG_SHIFT = 30;
-        const uint32_t C_FLAG_MASK = 0b00100000000000000000000000000000;
-        const uint32_t C_FLAG_SHIFT = 29;
-        const uint32_t V_FLAG_MASK = 0b00010000000000000000000000000000;
-        const uint32_t V_FLAG_SHIFT = 28;
+        const static uint32_t N_FLAG_MASK = 0b10000000000000000000000000000000;
+        const static uint32_t N_FLAG_SHIFT = 31;
+        const static uint32_t Z_FLAG_MASK = 0b01000000000000000000000000000000;
+        const static uint32_t Z_FLAG_SHIFT = 30;
+        const static uint32_t C_FLAG_MASK = 0b00100000000000000000000000000000;
+        const static uint32_t C_FLAG_SHIFT = 29;
+        const static uint32_t V_FLAG_MASK = 0b00010000000000000000000000000000;
+        const static uint32_t V_FLAG_SHIFT = 28;
 
         // Control bits
         // IRQ disable
-        const uint32_t I_FLAG_MASK = 0b00000000000000000000000010000000;
-        const uint32_t I_FLAG_SHIFT = 7;
+        const static uint32_t I_FLAG_MASK = 0b00000000000000000000000010000000;
+        const static uint32_t I_FLAG_SHIFT = 7;
         // FIQ disable
-        const uint32_t F_FLAG_MASK = 0b00000000000000000000000001000000;
-        const uint32_t F_FLAG_SHIFT = 6;
+        const static uint32_t F_FLAG_MASK = 0b00000000000000000000000001000000;
+        const static uint32_t F_FLAG_SHIFT = 6;
         // State bit (Thumb mode)
-        const uint32_t T_FLAG_MASK = 0b00000000000000000000000000100000;
-        const uint32_t T_FLAG_SHIFT = 5;
+        const static uint32_t T_FLAG_MASK = 0b00000000000000000000000000100000;
+        const static uint32_t T_FLAG_SHIFT = 5;
         // Mode bits
-        const uint32_t MODE_FLAG_MASK = 0b00000000000000000000000000011111;
-        const uint32_t MODE_FLAG_SHIFT = 0;
+        const static uint32_t MODE_FLAG_MASK = 0b00000000000000000000000000011111;
+        const static uint32_t MODE_FLAG_SHIFT = 0;
 
-        static const uint32_t MODE_FLAG_USR_VAL = 0b00000000000000000000000000010000;
-        static const uint32_t MODE_FLAG_FIQ_VAL  = 0b00000000000000000000000000010001;
-        static const uint32_t MODE_FLAG_IRQ_VAL  = 0b00000000000000000000000000010010;
-        static const uint32_t MODE_FLAG_SVC_VAL  = 0b00000000000000000000000000010011;
-        static const uint32_t MODE_FLAG_ABT_VAL  = 0b00000000000000000000000000010111;
-        static const uint32_t MODE_FLAG_UND_VAL  = 0b00000000000000000000000000011011;
-        static const uint32_t MODE_FLAG_SYS_VAL  = 0b00000000000000000000000000011111;
+        const static uint32_t MODE_FLAG_USR_VAL = 0b00000000000000000000000000010000;
+        const static uint32_t MODE_FLAG_FIQ_VAL  = 0b00000000000000000000000000010001;
+        const static uint32_t MODE_FLAG_IRQ_VAL  = 0b00000000000000000000000000010010;
+        const static uint32_t MODE_FLAG_SVC_VAL  = 0b00000000000000000000000000010011;
+        const static uint32_t MODE_FLAG_ABT_VAL  = 0b00000000000000000000000000010111;
+        const static uint32_t MODE_FLAG_UND_VAL  = 0b00000000000000000000000000011011;
+        const static uint32_t MODE_FLAG_SYS_VAL  = 0b00000000000000000000000000011111;
 
         void setCPSRFlags(Flag flag, bool val);
 	public:
@@ -74,8 +77,14 @@ class CPSR {
 
         void setIFlag(bool val);
 		void setFFlag(bool val);
+
 		void setTFlag(bool val);
+        bool isThumbMode();
 
         void setMode(Mode mode);
 
+        void reset();
+
 };
+
+#endif
