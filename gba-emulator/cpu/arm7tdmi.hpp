@@ -8,10 +8,28 @@ class OpCode;
 #include "op/opcode.hpp"
 #include "op/thumb/thumb_opcode.hpp"
 #include "../bios.hpp"
+#include "components/alu.hpp"
 
 class ARM7TDMI {
 	public:
 		ARM7TDMI();
+
+		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
+		ThumbOpCode* decodeInstructionThumb(uint16_t op, uint32_t pc);
+
+		CPSR& getCPSR();
+		ALU& getALU();
+
+		int64_t fetchInstructionThumb(uint32_t offset);
+		int64_t fetchInstructionArm(uint32_t offset);
+		void fetchNextInstruction();
+		//void executeNextInstruction();
+		void executionLoop();
+		void printStatus();
+
+		uint32_t getPC();
+		void setPC(uint32_t pc);
+		void setLR(uint32_t lr);
 
 	private:
 		/*
@@ -46,37 +64,11 @@ class ARM7TDMI {
 		*/
 		
 		uint32_t reg[16];
-
-
 		uint32_t spsr;
-		// Program Status Register
 		CPSR cpsr;
 		BIOS bios;
+		ALU alu;
 		const uint16_t REG_PC = 15;
-
-	public:
-		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
-		ThumbOpCode* decodeInstructionThumb(uint16_t op, uint32_t pc);
-
-		uint32_t getCPSR();
-		void setNFlag(bool val);
-		void setZFlag(bool val);
-		void setCFlag(bool val);
-		void setVFlag(bool val);
-		void setMode(CPSR::Mode mode);
-		std::string getModeString();
-
-		int64_t fetchInstructionThumb(uint32_t offset);
-		int64_t fetchInstructionArm(uint32_t offset);
-		void fetchNextInstruction();
-		//void executeNextInstruction();
-		void executionLoop();
-		void printStatus();
-
-		uint32_t getPC();
-		void setPC(uint32_t pc);
-
-		void setLR(uint32_t lr);
 };	
 
 #endif

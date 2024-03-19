@@ -7,6 +7,12 @@
 #include "../fields/imm.hpp"
 
 class SingleDataTransfer : public OpCode {
+	public:
+		SingleDataTransfer(uint32_t op);
+        ~SingleDataTransfer();
+        std::string toString();
+        void doExecute(ARM7TDMI &cpu);
+
     private:
         uint16_t I, P, U, B, W, L, Rn, Rd;
         Operand *offsetField;
@@ -46,12 +52,6 @@ class SingleDataTransfer : public OpCode {
 
         const static uint32_t OFFSET_MASK = 0b00000000000000000000111111111111; 
         const static uint32_t OFFSET_SHIFT = 0;
-
-	public:
-		SingleDataTransfer(uint32_t op);
-        ~SingleDataTransfer();
-        std::string toString();
-        void do_execute(ARM7TDMI &cpu);
 };
 
 #endif

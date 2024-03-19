@@ -7,6 +7,11 @@
 
 
 class MultiplyAccumulateLong : public OpCode {
+	public:
+		MultiplyAccumulateLong(uint32_t op);
+        std::string toString();
+        void doExecute(ARM7TDMI &cpu);
+
     private:
         uint16_t u, a, s, rdHi, rdLo, rs, rm;
 
@@ -37,11 +42,6 @@ class MultiplyAccumulateLong : public OpCode {
 
         std::string op2Mnemonic[2] = {"mull", "mlal"};
         std::string getOpMnemonic();
-
-	public:
-		MultiplyAccumulateLong(uint32_t op);
-        std::string toString();
-        void do_execute(ARM7TDMI &cpu);
 };
 
 #endif

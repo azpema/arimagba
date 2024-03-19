@@ -28,6 +28,6 @@ std::string MultiplyAccumulateLong::toString(){
             getRegMnemonic(rs);
 }
 
-void MultiplyAccumulateLong::do_execute(ARM7TDMI &cpu){
+void MultiplyAccumulateLong::doExecute(ARM7TDMI &cpu){
 
 }

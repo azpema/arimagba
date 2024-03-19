@@ -7,6 +7,11 @@
 
 
 class MultiplyAccumulate : public OpCode {
+	public:
+		MultiplyAccumulate(uint32_t op);
+        std::string toString();
+        void doExecute(ARM7TDMI &cpu);
+
     private:
         uint16_t a, s, rd, rn, rs, rm;
         const static uint32_t A_FLAG_MASK = 0b00000000001000000000000000000000; 
@@ -32,11 +37,6 @@ class MultiplyAccumulate : public OpCode {
 
         std::string op2Mnemonic[2] = {"mul", "mla"};
         std::string getOpMnemonic();
-
-	public:
-		MultiplyAccumulate(uint32_t op);
-        std::string toString();
-        void do_execute(ARM7TDMI &cpu);
 };
 
 #endif

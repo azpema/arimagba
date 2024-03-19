@@ -6,6 +6,15 @@
 #include "../../../utils/utils.hpp"
 
 class PSRTransferMSR : public OpCode {
+    public:
+        static bool isFullTransfer(uint32_t op);
+        static bool isFlagBitsTransfer(uint32_t op);
+
+    protected:
+        PSRTransferMSR(uint32_t op);
+        std::string toString();
+        void doExecute(ARM7TDMI &cpu);
+
     private:
         uint16_t psr;
 
@@ -23,15 +32,6 @@ class PSRTransferMSR : public OpCode {
 
         std::string PSR2Mnemonic[2] = {"cpsr", "spsr"};
         std::string getPSRMnemonic();
-
-	protected:
-        PSRTransferMSR(uint32_t op);
-        std::string toString();
-        void do_execute(ARM7TDMI &cpu);
-    public:
-        static bool isFullTransfer(uint32_t op);
-        static bool isFlagBitsTransfer(uint32_t op);
-        
 };
 
 #endif

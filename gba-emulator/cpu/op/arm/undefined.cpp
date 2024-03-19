@@ -6,6 +6,6 @@ std::string Undefined::toString(){
     return "Undefined";
 }
 
-void Undefined::do_execute(ARM7TDMI &cpu){
+void Undefined::doExecute(ARM7TDMI &cpu){
 
 }

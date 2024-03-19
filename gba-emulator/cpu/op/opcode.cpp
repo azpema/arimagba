@@ -6,16 +6,71 @@ const std::string OpCode::reg2Mnemonic[16] = {"r0", "r1", "r2", "r3", "r4", "r5"
 
 OpCode::OpCode(uint32_t op) {
     opcode = op;
+    condRaw = Utils::getRegBits(opcode, COND_FIELD_MASK, COND_FIELD_SHIFT);
+    if(condRaw >= 0 and condRaw <= 14){
+        cond = static_cast<Condition>(condRaw);
+    }else{
+        std::cerr << "ERROR: OpCode invalid condition" << std::endl;
+    }
 }
 
 void OpCode::execute(ARM7TDMI &cpu) {
     // Execute only if conditions are met
-    do_execute(cpu);
-}
+    bool execute = false;
+    switch(cond){
+        case EQ:
+            execute = cpu.getCPSR().getZFlag();
+            break;
+        case NE:
+            execute = !cpu.getCPSR().getZFlag();
+            break;
+        case CS:
+            execute = cpu.getCPSR().getCFlag();
+            break;
+        case CC:
+            execute = !cpu.getCPSR().getCFlag();
+            break;
+        case MI:
+            execute = cpu.getCPSR().getNFlag();
+            break;
+        case PL:
+            execute = !cpu.getCPSR().getNFlag();
+            break;
+        case VS:
+            execute = cpu.getCPSR().getVFlag();
+            break;
+        case VC:
+            execute = !cpu.getCPSR().getVFlag();
+            break;
+        case HI:
+            execute = (cpu.getCPSR().getCFlag()) && (!cpu.getCPSR().getZFlag());
+            break;
+        case LS:
+            execute = (!cpu.getCPSR().getCFlag()) || (cpu.getCPSR().getZFlag());
+            break;
+        case GE:
+            execute = (cpu.getCPSR().getNFlag() == cpu.getCPSR().getVFlag());
+            break;
+        case LT:
+            execute = (cpu.getCPSR().getNFlag() != cpu.getCPSR().getVFlag());
+            break;
+        case GT:
+            execute = (!cpu.getCPSR().getZFlag()) && (cpu.getCPSR().getNFlag() == cpu.getCPSR().getVFlag());
+            break;
+        case LE:
+            execute = (cpu.getCPSR().getZFlag()) || (cpu.getCPSR().getNFlag() != cpu.getCPSR().getVFlag());
+            break;
+        case AL:
+            execute = true;
+            break;
+    }
+        
+    if(execute)
+        doExecute(cpu);
+    else
+        std::cout << "DEBUG: Instructions skipped; condition not met" << std::endl;
 
- /*std::string OpCode::toString(){
-    return "";
- }*/
+}
 
 bool OpCode::checkOpCode(uint32_t op, uint32_t mask, uint32_t format){
     return (op & mask) == format;
@@ -78,12 +133,12 @@ bool OpCode::isDataProcessing(uint32_t op){
     return checkOpCode(op, DATA_PROCESSING_MASK, DATA_PROCESSING_FORMAT);
 }
 
-uint32_t OpCode::getCondField(){
-    return Utils::getRegBits(opcode, COND_FIELD_MASK, COND_FIELD_SHIFT);
+OpCode::Condition OpCode::getCondField(){
+    return cond;
 }
 
 std::string OpCode::getCondFieldMnemonic(){
-	return condCode2Suffix[getCondField()];
+	return condCode2Suffix[cond];
 }
 
 std::string OpCode::getRegMnemonic(uint16_t reg){

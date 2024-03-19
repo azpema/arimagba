@@ -43,6 +43,6 @@ std::string BlockDataTransfer::toString(){
     return getOpAddressingModeMnemonic() + getCondFieldMnemonic() + " " + getRegMnemonic(Rn) + getWFlagMnemonic() + "," + getRegisterListMnemonic() + getSFlagMnemonic();
 }
 
-void BlockDataTransfer::do_execute(ARM7TDMI &cpu){
+void BlockDataTransfer::doExecute(ARM7TDMI &cpu){
 
 }

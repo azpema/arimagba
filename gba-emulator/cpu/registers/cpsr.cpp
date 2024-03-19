@@ -71,6 +71,30 @@ std::string CPSR::getModeString(){
     return mode2String[mode];
 }
 
+bool CPSR::getNFlag(){
+    return Utils::getRegBits(value, N_FLAG_MASK, N_FLAG_SHIFT);
+}
+
+bool CPSR::getZFlag(){
+    return Utils::getRegBits(value, Z_FLAG_MASK, Z_FLAG_SHIFT);
+}
+
+bool CPSR::getCFlag(){
+    return Utils::getRegBits(value, C_FLAG_MASK, C_FLAG_SHIFT);
+}
+
+bool CPSR::getVFlag(){
+    return Utils::getRegBits(value, V_FLAG_MASK, V_FLAG_SHIFT);
+}
+
+bool CPSR::getIFlag(){
+    return Utils::getRegBits(value, I_FLAG_MASK, I_FLAG_SHIFT);
+}
+
+bool CPSR::getFFlag(){
+    return Utils::getRegBits(value, F_FLAG_MASK, F_FLAG_SHIFT);
+}
+
 void CPSR::setNFlag(bool val){
     setCPSRFlags(N, val);
 }

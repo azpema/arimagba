@@ -6,6 +6,11 @@
 #include "../../../utils/utils.hpp"
 
 class PSRTransferMRS : public OpCode {
+    public:
+		PSRTransferMRS(uint32_t op);
+        std::string toString();
+        void doExecute(ARM7TDMI &cpu);
+
     private:
         uint16_t psr, Rd;
 
@@ -17,11 +22,6 @@ class PSRTransferMRS : public OpCode {
 
         std::string PSR2Mnemonic[2] = {"cpsr", "spsr"};
         std::string getPSRMnemonic();
-
-	public:
-		PSRTransferMRS(uint32_t op);
-        std::string toString();
-        void do_execute(ARM7TDMI &cpu);
 };
 
 #endif

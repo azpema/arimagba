@@ -21,6 +21,6 @@ std::string PSRTransferMSR::toString(){
     return "msr" + getCondFieldMnemonic() + " " + getPSRMnemonic();
 }
 
-void PSRTransferMSR::do_execute(ARM7TDMI &cpu){
+void PSRTransferMSR::doExecute(ARM7TDMI &cpu){
 
 }

@@ -95,6 +95,49 @@ std::string DataProcessing::getOperand2Mnemonic(){
     }
 }
 
-void DataProcessing::do_execute(ARM7TDMI &cpu){
-
+void DataProcessing::doExecute(ARM7TDMI &cpu){
+    switch (dataOpCode)
+    {
+    case OPCODE_MOV_VAL:
+        break;
+    case OPCODE_MVN_VAL:
+        break;
+    case OPCODE_CMP_VAL:
+        break;
+    case OPCODE_CMN_VAL:
+        break;
+    case OPCODE_TEQ_VAL:
+        break;
+    case OPCODE_TST_VAL:
+        break;
+    case OPCODE_AND_VAL:
+        break;
+    case OPCODE_EOR_VAL:
+        break;
+    case OPCODE_SUB_VAL:
+        break;
+    case OPCODE_RSB_VAL:
+        break;
+    case OPCODE_ADD_VAL:
+        break;
+    case OPCODE_ADC_VAL:
+        break;
+    case OPCODE_SBC_VAL:
+        break;
+    case OPCODE_RSC_VAL:
+        break;
+    case OPCODE_ORR_VAL:
+        break;
+    case OPCODE_BIC_VAL:
+        break;
+    default:
+        break;
+    }
 }
+
+/*void DataProcessing::doExecuteCmp(ARM7TDMI &cpu){
+
+}*/
+
+
+    

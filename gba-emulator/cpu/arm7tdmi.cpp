@@ -138,32 +138,12 @@ ThumbOpCode* ARM7TDMI::decodeInstructionThumb(uint16_t op, uint32_t pc) {
 	return nullptr;
 }
 
-uint32_t ARM7TDMI::getCPSR(){
-	return cpsr.getValue();
+CPSR& ARM7TDMI::getCPSR(){
+	return cpsr;
 }
 
-void ARM7TDMI::setNFlag(bool val){
-	cpsr.setNFlag(val);
-}
-
-void ARM7TDMI::setZFlag(bool val){
-	cpsr.setZFlag(val);
-}
-
-void ARM7TDMI::setCFlag(bool val){
-	cpsr.setCFlag(val);
-}
-
-void ARM7TDMI::setVFlag(bool val){
-	cpsr.setVFlag(val);
-}
-
-void ARM7TDMI::setMode(CPSR::Mode mode){
-	cpsr.setMode(mode);
-}
-
-std::string ARM7TDMI::getModeString(){
-	return cpsr.getModeString();
+ALU& ARM7TDMI::getALU(){
+	return alu;
 }
 
 int64_t ARM7TDMI::fetchInstructionThumb(uint32_t offset){
@@ -232,3 +212,4 @@ void ARM7TDMI::executionLoop(){
 	}
 	
 }
+

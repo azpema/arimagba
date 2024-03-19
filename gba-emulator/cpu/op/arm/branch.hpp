@@ -16,11 +16,15 @@ namespace ARM {
  
 class Branch : public OpCode {
     public:
+    	Branch(uint32_t op, uint32_t pc);
+        std::string toString();
+        void doExecute(ARM7TDMI &cpu);
+
+    private:
         uint16_t L;
         uint32_t offsetField;
         int32_t realOffset;
 
-    private:
         const static uint32_t LINK_MASK = 0b00000001000000000000000000000000; 
         const static uint32_t LINK_SHIFT = 24; 
 
@@ -31,9 +35,7 @@ class Branch : public OpCode {
         std::string getLinkFlagMnemonic();
 
 	public:
-		Branch(uint32_t op, uint32_t pc);
-        std::string toString();
-        void do_execute(ARM7TDMI &cpu);
+
 };
 
 }

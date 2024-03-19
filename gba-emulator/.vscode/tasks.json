@@ -15,6 +15,7 @@
                 "${fileDirname}/cpu/op/fields/*.cpp",
                 "${fileDirname}/cpu/op/thumb/*.cpp",
                 "${fileDirname}/cpu/registers/*.cpp",
+                "${fileDirname}/cpu/components/*.cpp",
                 "${fileDirname}/utils/*.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"

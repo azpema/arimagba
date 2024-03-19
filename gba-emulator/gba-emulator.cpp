@@ -25,27 +25,6 @@ int main()
 
 	OpCode* op;
 
-	//op = cpu.decodeInstructionARM(0xF00FF32);
-	//std::cout << op->toString() << std::endl;	// cmp r14,#0xA5
-	//delete op;
-
-	/*DataProcessing otro = DataProcessing(0xe35e00a5);
-	std::cout << otro.toString() << std::endl;	// cmp r14,#0xA5
-
-	DataProcessing otro2 = DataProcessing(0x021ee080);
-	std::cout << otro2.toString() << std::endl;	// andeqs r14,r14,#0x80
-
-	DataProcessing otro3 = DataProcessing(0xe28f0001); // @0x0000014 no$gba -> add r0,=#0x11D 	mGBA -> add r0, pc, #1
-	std::cout << otro3.toString() << std::endl;	// 
-
-	DataProcessing otro4 = DataProcessing(0xe28fb078); // @0x00000148 no$gba -> add r11,=#0x1C8 == add r11, r15, #0x78
-													   // #0x1C8 equals content of r15(pc)=0x0148 + 0x78 + 0x8
-	std::cout << otro4.toString() << std::endl;	// */
-
-
-	// std::unique_ptr<OpCode> op2{cpu.decodeInstructionARM(0x021ee080)};
-	// std::cout << op2->toString() << std::endl;	// andeqs r14,r14,#0x80
-
 	/*uint32_t insCount = 8000;
 	BIOS bios = BIOS("files/bios.bin");
 	int64_t ins;

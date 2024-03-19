@@ -7,6 +7,11 @@
 
 
 class BlockDataTransfer : public OpCode {
+    public:
+		BlockDataTransfer(uint32_t op);
+        std::string toString();
+        void doExecute(ARM7TDMI &cpu);
+
     private:
         uint16_t P, U, S, W, L, Rn, registerList;
         std::vector<uint32_t> registerListVec;
@@ -41,12 +46,6 @@ class BlockDataTransfer : public OpCode {
         std::string opAddressingMode2Mnemonic[2][2][2] = {{{"stmed", "stmea"}, {"stmfd", "stmfa"}},
                                                           {{"ldmfa", "ldmfd"}, {"ldmea", "ldmed"}}};
         std::string getOpAddressingModeMnemonic();
-
-	public:
-		BlockDataTransfer(uint32_t op);
-        //~BlockDataTransfer();
-        std::string toString();
-        void do_execute(ARM7TDMI &cpu);
 };
 
 #endif

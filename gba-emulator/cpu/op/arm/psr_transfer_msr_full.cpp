@@ -8,6 +8,6 @@ std::string PSRTransferMSRFull::toString() {
     return PSRTransferMSR::toString() + "," + getRegMnemonic(Rm);
 }
 
-void PSRTransferMSRFull::do_execute(ARM7TDMI &cpu){
+void PSRTransferMSRFull::doExecute(ARM7TDMI &cpu){
 
 }

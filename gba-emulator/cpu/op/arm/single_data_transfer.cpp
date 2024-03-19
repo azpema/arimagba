@@ -79,6 +79,6 @@ std::string SingleDataTransfer::toString(){
     return base + address;
 }
 
-void SingleDataTransfer::do_execute(ARM7TDMI &cpu){
+void SingleDataTransfer::doExecute(ARM7TDMI &cpu){
 
 }

@@ -27,6 +27,6 @@ std::string HalfwordDataTransferOffset::toString(){
     return base + address;
 }
 
-void HalfwordDataTransferOffset::do_execute(ARM7TDMI &cpu){
+void HalfwordDataTransferOffset::doExecute(ARM7TDMI &cpu){
 
 }

@@ -21,7 +21,7 @@ std::string HalfwordDataTransferRegister::toString(){
     return base + address;
 }
 
-void HalfwordDataTransferRegister::do_execute(ARM7TDMI &cpu){
+void HalfwordDataTransferRegister::doExecute(ARM7TDMI &cpu){
 
 }
 

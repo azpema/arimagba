@@ -6,16 +6,16 @@
 #include "../../../utils/utils.hpp"
 
 class HalfwordDataTransferRegister : public HalfwordDataTransfer {
+    public:
+        HalfwordDataTransferRegister(uint32_t op);
+        std::string toString();
+        void doExecute(ARM7TDMI &cpu);
+
     private:
         uint16_t rm;
 
         const static uint32_t RM_FLAG_MASK = 0b00000000000000000000000000001111; 
         const static uint32_t RM_FLAG_SHIFT = 0;
-
-    public:
-        HalfwordDataTransferRegister(uint32_t op);
-        std::string toString();
-        void do_execute(ARM7TDMI &cpu);
 };
 
 

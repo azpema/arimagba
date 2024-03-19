@@ -9,7 +9,7 @@ class Undefined : public OpCode {
 	public:
 		Undefined(uint32_t op);
         std::string toString();
-		void do_execute(ARM7TDMI &cpu);
+		void doExecute(ARM7TDMI &cpu);
 };
 
 #endif

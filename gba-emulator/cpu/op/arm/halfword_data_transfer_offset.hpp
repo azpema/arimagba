@@ -6,6 +6,11 @@
 #include "../../../utils/utils.hpp"
 
 class HalfwordDataTransferOffset : public HalfwordDataTransfer {
+    public:
+        HalfwordDataTransferOffset(uint32_t op);
+        std::string toString();
+        void doExecute(ARM7TDMI &cpu);
+
     private:
         uint16_t offsetHi, offsetLo, offsetVal;
 
@@ -16,11 +21,6 @@ class HalfwordDataTransferOffset : public HalfwordDataTransfer {
         const static uint32_t OFFSETLO_FLAG_SHIFT = 0;
 
         uint16_t getOffsetVal();
-
-    public:
-        HalfwordDataTransferOffset(uint32_t op);
-        std::string toString();
-        void do_execute(ARM7TDMI &cpu);
 };
 
 

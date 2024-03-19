@@ -18,7 +18,7 @@ std::string Branch::toString(){
 }
 
 
-void Branch::do_execute(ARM7TDMI &cpu){
+void Branch::doExecute(ARM7TDMI &cpu){
     uint32_t oldPC = cpu.getPC();
     cpu.setPC(realOffset);
 

@@ -10,26 +10,62 @@ class ARM7TDMI;
 #include "../arm7tdmi.hpp"
 
 class OpCode {
+	public:
+		virtual std::string toString() = 0;
+		void execute(ARM7TDMI &cpu);
+
+		static bool isBranchAndExchange(uint32_t op);
+		static bool isBlockDataTransfer(uint32_t op);
+		static bool isBranch(uint32_t op);
+		static bool isSoftwareInterrupt(uint32_t op);
+		static bool isUndefined(uint32_t op);
+		static bool isSingleDataTransfer(uint32_t op);
+		static bool isSingleDataSwap(uint32_t op);
+		static bool isMultiply(uint32_t op);
+		static bool isMultiplyLong(uint32_t op);
+		static bool isHalfwordDataTransferRegister(uint32_t op);
+		static bool isHalfwordDataTransferOffset(uint32_t op);
+		static bool isPSRTransferMRS(uint32_t op);
+		static bool isPSRTransferMSR(uint32_t op);
+		static bool isDataProcessing(uint32_t op);
+
+		static bool checkOpCode(uint32_t op, uint32_t mask, uint32_t format);
+
+		enum Condition { EQ = 0b0000, NE = 0b0001, CS = 0b0010, CC = 0b0011,
+						 MI = 0b0100, PL = 0b0101, VS = 0b0110, VC = 0b0111,
+						 HI = 0b1000, LS = 0b1001, GE = 0b1010, LT = 0b1011,
+						 GT = 0b1100, LE = 0b1101, AL = 0b1110 
+		};
+
+		OpCode::Condition getCondField();
+		std::string getCondFieldMnemonic();
+		static std::string getRegMnemonic(uint16_t reg);
+
+	protected:
+		OpCode(uint32_t op);
+
 	private:
 		uint32_t opcode = 0;
-		uint16_t cond = 0;
+		uint16_t condRaw = 0;
 
-		std::unordered_map<uint32_t, std::string> condCode2Suffix = {
-            {0b0000, "eq"},	// Z set, equal
-            {0b0001, "ne"}, // Z clear, not equal
-            {0b0010, "cs"}, // C set, unsigned higher or same
-            {0b0011, "cc"}, // C clear, unsigned lower
-            {0b0100, "mi"}, // N set, negative
-            {0b0101, "pl"}, // N clear, positive or zero
-            {0b0110, "vs"}, // V set, overflow
-			{0b0111, "vc"}, // V clear, no overflow
-			{0b1000, "hi"}, // C set and Z clear, unsigned higher
-			{0b1001, "ls"}, // C clear or Z set, unsigned lower or same
-			{0b1010, "ge"}, // N equals V, greater or equal
-			{0b1011, "lt"}, // N not equal to V, less than
-			{0b1100, "gt"}, // Z clear AND (N equals V), greater than
-			{0b1101, "le"}, // Z set OR (N not equal to V), less than or equal
-			{0b1110, ""}  // (ignored), always
+		Condition cond;
+
+		std::unordered_map<Condition, std::string> condCode2Suffix = {
+            {EQ, "eq"},	// Z set, equal
+            {NE, "ne"}, // Z clear, not equal
+            {CS, "cs"}, // C set, unsigned higher or same
+            {CC, "cc"}, // C clear, unsigned lower
+            {MI, "mi"}, // N set, negative
+            {PL, "pl"}, // N clear, positive or zero
+            {VS, "vs"}, // V set, overflow
+			{VC, "vc"}, // V clear, no overflow
+			{HI, "hi"}, // C set and Z clear, unsigned higher
+			{LS, "ls"}, // C clear or Z set, unsigned lower or same
+			{GE, "ge"}, // N equals V, greater or equal
+			{LT, "lt"}, // N not equal to V, less than
+			{GT, "gt"}, // Z clear AND (N equals V), greater than
+			{LE, "le"}, // Z set OR (N not equal to V), less than or equal
+			{AL, ""}  // (ignored), always
         }; 
 		static const std::string reg2Mnemonic[16];
 
@@ -98,35 +134,7 @@ class OpCode {
 		const static uint32_t BRANCH_LINK =   0b00000001000000000000000000000000;
 		const static uint32_t BRANCH_LINK_SHIFT = 24;
 
-		virtual void do_execute(ARM7TDMI &cpu) = 0;
-
-	protected:
-		OpCode(uint32_t op);
-
-	public:
-		virtual std::string toString() = 0;
-		void execute(ARM7TDMI &cpu);
-
-		static bool isBranchAndExchange(uint32_t op);
-		static bool isBlockDataTransfer(uint32_t op);
-		static bool isBranch(uint32_t op);
-		static bool isSoftwareInterrupt(uint32_t op);
-		static bool isUndefined(uint32_t op);
-		static bool isSingleDataTransfer(uint32_t op);
-		static bool isSingleDataSwap(uint32_t op);
-		static bool isMultiply(uint32_t op);
-		static bool isMultiplyLong(uint32_t op);
-		static bool isHalfwordDataTransferRegister(uint32_t op);
-		static bool isHalfwordDataTransferOffset(uint32_t op);
-		static bool isPSRTransferMRS(uint32_t op);
-		static bool isPSRTransferMSR(uint32_t op);
-		static bool isDataProcessing(uint32_t op);
-
-		static bool checkOpCode(uint32_t op, uint32_t mask, uint32_t format);
-		uint32_t getCondField();
-		std::string getCondFieldMnemonic();
-		static std::string getRegMnemonic(uint16_t reg);
-
+		virtual void doExecute(ARM7TDMI &cpu) = 0;
 };
 
 #endif

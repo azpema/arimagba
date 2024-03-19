@@ -9,16 +9,14 @@
 
 class BranchAndExchange : public OpCode {
     public:
-        uint32_t Rn;
+        BranchAndExchange(uint32_t op);
+        std::string toString();
+        void doExecute(ARM7TDMI &cpu);
 
     private:
+        uint32_t Rn;
         const static uint32_t RN_MASK = 0b00000000000000000000000000001111; 
         const static uint32_t RN_SHIFT = 0; 
-
-	public:
-		BranchAndExchange(uint32_t op);
-        std::string toString();
-        void do_execute(ARM7TDMI &cpu);
 };
 
 #endif

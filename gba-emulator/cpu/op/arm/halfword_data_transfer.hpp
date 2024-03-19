@@ -6,6 +6,10 @@
 #include "../../../utils/utils.hpp"
 
 class HalfwordDataTransfer : public OpCode {
+    public:
+        virtual std::string toString() = 0;
+        virtual void doExecute(ARM7TDMI &cpu) = 0;
+
     protected:
         uint16_t p, u, w, l, rn, rd, s, h;
         HalfwordDataTransfer(uint32_t op);
@@ -44,10 +48,6 @@ class HalfwordDataTransfer : public OpCode {
 
         std::string op2Mnemonic[2] = {"str", "ldr"};
         std::string getOpMnemonic();
-
-    public:
-        virtual std::string toString() = 0;
-        virtual void do_execute(ARM7TDMI &cpu) = 0;
 };
 
 

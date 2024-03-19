@@ -7,6 +7,18 @@
 #include <unordered_map>
 
 class DataProcessing : public OpCode {
+    public:
+		DataProcessing(uint32_t op);
+        ~DataProcessing();
+        std::string toString();
+        void doExecute(ARM7TDMI &cpu);
+
+        std::string getOpCodeMnemonic();
+        std::string getRdMnemonic();
+        std::string getRnMnemonic();
+        std::string getOperand2Mnemonic();
+        uint32_t getOperand2();
+
     private:
         uint16_t I, S, Rn, Rd, dataOpCode;
         Operand *operand2;
@@ -74,16 +86,5 @@ class DataProcessing : public OpCode {
         // https://alisdair.mcdiarmid.org/arm-immediate-value-encoding/
         uint32_t getOperand2Rm();
 
-	public:
-		DataProcessing(uint32_t op);
-        ~DataProcessing();
-        std::string toString();
-        void do_execute(ARM7TDMI &cpu);
-
-        std::string getOpCodeMnemonic();
-        std::string getRdMnemonic();
-        std::string getRnMnemonic();
-        std::string getOperand2Mnemonic();
-        uint32_t getOperand2();
-
+        //void DataProcessing::doExecuteCmp(ARM7TDMI &cpu);
 };
