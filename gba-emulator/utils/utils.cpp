@@ -20,6 +20,11 @@ uint32_t Utils::getRegBits(uint32_t reg, const uint32_t mask, const uint32_t shi
     return (reg & mask) >> shift;
 }
 
+bool Utils::getRegSingleBit(uint32_t reg, uint8_t pos){
+    return (reg >> pos) & 0x1;
+}
+
+
 uint32_t Utils::rotateRight(uint32_t reg, uint32_t nTimes){
     uint32_t res = reg;
     for (size_t i = 0; i < nTimes; i++) {
@@ -58,4 +63,8 @@ int32_t Utils::twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint3
         return val | orVal;
     }
 
+}
+
+bool Utils::inRange(uint32_t val, uint32_t from, uint32_t to){
+    return from <= val && val <= to;
 }

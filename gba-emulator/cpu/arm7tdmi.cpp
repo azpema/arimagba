@@ -41,13 +41,34 @@
 
 #include <iostream>
 
-ARM7TDMI::ARM7TDMI() {
+ARM7TDMI::ARM7TDMI(MemoryManager *memManager) {
+	mem = memManager;
+
 	spsr = 0;
 	cpsr = CPSR();
-	bios = BIOS(std::string("files/bios.bin"));
 	for(size_t i=0; i<16; i++){
 		reg[i] = 0;
 	}
+
+	for(size_t i=0; i<7; i++){
+		r8_fiq[i] = 0;
+	}
+
+	for(size_t i=0; i<2; i++){
+		r13_svc[i] = 0;
+		r13_abt[i] = 0; 
+		r13_irq[i] = 0; 
+		r13_und[i] = 0; 
+	}
+
+	reg[13] = 0x03007F00;
+	r13_irq[0] = 0x03007FA0;
+	r13_svc[0] = 0x03007FE0;
+	barrelShifter = new BarrelShifter();
+}
+
+ARM7TDMI::~ARM7TDMI() {
+	delete barrelShifter;
 }
 
 OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
@@ -146,12 +167,16 @@ ALU& ARM7TDMI::getALU(){
 	return alu;
 }
 
+BarrelShifter& ARM7TDMI::getBarrelShifter(){
+	return *barrelShifter;
+}
+
 int64_t ARM7TDMI::fetchInstructionThumb(uint32_t offset){
-	return bios.readHalfWord(offset);
+	return mem->readHalfWord(offset);
 }
 
 int64_t ARM7TDMI::fetchInstructionArm(uint32_t offset){
-	return bios.readWord(offset);
+	return mem->readWord(offset);
 }
 
 /*void ARM7TDMI::fetchNextInstruction(){
@@ -164,6 +189,108 @@ int64_t ARM7TDMI::fetchInstructionArm(uint32_t offset){
 		reg[REG_PC] += 4;
 	}
 }*/
+
+uint32_t ARM7TDMI::getReg(uint16_t n){
+	if(n < 0 || n > 15){
+		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
+		return 0;
+	}
+	
+	if(n == 15)
+		return reg[15];
+
+	switch (cpsr.getMode())
+	{
+	case CPSR::Mode::System:
+	case CPSR::Mode::User:
+		return reg[n];
+		break;
+	case CPSR::Mode::FIQ:
+		if(n>=0 && n<=7)
+			return reg[n];
+		else if(n>=8 && n<=14)
+			return r8_fiq[n - 8];
+		break;
+	case CPSR::Mode::Supervisor:
+		if(n>=0 && n<=12)
+			return reg[n];
+		else if(n>=13 && n<=14)
+			return r13_svc[n - 13];
+		break;
+	case CPSR::Mode::Abort:
+		if(n>=0 && n<=12)
+			return reg[n];
+		else if(n>=13 && n<=14)
+			return r13_abt[n - 13];
+		break;
+	case CPSR::Mode::IRQ:
+		if(n>=0 && n<=12)
+			return reg[n];
+		else if(n>=13 && n<=14)
+			return r13_irq[n - 13];
+		break;
+	case CPSR::Mode::Undefined:
+		if(n>=0 && n<=12)
+			return reg[n];
+		else if(n>=13 && n<=14)
+			return r13_und[n - 13];
+		break;
+	default:
+		std::cerr << "ERROR: Unknown CPSR Mode in CPU getReg" << std::endl;
+		return 0;
+		break;
+	}
+	
+	return 0;
+}
+
+void ARM7TDMI::setReg(uint16_t n, uint32_t val){
+	if(n < 0 || n > 15){
+		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
+		return;
+	}
+	switch (cpsr.getMode())
+	{
+	case CPSR::Mode::System:
+	case CPSR::Mode::User:
+		reg[n] = val;
+		break;
+	case CPSR::Mode::FIQ:
+		if(n>=0 && n<=7)
+			reg[n] = val;
+		else if(n>=8 && n<=14)
+			r8_fiq[n - 8] = val;
+		break;
+	case CPSR::Mode::Supervisor:
+		if(n>=0 && n<=12)
+			reg[n] = val;
+		else if(n>=13 && n<=14)
+			r13_svc[n - 13] = val;
+		break;
+	case CPSR::Mode::Abort:
+		if(n>=0 && n<=12)
+			reg[n] = val;
+		else if(n>=13 && n<=14)
+			r13_abt[n - 13] = val;
+		break;
+	case CPSR::Mode::IRQ:
+		if(n>=0 && n<=12)
+			reg[n] = val;
+		else if(n>=13 && n<=14)
+			r13_irq[n - 13] = val;
+		break;
+	case CPSR::Mode::Undefined:
+		if(n>=0 && n<=12)
+			reg[n] = val;
+		else if(n>=13 && n<=14)
+			r13_und[n - 13] = val;
+		break;
+	default:
+		std::cerr << "ERROR: Unknown CPSR Mode in CPU getReg" << std::endl;
+		break;
+	}
+}
+
 
 uint32_t ARM7TDMI::getPC(){
 	return reg[15];
@@ -178,37 +305,123 @@ void ARM7TDMI::setLR(uint32_t lr){
 }
 
 void ARM7TDMI::printStatus(){
-	std::cout << "<<<" << std::endl;
+	// PC is reduced by 8 to account for pipeline parallelism
 	std::cout << "pc:   " << Utils::toHexString(getPC(), 8) << std::endl;
 	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << std::endl;
-	std::cout << "<<<" << std::endl;
+	std::cout << "n:" << cpsr.getNFlag() << " z:" << cpsr.getZFlag() << " c:" << cpsr.getCFlag() << " v:" << cpsr.getVFlag() <<std::endl;
+	for(int i=0; i<16; i++){
+		std::cout << "r" + std::to_string(i) + ": " + Utils::toHexString(getReg(i)) + " ";
+	}
+	std::cout << std::endl;
 }
+
+MemoryManager& ARM7TDMI::getMemManager(){
+	return (*mem);
+}
+
 
 /*void ARM7TDMI::executeOpArm(OpCode *op){
 	op->execute(); 
 }*/
 
+void ARM7TDMI::executeNextInstruction(){
+	if(!cpsr.isThumbMode()){
+		// execute
+		if(insDecodeSet){
+			insExecuteSet = opExecute->execute(*this);
+
+			// print status
+			//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
+			//printStatus();
+			//std::cout << "<<<" << std::endl;
+		}
+
+		// flush pipeline if needed
+		if(insExecuteSet && opExecute->mustFlushPipeline()){
+			insFetchSet = false;
+			insDecodeSet = false;
+		}
+
+		if(insExecuteSet){
+			insExecuteSet = false;
+			delete opExecute;
+		}
+
+		// decode
+		if(insFetchSet){
+			opExecute = decodeInstructionARM(insDecode, fetchPC);
+			insDecodeSet = true;
+		}
+		
+		// fetch
+		insFetch = mem->readWord(getPC());
+		fetchPC = getPC();
+		setPC(getPC() + 4);
+
+		
+		insFetchSet = true;
+		insDecode = insFetch;
+		
+	}else{
+
+	}
+
+}
+
+
 void ARM7TDMI::executionLoop(){
-	uint64_t ins;
-	OpCode *op;
-	int i=0;
-	while(i<2){
+	uint32_t insFetch, insDecode;
+	OpCode *opExecute = nullptr;
+	bool insFetchSet = false;
+	bool insDecodeSet = false;
+	bool insExecuteSet = false;
+	uint32_t fetchPC;
+	while(true){
 		if(!cpsr.isThumbMode()){
-			// fetch
-			ins = bios.readWord(reg[15]);
-			if(ins == -1) return;
+			// execute
+			if(insDecodeSet){
+				insExecuteSet = opExecute->execute(*this);
+
+				if(opExecute->toHexString() == "0xEAFFFFFE"){
+					std::cout << "END" << std::endl;
+					return;
+				}
+
+				// print status
+				//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
+				//printStatus();
+				//std::cout << "<<<" << std::endl;
+			}
+
+			// flush pipeline if needed
+			if(insExecuteSet && opExecute->mustFlushPipeline()){
+				insFetchSet = false;
+				insDecodeSet = false;
+			}
+
+			if(insExecuteSet){
+				insExecuteSet = false;
+				delete opExecute;
+			}
 
 			// decode
-			op = decodeInstructionARM(ins, reg[15]);
-			std::cout << op->toString() << std::endl;
+			if(insFetchSet){
+				opExecute = decodeInstructionARM(insDecode, fetchPC);
+				insDecodeSet = true;
+			}
+			
+			// fetch
+			insFetch = mem->readWord(getPC());
+  			fetchPC = getPC();
+			setPC(getPC() + 4);
 
-			// execute
-			printStatus();
-			op->execute(*this);
+			
+			insFetchSet = true;
+			insDecode = insFetch;
+			
 		}else{
 
 		}
-		i++;
 	}
 	
 }

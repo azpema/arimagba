@@ -11,3 +11,12 @@ std::string PSRTransferMSRFull::toString() {
 void PSRTransferMSRFull::doExecute(ARM7TDMI &cpu){
 
 }
+
+bool PSRTransferMSRFull::mustFlushPipeline() const {
+    return false;
+}
+
+// MSR,MRS          1S
+uint32_t PSRTransferMSRFull::cyclesUsed() const {
+    return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE;
+}

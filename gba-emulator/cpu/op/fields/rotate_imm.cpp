@@ -2,11 +2,20 @@
 #include <iostream>
 
 RotateImm::RotateImm(uint16_t val) : Operand::Operand(val, OperandType::ROTATE_IMM){
+    c = false;
     rotate = Utils::getRegBits(val, ROTATE_MASK, ROTATE_SHIFT);
     imm = Utils::getRegBits(val, IMM_MASK, IMM_SHIFT);
     operandVal = Utils::rotateRight(imm, 2*rotate);
 }
 
-uint32_t RotateImm::getOperandVal(){
+uint32_t RotateImm::getMnemonicVal(){
     return operandVal;
+}
+
+uint32_t RotateImm::getOperandVal(ARM7TDMI &cpu){
+    return getMnemonicVal();
+}
+
+bool RotateImm::getC(){
+    return c;
 }

@@ -61,6 +61,18 @@ uint32_t CPSR::getValue(){
    return value;
 }
 
+CPSR::Mode CPSR::getMode(){
+    switch(getModeUInt()) {
+        case MODE_FLAG_USR_VAL: return Mode::User;
+        case MODE_FLAG_FIQ_VAL: return Mode::FIQ;
+        case MODE_FLAG_IRQ_VAL: return Mode::IRQ;
+        case MODE_FLAG_SVC_VAL: return Mode::Supervisor;
+        case MODE_FLAG_ABT_VAL: return Mode::Abort;
+        case MODE_FLAG_UND_VAL: return Mode::Undefined;
+        case MODE_FLAG_SYS_VAL: return Mode::System;
+        default: throw std::invalid_argument("Invalid value");
+    }
+}
 
 uint32_t CPSR::getModeUInt(){
     return Utils::getRegBits(value, MODE_FLAG_MASK, MODE_FLAG_SHIFT);

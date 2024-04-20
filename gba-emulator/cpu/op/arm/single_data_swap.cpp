@@ -20,3 +20,12 @@ std::string SingleDataSwap::toString(){
 void SingleDataSwap::doExecute(ARM7TDMI &cpu){
 
 }
+
+bool SingleDataSwap::mustFlushPipeline() const {
+    return false;
+}
+
+// SWP              1S+2N+1I
+uint32_t SingleDataSwap::cyclesUsed() const {
+    return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + 2 * ARM7TDMI::CPU_CYCLES_PER_N_CYCLE + 1 * ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+}

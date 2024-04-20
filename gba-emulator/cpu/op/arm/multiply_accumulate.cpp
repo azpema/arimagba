@@ -28,3 +28,15 @@ std::string MultiplyAccumulate::toString(){
 void MultiplyAccumulate::doExecute(ARM7TDMI &cpu){
 
 }
+
+bool MultiplyAccumulate::mustFlushPipeline() const {
+    return false;
+}
+
+
+// MUL              1S+ml
+// MLA              1S+(m+1)I
+uint32_t MultiplyAccumulate::cyclesUsed() const {
+    std::cerr << "TODO: MultiplyAccumulate::cyclesUsed" << std::endl;
+    return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + (0 + 1) * ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+}

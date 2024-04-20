@@ -2,14 +2,36 @@
 #include <iostream>
 
 GamePak::GamePak() {
+    this->fileStream = std::ifstream(std::string("files/panda.gba"), std::ios::binary);
 
+    if (!this->fileStream.is_open()) {
+        std::cerr << "ERROR: GamePak Failed to open the file." << std::endl;
+    }else {
+        std::cout << "DEBUG: GamePak READ OK" << std::endl;
+    }
 }
 
 GamePak::GamePak(std::string filePath) {
+    this->fileStream = std::ifstream(filePath, std::ios::binary);
+
+    if (!this->fileStream.is_open()) {
+        std::cerr << "ERROR: GamePak Failed to open the file." << std::endl;
+    }else {
+        std::cout << "DEBUG: GamePak READ OK" << std::endl;
+    }
 }
 
+uint32_t GamePak::read(uint32_t addr, uint8_t bytes) {
+    uint32_t val;
+    this->fileStream.seekg(addr, std::ios::beg);
+    this->fileStream.read(reinterpret_cast<char*>(&val), bytes);
+
+    return val;
+}
+
+
 int GamePak::setFileStream(std::string filePath) {
-    this->fileStream = std::ifstream("C:\\Users\\Markel\\Downloads\\shinchan.gba", std::ios::binary);
+    this->fileStream = std::ifstream(filePath, std::ios::binary);
 
     if (!this->fileStream.is_open()) {
         std::cerr << "Failed to open the file." << std::endl;

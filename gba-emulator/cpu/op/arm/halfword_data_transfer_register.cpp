@@ -21,8 +21,77 @@ std::string HalfwordDataTransferRegister::toString(){
     return base + address;
 }
 
-void HalfwordDataTransferRegister::doExecute(ARM7TDMI &cpu){
+bool HalfwordDataTransferRegister::mustFlushPipeline() const {
+    return false;
+}
 
+// Depends on load or store
+uint32_t HalfwordDataTransferRegister::cyclesUsed() const {
+    std::cerr << "TODO: HalfwordDataTransferRegister::cyclesUsed" << std::endl;
+    return 1;
+}
+
+void HalfwordDataTransferRegister::doExecute(ARM7TDMI &cpu){
+    uint32_t baseRegVal = cpu.getReg(rn);
+    uint32_t sourceRegVal = cpu.getReg(rd);
+    uint32_t offsetRegVal = cpu.getReg(rm);
+    // Pre-indexing
+    if(p == 1){
+        if(u == 0)
+            baseRegVal -= offsetRegVal;
+        else if(u == 1)
+            baseRegVal += offsetRegVal;
+    }
+
+    if(l == 0){
+        // Store to memory
+        if(s == 0){
+            if(h == 0){
+                // SWP instruction
+            }else if( h == 1){
+                // Unsigned halfwords
+                cpu.getMemManager().store(baseRegVal, cpu.getReg(rd), 2);
+            }
+        }else if(s == 1){
+            if(h == 0){
+                // Signed byte
+
+            }else if( h == 1){
+                // Signed halfwords
+
+            }
+        }
+
+    }else if(l == 1){
+        // Load from memory
+        if(s == 0){
+            if(h == 0){
+                // SWP instruction
+            }else if( h == 1){
+                // Unsigned halfwords
+                uint16_t loadVal = cpu.getMemManager().readHalfWord(baseRegVal);
+                cpu.setReg(rd, loadVal);
+            }
+        }else if(s == 1){
+            if(h == 0){
+                // Signed byte
+
+            }else if( h == 1){
+                // Signed halfwords
+
+            }
+        }
+    }
+
+    // Post Indexing, Writeback
+    if(p == 0 || w == 1){
+        if(u == 0)
+            baseRegVal -= offsetRegVal;
+        else if(u == 1)
+            baseRegVal += offsetRegVal;
+
+        cpu.setReg(rn, baseRegVal);
+    }
 }
 
 

@@ -16,10 +16,17 @@ std::string HalfwordDataTransferOffset::toString(){
                         getRegMnemonic(rd) + ",";
     std::string address = "[" + getRegMnemonic(rn);
 
+    bool showOffset = getOffsetVal() !=0;
+
     if(p == 1){
-        address += "," + getUFlagMnemonic() + Utils::toHexString(getOffsetVal()) + "]" + getWFlagMnemonic();
+        if(showOffset)
+            address += "," + getUFlagMnemonic() + Utils::toHexString(getOffsetVal()) + "]" + getWFlagMnemonic();
+        else
+            address += "]" + getWFlagMnemonic();
     }else if(p == 0){
-        address += "]," + getUFlagMnemonic() + Utils::toHexString(getOffsetVal());
+        address += "]";
+        if(showOffset) 
+            address += "," + getUFlagMnemonic() + Utils::toHexString(getOffsetVal());
     }else{
         std::cerr << "ERROR: Invalid p flag value HalfwordDataTransferOffset" << std::endl;
     }
@@ -27,6 +34,77 @@ std::string HalfwordDataTransferOffset::toString(){
     return base + address;
 }
 
+bool HalfwordDataTransferOffset::mustFlushPipeline() const {
+    return false;
+}
+
+// Depends on load or store
+uint32_t HalfwordDataTransferOffset::cyclesUsed() const {
+    std::cerr << "TODO: HalfwordDataTransferOffset::cyclesUsed" << std::endl;
+    return 1;
+}
+
+
 void HalfwordDataTransferOffset::doExecute(ARM7TDMI &cpu){
+    uint32_t baseRegVal = cpu.getReg(rn);
+    
+    // Pre-indexing
+    if(p == 1){
+        if(u == 0)
+            baseRegVal -= offsetVal;
+        else if(u == 1)
+            baseRegVal += offsetVal;
+    }
+
+    if(l == 0){
+        // Store to memory
+        uint32_t sourceRegVal = cpu.getReg(rd);
+        if(s == 0){
+            if(h == 0){
+                // SWP instruction
+            }else if( h == 1){
+                // Unsigned halfwords
+                cpu.getMemManager().store(baseRegVal, cpu.getReg(rd), 2);
+            }
+        }else if(s == 1){
+            if(h == 0){
+                // Signed byte
+
+            }else if( h == 1){
+                // Signed halfwords
+
+            }
+        }
+
+    }else if(l == 1){
+        // Load from memory
+        if(s == 0){
+            if(h == 0){
+                // SWP instruction
+            }else if( h == 1){
+                // Unsigned halfwords
+                uint16_t loadVal = cpu.getMemManager().readHalfWord(baseRegVal);
+                cpu.setReg(rd, loadVal);
+            }
+        }else if(s == 1){
+            if(h == 0){
+                // Signed byte
+
+            }else if( h == 1){
+                // Signed halfwords
+
+            }
+        }
+    }
+
+    // Post Indexing, Writeback
+    if(p == 0 || w == 1){
+        if(u == 0)
+            baseRegVal -= offsetVal;
+        else if(u == 1)
+            baseRegVal += offsetVal;
+
+        cpu.setReg(rn, baseRegVal);
+    }
 
 }

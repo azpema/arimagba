@@ -14,7 +14,11 @@ OpCode::OpCode(uint32_t op) {
     }
 }
 
-void OpCode::execute(ARM7TDMI &cpu) {
+std::string OpCode::toHexString(){
+    return Utils::toHexString(opcode);
+}
+
+bool OpCode::execute(ARM7TDMI &cpu) {
     // Execute only if conditions are met
     bool execute = false;
     switch(cond){
@@ -65,10 +69,13 @@ void OpCode::execute(ARM7TDMI &cpu) {
             break;
     }
         
-    if(execute)
+    if(execute){
         doExecute(cpu);
-    else
+        return true;
+    }else {
         std::cout << "DEBUG: Instructions skipped; condition not met" << std::endl;
+        return false;
+    }
 
 }
 

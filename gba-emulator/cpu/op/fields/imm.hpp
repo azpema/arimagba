@@ -7,15 +7,17 @@
 #include "../../../utils/utils.hpp"
 
 class Imm : public Operand {
-
-    private:
-        uint16_t immVal;
-
 	public:
 		Imm(uint16_t val);
         std::string toString();
-        uint16_t getVal();
-        uint16_t getImmVal();
+        uint32_t getMnemonicVal();
+
+        uint32_t getOperandVal(ARM7TDMI &cpu) override;
+        bool getC() override;
+
+    private:
+        bool c;
+        uint16_t immVal;
 };
 
 #endif

@@ -17,3 +17,12 @@ std::string PSRTransferMRS::toString(){
 void PSRTransferMRS::doExecute(ARM7TDMI &cpu){
 
 }
+
+bool PSRTransferMRS::mustFlushPipeline() const {
+    return false;
+}
+
+// MSR,MRS          1S
+uint32_t PSRTransferMRS::cyclesUsed() const {
+    return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE;
+}

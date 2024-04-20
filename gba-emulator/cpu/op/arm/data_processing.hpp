@@ -10,8 +10,10 @@ class DataProcessing : public OpCode {
     public:
 		DataProcessing(uint32_t op);
         ~DataProcessing();
-        std::string toString();
+        std::string toString() override;
         void doExecute(ARM7TDMI &cpu);
+        bool mustFlushPipeline() const override;
+        uint32_t cyclesUsed() const override;
 
         std::string getOpCodeMnemonic();
         std::string getRdMnemonic();
@@ -20,7 +22,8 @@ class DataProcessing : public OpCode {
         uint32_t getOperand2();
 
     private:
-        uint16_t I, S, Rn, Rd, dataOpCode;
+        uint16_t i, s, rn, rd, dataOpCode;
+        uint32_t op1, op2;
         Operand *operand2;
 
         const static uint32_t IMMEDIATE_OPERAND_MASK = 0b00000010000000000000000000000000; 
@@ -87,4 +90,7 @@ class DataProcessing : public OpCode {
         uint32_t getOperand2Rm();
 
         //void DataProcessing::doExecuteCmp(ARM7TDMI &cpu);
+        void doExecuteCmp(ARM7TDMI &cpu);
+        void doExecuteMov(ARM7TDMI &cpu);
+        void doExecuteAdd(ARM7TDMI &cpu);
 };

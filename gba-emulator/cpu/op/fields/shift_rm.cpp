@@ -2,29 +2,130 @@
 #include <iostream>
 
 ShiftRm::ShiftRm(uint16_t val) : Operand::Operand(val, OperandType::SHIFT_RM){
-    Shift = Utils::getRegBits(val, SHIFT_MASK, SHIFT_SHIFT);
-    Rm = Utils::getRegBits(val, RM_MASK, RM_SHIFT);
-    shiftType = Utils::getRegBits(Shift, SHIFT_TYPE_MASK, SHIFT_TYPE_SHIFT);
+    c = false;
+    _shift = Utils::getRegBits(val, SHIFT_MASK, SHIFT_SHIFT);
+    _rm = Utils::getRegBits(val, RM_MASK, RM_SHIFT);
+    _shiftType = Utils::getRegBits(_shift, SHIFT_TYPE_MASK, SHIFT_TYPE_SHIFT);
 
-    if((Shift & 0b00000001) == 0b00000000){
-        shiftAmount = Utils::getRegBits(Shift, SHIFT_AMOUNT_MASK, SHIFT_AMOUNT_SHIFT);
-        _type = AMOUNT;
-    }else if((Shift & 0b00001001) == 0b00000001){
-        shiftReg = Utils::getRegBits(Shift, SHIFT_RS_MASK, SHIFT_RS_SHIFT);
-        _type = REGISTER;
+    // Shift amount
+    if((_shift & 0b00000001) == 0b00000000){
+        _shiftAmount = Utils::getRegBits(_shift, SHIFT_AMOUNT_MASK, SHIFT_AMOUNT_SHIFT);
+        type = AMOUNT;
+    // SHift register
+    }else if((_shift & 0b00001001) == 0b00000001){
+        _shiftReg = Utils::getRegBits(_shift, SHIFT_RS_MASK, SHIFT_RS_SHIFT);
+        type = REGISTER;
     }else{
         std::cerr << "ERROR: Unknown ShiftRm" << std::endl;
     }
 }
 
 std::string ShiftRm::getShiftTypeMnemonic(){
-    return shiftType2Mnemonic[shiftType];
+    return shiftType2Mnemonic[_shiftType];
 }
 
 uint16_t ShiftRm::getRm(){
-    return Rm;
+    return _rm;
 }
 
 uint16_t ShiftRm::getShiftAmount(){
-    return shiftAmount;
+    return _shiftAmount;
+}
+
+bool ShiftRm::getC(){
+    return c;
+}
+
+uint32_t ShiftRm::getOperandVal(ARM7TDMI &cpu){
+    uint32_t rmVal = cpu.getReg(_rm);
+    uint32_t res = 0;
+    if(type == AMOUNT){
+        shiftAmount = _shiftAmount;
+    } else if(type == REGISTER){
+        // The amount by which the register should be shifted may be contained in an immediate field
+        // in the instruction, or in the bottom byte of another register (other than R15)
+        // ...
+        // Only the least significant byte of the contents of Rs is used to determine the shift
+        // amount. Rs can be any general register other than R15.
+        shiftAmount = cpu.getReg(_shiftReg) & 0xFF;
+
+        // If this byte is zero, the unchanged contents of Rm will be used as the second operand,
+        // and the old value of the CPSR C flag will be passed on as the shifter carry output.
+        if(shiftAmount == 0){
+            c = cpu.getCPSR().getCFlag();
+            return rmVal;
+        }
+        if(shiftAmount == 32){
+            switch (static_cast<ShiftType>(_shiftType)){
+                case LSL:
+                    // LSL by 32 has result zero, carry out equal to bit 0 of Rm
+                    c = Utils::getRegSingleBit(rmVal, 0);
+                    return 0;
+                case LSR:
+                    // LSR by 32 has result zero, carry out equal to bit 31 of Rm
+                    c = Utils::getRegSingleBit(rmVal, 31);
+                    return 0;
+                case ASR:
+                    // ASR by 32 or more has result filled with and carry out equal to bit 31 of Rm 
+                    c = Utils::getRegSingleBit(rmVal, 31);
+                    return c * 0xFFFFFFFF;
+                    break;
+                case ROR:
+                    // ROR by 32 has result equal to Rm, carry out equal to bit 31 of Rm.
+                    c = Utils::getRegSingleBit(rmVal, 31);
+                    return rmVal;
+                default:
+                    std::cerr << "ERROR: Invalid _shiftType value!" << std::endl;
+                    break;
+            }
+        }
+        if (shiftAmount > 32){
+            switch (static_cast<ShiftType>(_shiftType)){
+                case LSL:
+                case LSR:
+                    // LSL by more than 32 has result zero, carry out zero
+                    // LSR by more than 32 has result zero, carry out zero
+                    c = 0;
+                    return 0;
+                case ASR:
+                    // ASR by 32 or more has result filled with and carry out equal to bit 31 of Rm 
+                    c = Utils::getRegSingleBit(rmVal, 31);
+                    return c * 0xFFFFFFFF;
+                    break;
+                case ROR:
+                    // ROR by n where n is greater than 32 will give the same result and carry out
+                    // as ROR by n-32; therefore repeatedly subtract 32 from n until the amount is
+                    // in the range 1 to 32 and see above.
+                    res = cpu.getBarrelShifter().ror(cpu, rmVal, shiftAmount);
+                    c = cpu.getBarrelShifter().getC();
+                    return res;
+                default:
+                    std::cerr << "ERROR: Invalid _shiftType value!" << std::endl;
+                    break;
+            }
+        }
+    }
+
+    switch (static_cast<ShiftType>(_shiftType))
+    {
+    case LSL:
+        res = cpu.getBarrelShifter().lsl(cpu, rmVal, shiftAmount);
+        break;
+    case LSR:
+        res = cpu.getBarrelShifter().lsr(rmVal, shiftAmount);
+        break;
+    case ASR:
+        res = cpu.getBarrelShifter().asr(rmVal, shiftAmount);
+        break;
+    case ROR:
+        res = cpu.getBarrelShifter().ror(cpu, rmVal, shiftAmount);
+        break;
+    default:
+        std::cerr << "ERROR: Invalid _shiftType value!" << std::endl;
+        break;
+    }
+
+    c = cpu.getBarrelShifter().getC();
+    return res;
+
 }

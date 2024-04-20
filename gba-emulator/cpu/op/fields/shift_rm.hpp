@@ -7,11 +7,22 @@
 #include "../../../utils/utils.hpp"
 
 class ShiftRm : public Operand {
-
+    public:
+		ShiftRm(uint16_t val);
+        std::string getShiftTypeMnemonic();
+        bool getC() override;
+        uint16_t getShiftAmount();
+        uint16_t getRm();
+        uint32_t getOperandVal(ARM7TDMI &cpu) override;
     private:
-        uint16_t Shift, Rm, shiftType, shiftAmount, shiftReg;
+        bool c;
+        uint16_t _shift, _rm, _shiftType, _shiftAmount, _shiftReg;
+        uint32_t shiftAmount, operand2;
+
         enum Type {AMOUNT, REGISTER};
-        enum Type _type;
+        enum Type type;
+
+        enum ShiftType {LSL = 0b00, LSR = 0b01, ASR = 0b10, ROR = 0b11};
 
         const static uint32_t SHIFT_MASK = 0b111111110000;
         const static uint32_t SHIFT_SHIFT = 4;
@@ -31,13 +42,6 @@ class ShiftRm : public Operand {
         const static uint16_t SHIFT_RS_SHIFT = 4;
 
         const std::string shiftType2Mnemonic[4] = {"lsl", "lsr", "asr", "ror"};
-
-
-	public:
-		ShiftRm(uint16_t val);
-        std::string getShiftTypeMnemonic();
-        uint16_t getShiftAmount();
-        uint16_t getRm();
 
 };
 

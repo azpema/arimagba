@@ -16,9 +16,16 @@
                 "${fileDirname}/cpu/op/thumb/*.cpp",
                 "${fileDirname}/cpu/registers/*.cpp",
                 "${fileDirname}/cpu/components/*.cpp",
+                "${fileDirname}/memory/*.cpp",
                 "${fileDirname}/utils/*.cpp",
+                "${fileDirname}/graphics/*.cpp",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "-O0",
+                "-lSDL2",
+                "-I/usr/include/SDL2 -D_REENTRANT",
+                "-lSDL2_image"
+                
             ],
             "options": {
                 "cwd": "/usr/bin"

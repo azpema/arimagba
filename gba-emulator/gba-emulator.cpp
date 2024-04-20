@@ -2,10 +2,9 @@
 //
 
 #include "gba-emulator.h"
-#include "gamepak.hpp"
 #include "cpu/arm7tdmi.hpp"
 #include "utils/utils.hpp"
-#include "bios.hpp"
+#include "graphics/ppu.hpp"
 #include <bitset>
 
 void decodeAllInstructionsThumb(ARM7TDMI &cpu);
@@ -19,11 +18,6 @@ int main()
 	gp.readHeader();
 	gp.printHeader();
 	*/
-
-	ARM7TDMI cpu = ARM7TDMI();
-
-
-	OpCode* op;
 
 	/*uint32_t insCount = 8000;
 	BIOS bios = BIOS("files/bios.bin");
@@ -82,10 +76,62 @@ int main()
 	
 	//decodeAllInstructionsArm(cpu);
 
-	cpu.executionLoop();
+	/*uint32_t op1, op2;
+	op1 = 0b11111111111111111111111111111111;
+	op2 = 1;
+	ALU alu;
+
+	uint32_t res = alu.add(op1, op2);
+	std::cout << " n" << alu.getN() << " z" << alu.getZ() << " c" << alu.getC() << " v" << alu.getV() << " " << std::endl;
+
+	op1 = 0b01111111111111111111111111111111;
+	op2 = 2;
+	res = alu.add(op1, op2);
+	std::cout << " n" << alu.getN() << " z" << alu.getZ() << " c" << alu.getC() << " v" << alu.getV() << " " << std::endl;
+
+
+	op1 = 0b010000000000000000000000000000001;
+	op2 = 0b010000000000000000000000000000001;
+	res = alu.add(op1, op2);
+	std::cout << " n" << alu.getN() << " z" << alu.getZ() << " c" << alu.getC() << " v" << alu.getV() << " " << std::endl;
+	*/
+
+	OpCode* op;
+
+	MemoryManager mem;
+
+	PPU ppu("GBA", &mem);
+	ARM7TDMI cpu(&mem);
+	cpu.setPC(0x08000000);
+
+
+	bool run = true;
+
+	int i = 1;
+	while(run){
+
+		// Handle events
+		SDL_Event e;
+		while (SDL_PollEvent(&e)) {
+    		if (e.type == SDL_QUIT) run = false;
+		}
+
+
+		cpu.executeNextInstruction();
+		i++;
+		// Render scanline if necessary cycles have been consumed
+		if(i % 1000 == 0)
+			ppu.renderScanline();
+
+	}
+	//cpu.executionLoop();
+
+	SDL_Quit();
 
 	return 0;
 }
+
+
 
 void decodeAllInstructionsArm(ARM7TDMI &cpu){
 	OpCode* op;

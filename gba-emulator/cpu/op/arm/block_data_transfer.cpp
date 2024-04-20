@@ -46,3 +46,12 @@ std::string BlockDataTransfer::toString(){
 void BlockDataTransfer::doExecute(ARM7TDMI &cpu){
 
 }
+
+bool BlockDataTransfer::mustFlushPipeline() const{
+    return false;
+}
+
+uint32_t BlockDataTransfer::cyclesUsed() const {
+    std::cerr << "TODO: BlockDataTransfer::cyclesUsed" << std::endl;
+    return 1;
+}

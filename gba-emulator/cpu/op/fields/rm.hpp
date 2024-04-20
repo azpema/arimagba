@@ -7,16 +7,19 @@
 #include "../../../utils/utils.hpp"
 
 class Rm : public Operand {
-    private:
-        uint16_t rmVal;
-
-        const uint16_t RM_MASK = 000000001111;
-        const uint16_t RM_SHIFT = 0;
-
-	public:
+    public:
 		Rm(uint16_t val);
         std::string toString();
         uint16_t getRmVal();
+        bool getC();
+        uint32_t getOperandVal(ARM7TDMI &cpu) override;
+
+    private:
+        bool c;
+        uint16_t rmVal;
+        const uint16_t RM_MASK = 000000001111;
+        const uint16_t RM_SHIFT = 0;
+
 };
 
 #endif

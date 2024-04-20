@@ -1,3 +1,6 @@
+#ifndef _GAMEPAK_ 
+#define _GAMEPAK_ 
+
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -6,6 +9,9 @@ class GamePak {
 	public:
 		GamePak();
 		GamePak(std::string filePath);
+
+		uint32_t read(uint32_t addr, uint8_t bytes);
+
 		int setFileStream(std::string filePath);
 		int readHeader();
 		int readEntryPoint();
@@ -71,3 +77,4 @@ class GamePak {
 		// TODO: Multiboot header
 };
 
+#endif

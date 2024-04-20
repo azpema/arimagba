@@ -2,34 +2,49 @@
 #define _ARM7TDMI_ 
 
 class OpCode;
+class BarrelShifter;
 
 #include <iostream>
+#include <memory>
 #include "registers/cpsr.hpp"
 #include "op/opcode.hpp"
 #include "op/thumb/thumb_opcode.hpp"
-#include "../bios.hpp"
+#include "../memory/memory_manager.hpp"
 #include "components/alu.hpp"
+#include "components/barrel_shifter.hpp"
 
 class ARM7TDMI {
 	public:
-		ARM7TDMI();
-
+		ARM7TDMI(MemoryManager *memoryManager);
+		~ARM7TDMI();
+		
 		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
 		ThumbOpCode* decodeInstructionThumb(uint16_t op, uint32_t pc);
 
 		CPSR& getCPSR();
 		ALU& getALU();
+		BarrelShifter& getBarrelShifter();
+		MemoryManager& getMemManager();
 
 		int64_t fetchInstructionThumb(uint32_t offset);
 		int64_t fetchInstructionArm(uint32_t offset);
 		void fetchNextInstruction();
-		//void executeNextInstruction();
+		void executeNextInstruction();
 		void executionLoop();
 		void printStatus();
+
+		uint32_t getReg(uint16_t n);
+		void setReg(uint16_t n, uint32_t val);
 
 		uint32_t getPC();
 		void setPC(uint32_t pc);
 		void setLR(uint32_t lr);
+
+		// Cycle counting. INACCURATE
+		// "if you want to, you can count each one of S/N/I cycles as 1 cycle too"
+		const static uint32_t CPU_CYCLES_PER_S_CYCLE = 1;
+		const static uint32_t CPU_CYCLES_PER_N_CYCLE = 1;
+		const static uint32_t CPU_CYCLES_PER_I_CYCLE = 1;
 
 	private:
 		/*
@@ -64,11 +79,25 @@ class ARM7TDMI {
 		*/
 		
 		uint32_t reg[16];
+		uint32_t r8_fiq[7];
+		uint32_t r13_svc[2];
+		uint32_t r13_abt[2]; 
+		uint32_t r13_irq[2]; 
+		uint32_t r13_und[2]; 
 		uint32_t spsr;
 		CPSR cpsr;
-		BIOS bios;
 		ALU alu;
+		MemoryManager *mem;
+		BarrelShifter *barrelShifter;
 		const uint16_t REG_PC = 15;
+
+		// Pipeline
+		uint32_t insFetch, insDecode;
+		OpCode *opExecute = nullptr;
+		bool insFetchSet = false;
+		bool insDecodeSet = false;
+		bool insExecuteSet = false;
+		uint32_t fetchPC;
 };	
 
 #endif

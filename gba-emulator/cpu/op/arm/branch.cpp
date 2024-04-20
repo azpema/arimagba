@@ -17,6 +17,15 @@ std::string Branch::toString(){
     return "b" + getLinkFlagMnemonic() + getCondFieldMnemonic() + " #" + Utils::toHexString(realOffset);
 }
 
+bool Branch::mustFlushPipeline() const {
+    return true;
+}
+
+uint32_t Branch::cyclesUsed() const {
+    // 2S + 1N
+    return 2 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + 1 * ARM7TDMI::CPU_CYCLES_PER_N_CYCLE;
+}
+
 
 void Branch::doExecute(ARM7TDMI &cpu){
     uint32_t oldPC = cpu.getPC();

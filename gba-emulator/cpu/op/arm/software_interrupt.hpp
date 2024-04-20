@@ -10,8 +10,10 @@ namespace ARM {
 class SoftwareInterrupt : public OpCode {
 	public:
 		SoftwareInterrupt(uint32_t op);
-        std::string toString();
+        std::string toString() override;
         void doExecute(ARM7TDMI &cpu);
+        bool mustFlushPipeline() const override;
+        uint32_t cyclesUsed() const override;
         
     private:
         uint32_t comment;

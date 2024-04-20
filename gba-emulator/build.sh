@@ -1,1 +1,1 @@
-g++ *.cpp cpu/*.cpp cpu/op/*.cpp cpu/op/fields/*.cpp cpu/op/arm/* cpu/op/thumb/*.cpp cpu/registers/*.cpp cpu/components/*.cpp utils/*.cpp -o gba-emulator
+g++ *.cpp cpu/*.cpp cpu/op/*.cpp cpu/op/fields/*.cpp cpu/op/arm/* cpu/op/thumb/*.cpp cpu/registers/*.cpp cpu/components/*.cpp utils/*.cpp memory/*.cpp graphics/* -o gba-emulator -O2 `sdl2-config --libs --cflags` -lSDL2_image

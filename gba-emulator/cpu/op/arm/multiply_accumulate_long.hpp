@@ -9,9 +9,11 @@
 class MultiplyAccumulateLong : public OpCode {
 	public:
 		MultiplyAccumulateLong(uint32_t op);
-        std::string toString();
+        std::string toString() override;
         void doExecute(ARM7TDMI &cpu);
-
+        bool mustFlushPipeline() const override;
+        uint32_t cyclesUsed() const override;
+        
     private:
         uint16_t u, a, s, rdHi, rdLo, rs, rm;
 

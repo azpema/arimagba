@@ -25,7 +25,7 @@ std::string PSRTransferMSRFlagBits::toString() {
         srcOper = getRegMnemonic(rm->getRmVal());
     }else if(sourceOperand->_type == Operand::ROTATE_IMM){
         RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand);
-        srcOper = "#" + Utils::toHexString(rotImm->getOperandVal());
+        srcOper = "#" + Utils::toHexString(rotImm->getMnemonicVal());
     }else{
         std::cerr << "ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " << sourceOperand->_type << std::endl;
     }
@@ -35,4 +35,13 @@ std::string PSRTransferMSRFlagBits::toString() {
 
 void PSRTransferMSRFlagBits::doExecute(ARM7TDMI &cpu){
 
+}
+
+bool PSRTransferMSRFlagBits::mustFlushPipeline() const {
+    return false;
+}
+
+// MSR,MRS          1S
+uint32_t PSRTransferMSRFlagBits::cyclesUsed() const {
+    return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE;
 }

@@ -50,7 +50,7 @@ std::string SingleDataTransfer::toString(){
         // Offset is an immediate value
         if(I == 0){
             Imm* imm = static_cast<Imm*>(offsetField);
-            address = "[" + getRegMnemonic(Rn) + "," + getUFlagMnemonic() + Utils::toHexString(imm->getImmVal()) + "]" + writeBack;
+            address = "[" + getRegMnemonic(Rn) + "," + getUFlagMnemonic() + Utils::toHexString(imm->getMnemonicVal()) + "]" + writeBack;
         // Offset is a register
         }else if(I == 1){
             ShiftRm* shiftRm = static_cast<ShiftRm*>(offsetField);
@@ -66,7 +66,7 @@ std::string SingleDataTransfer::toString(){
         address = "[" + getRegMnemonic(Rn) + "],";
         if(I == 0){
             Imm* imm = static_cast<Imm*>(offsetField);
-            address += getUFlagMnemonic() + Utils::toHexString(imm->getImmVal());
+            address += getUFlagMnemonic() + Utils::toHexString(imm->getMnemonicVal());
         }else if(I == 1){
             ShiftRm* shiftRm = static_cast<ShiftRm*>(offsetField);
             address += getUFlagMnemonic() + getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + \
@@ -81,4 +81,12 @@ std::string SingleDataTransfer::toString(){
 
 void SingleDataTransfer::doExecute(ARM7TDMI &cpu){
 
+}
+
+bool SingleDataTransfer::mustFlushPipeline() const {
+    return false;
+}
+
+uint32_t SingleDataTransfer::cyclesUsed() const {
+    return 1;
 }

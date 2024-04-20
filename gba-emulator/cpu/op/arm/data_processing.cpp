@@ -4,14 +4,14 @@
 
 DataProcessing::DataProcessing(uint32_t op): OpCode::OpCode(op) {
     dataOpCode = Utils::getRegBits(op, OPCODE_MASK, OPCODE_SHIFT);
-    I = Utils::getRegBits(op, IMMEDIATE_OPERAND_MASK, IMMEDIATE_OPERAND_SHIFT);
-    S = Utils::getRegBits(op, SET_CONDITION_MASK, SET_CONDITION_SHIFT);
-    Rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
-    Rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
+    i = Utils::getRegBits(op, IMMEDIATE_OPERAND_MASK, IMMEDIATE_OPERAND_SHIFT);
+    s = Utils::getRegBits(op, SET_CONDITION_MASK, SET_CONDITION_SHIFT);
+    rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
+    rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
 
-    if(I == 0){
+    if(i == 0){
         operand2 = new ShiftRm(Utils::getRegBits(op, OPERAND2_MASK, OPERAND2_SHIFT));
-    }else if (I == 1){
+    }else if (i == 1){
         operand2 = new RotateImm(Utils::getRegBits(op, OPERAND2_MASK, OPERAND2_SHIFT));
     }else{
         std::cout << "ERROR: Invalid I field value" << std::endl;
@@ -34,14 +34,14 @@ std::string DataProcessing::toString(){
     // <opcode>{cond}{S} Rd,<Op2>
     case OPCODE_MOV_VAL:
     case OPCODE_MVN_VAL:
-        mnemonic += SFlag2Mnemonic[S] + " " + getRegMnemonic(Rd) + "," + getOperand2Mnemonic();
+        mnemonic += SFlag2Mnemonic[s] + " " + getRegMnemonic(rd) + "," + getOperand2Mnemonic();
         break;
     // <opcode>{cond} Rn,<Op2>
     case OPCODE_CMP_VAL:
     case OPCODE_CMN_VAL:
     case OPCODE_TEQ_VAL:
     case OPCODE_TST_VAL:
-        mnemonic += " " + getRegMnemonic(Rn) + "," + getOperand2Mnemonic();
+        mnemonic += " " + getRegMnemonic(rn) + "," + getOperand2Mnemonic();
         break;
     // <opcode>{cond}{s} Rd,Rn,<Op2>
     case OPCODE_AND_VAL:
@@ -54,7 +54,7 @@ std::string DataProcessing::toString(){
     case OPCODE_RSC_VAL:
     case OPCODE_ORR_VAL:
     case OPCODE_BIC_VAL:
-        mnemonic += SFlag2Mnemonic[S] + " " + getRegMnemonic(Rd) + "," + getRegMnemonic(Rn) + "," + getOperand2Mnemonic();
+        mnemonic += SFlag2Mnemonic[s] + " " + getRegMnemonic(rd) + "," + getRegMnemonic(rn) + "," + getOperand2Mnemonic();
         break;
 
     default:
@@ -70,12 +70,12 @@ std::string DataProcessing::getOpCodeMnemonic(){
 }
 
 std::string DataProcessing::getRdMnemonic(){
-    return getRegMnemonic(Rd);
+    return getRegMnemonic(rd);
 
 }
 
 std::string DataProcessing::getRnMnemonic(){
-    return getRegMnemonic(Rn);
+    return getRegMnemonic(rn);
 }
 
 uint32_t DataProcessing::getOperand2Rm(){
@@ -84,25 +84,54 @@ uint32_t DataProcessing::getOperand2Rm(){
 }
 
 std::string DataProcessing::getOperand2Mnemonic(){
-    if(I == 0){
+    if(i == 0){
         ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
         return getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + Utils::toHexString(shiftRm->getShiftAmount());
-    }else if(I == 1){
+    }else if(i == 1){
         RotateImm* rotateImm = static_cast<RotateImm*>(operand2);
-        return "#" + Utils::toHexString(rotateImm->getOperandVal()); 
+        return "#" + Utils::toHexString(rotateImm->getMnemonicVal()); 
     }else{
         return "ERROR getOperand2Mnemonic Data_processing";
     }
 }
 
+bool DataProcessing::mustFlushPipeline() const {
+    return false;
+}
+
+//   ALU, 1S, +1S+1N if R15 loaded, +1I if SHIFT(Rs)
+uint32_t DataProcessing::cyclesUsed() const {
+    std::cerr << "TODO: DataProcessing::cyclesUsed" << std::endl;
+    return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE;
+}
+
+void DataProcessing::doExecuteCmp(ARM7TDMI &cpu){
+    cpu.getALU().sub(op1, op2);
+}
+
+void DataProcessing::doExecuteMov(ARM7TDMI &cpu){
+    cpu.setReg(rd, op2);
+}
+
+void DataProcessing::doExecuteAdd(ARM7TDMI &cpu){
+    uint32_t addRes = cpu.getALU().add(op1, op2);
+    cpu.setReg(rd, addRes);
+}
+
 void DataProcessing::doExecute(ARM7TDMI &cpu){
+        // Assign values to op1 and op2
+    op1 = cpu.getReg(rn);
+    op2 = operand2->getOperandVal(cpu);
+
     switch (dataOpCode)
     {
     case OPCODE_MOV_VAL:
+        doExecuteMov(cpu);
         break;
     case OPCODE_MVN_VAL:
         break;
     case OPCODE_CMP_VAL:
+        doExecuteCmp(cpu);
         break;
     case OPCODE_CMN_VAL:
         break;
@@ -119,6 +148,7 @@ void DataProcessing::doExecute(ARM7TDMI &cpu){
     case OPCODE_RSB_VAL:
         break;
     case OPCODE_ADD_VAL:
+        doExecuteAdd(cpu);
         break;
     case OPCODE_ADC_VAL:
         break;
@@ -133,11 +163,38 @@ void DataProcessing::doExecute(ARM7TDMI &cpu){
     default:
         break;
     }
+
+    switch (dataOpCode)
+    {
+    case OPCODE_AND_VAL:
+    case OPCODE_EOR_VAL:
+    case OPCODE_TST_VAL:
+    case OPCODE_TEQ_VAL:
+    case OPCODE_ORR_VAL:
+    case OPCODE_MOV_VAL:
+    case OPCODE_BIC_VAL:
+    case OPCODE_MVN_VAL:
+        if(s == 1){
+            // TODO CPSR flags
+        }
+        break;
+    case OPCODE_CMP_VAL:
+    case OPCODE_CMN_VAL:
+    case OPCODE_SUB_VAL:
+    case OPCODE_RSB_VAL:
+    case OPCODE_ADD_VAL:
+    case OPCODE_ADC_VAL:
+    case OPCODE_SBC_VAL:
+    case OPCODE_RSC_VAL:
+        if(s == 1){
+            cpu.getCPSR().setNFlag(cpu.getALU().getN());
+            cpu.getCPSR().setZFlag(cpu.getALU().getZ());
+            cpu.getCPSR().setCFlag(cpu.getALU().getC());
+            cpu.getCPSR().setVFlag(cpu.getALU().getV());
+        }
+        break;
+    default:
+        std::cerr << "ERROR: Invalid Opcode in DataProcessing::doExecute" << std::endl;
+        break;
+    }
 }
-
-/*void DataProcessing::doExecuteCmp(ARM7TDMI &cpu){
-
-}*/
-
-
-    

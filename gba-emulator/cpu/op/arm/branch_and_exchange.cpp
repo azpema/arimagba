@@ -13,3 +13,14 @@ std::string BranchAndExchange::toString(){
 void BranchAndExchange::doExecute(ARM7TDMI &cpu){
 
 }
+
+bool BranchAndExchange::mustFlushPipeline() const{
+    return true;
+}
+
+// A Branch and Exchange operation takes 3 cycles and is similar to a Branch
+uint32_t BranchAndExchange::cyclesUsed() const {
+    std::cerr << "TODO: BranchAndExchange::cyclesUsed" << std::endl;
+    return 3;
+}
+
