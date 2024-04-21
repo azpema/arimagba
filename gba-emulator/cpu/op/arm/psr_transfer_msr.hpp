@@ -13,13 +13,13 @@ class PSRTransferMSR : public OpCode {
     protected:
         PSRTransferMSR(uint32_t op);
         std::string toString() override;
-        void doExecute(ARM7TDMI &cpu);
+        virtual void doExecute(ARM7TDMI &cpu) = 0;
+        virtual void doDecode(ARM7TDMI &cpu) = 0;
         bool mustFlushPipeline() const override;
         uint32_t cyclesUsed() const override;
 
-    private:
         uint16_t psr;
-
+    private:
         const static uint32_t PSR_MASK = 0b00000000010000000000000000000000;
         const static uint32_t PSR_SHIFT = 22; 
 

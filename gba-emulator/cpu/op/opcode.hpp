@@ -15,6 +15,7 @@ class OpCode {
 		virtual std::string toString() = 0;
 		std::string toHexString();
 		bool execute(ARM7TDMI &cpu);
+		void decode(ARM7TDMI &cpu);
 		virtual bool mustFlushPipeline() const = 0;
 		virtual uint32_t cyclesUsed() const = 0;
 
@@ -50,6 +51,7 @@ class OpCode {
 
 	private:
 		virtual void doExecute(ARM7TDMI &cpu) = 0;
+		virtual void doDecode(ARM7TDMI &cpu) = 0;
 
 		uint32_t opcode = 0;
 		uint16_t condRaw = 0;

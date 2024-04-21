@@ -6,7 +6,6 @@
 #include "../utils/utils.hpp"
 #include "bios.hpp"
 #include "gamepak.hpp"
-#include "io_registers.hpp"
 #include "vram.hpp"
 /*
   General Internal Memory
@@ -40,7 +39,7 @@
 
 class MemoryManager {
     public:
-        MemoryManager();
+        MemoryManager(std::string biosPath, std::string gamePath);
         uint32_t readWord(uint32_t addr);
         uint16_t readHalfWord(uint32_t addr);
         void store(uint32_t addr, uint32_t val, uint8_t bytes);
@@ -51,14 +50,14 @@ class MemoryManager {
         
         BIOS bios;
         GamePak gamepak;
-        IOregisters io;
         VRAM vram;
         // General Internal Memory
         const static uint32_t BIOS_OFFSET_START = 0x00000000;
         const static uint32_t BIOS_OFFSET_END = 0x00003FFF;
 
-        const static uint32_t IO_REGISTERS_OFFSET_START = 0x04000000;
-        const static uint32_t IO_REGISTERS_OFFSET_END = 0x040003FE;
+        // LCD I/O Registers
+        const static uint32_t LCD_REGISTERS_OFFSET_START = 0x04000000;
+        const static uint32_t LCD_REGISTERS_OFFSET_END = 0x04000056;
 
         // Internal Display Memory
         const static uint32_t BG_OBJ_PALETTE_RAM_OFFSET_START = 0x05000000;

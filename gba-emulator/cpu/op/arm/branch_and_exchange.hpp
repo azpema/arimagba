@@ -11,7 +11,8 @@ class BranchAndExchange : public OpCode {
     public:
         BranchAndExchange(uint32_t op);
         std::string toString() override;
-        void doExecute(ARM7TDMI &cpu);
+        void doExecute(ARM7TDMI &cpu) override;
+        void doDecode(ARM7TDMI &cpu) override;
         bool mustFlushPipeline() const override;
         uint32_t cyclesUsed() const override;
 

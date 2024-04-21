@@ -10,6 +10,10 @@ std::string BranchAndExchange::toString(){
     return "bx" + getCondFieldMnemonic() + " " + getRegMnemonic(Rn);
 }
 
+void BranchAndExchange::doDecode(ARM7TDMI &cpu){
+
+}
+
 void BranchAndExchange::doExecute(ARM7TDMI &cpu){
 
 }

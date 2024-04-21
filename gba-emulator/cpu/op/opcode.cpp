@@ -79,6 +79,10 @@ bool OpCode::execute(ARM7TDMI &cpu) {
 
 }
 
+void OpCode::decode(ARM7TDMI &cpu) {
+    doDecode(cpu);
+}
+
 bool OpCode::checkOpCode(uint32_t op, uint32_t mask, uint32_t format){
     return (op & mask) == format;
 }

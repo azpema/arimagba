@@ -9,7 +9,7 @@ class HalfwordDataTransfer : public OpCode {
     public:
         virtual std::string toString() = 0;
         virtual void doExecute(ARM7TDMI &cpu) = 0;
-
+        virtual void doDecode(ARM7TDMI &cpu) = 0;
     protected:
         uint16_t p, u, w, l, rn, rd, s, h;
         HalfwordDataTransfer(uint32_t op);

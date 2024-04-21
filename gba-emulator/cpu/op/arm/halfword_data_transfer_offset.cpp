@@ -44,6 +44,9 @@ uint32_t HalfwordDataTransferOffset::cyclesUsed() const {
     return 1;
 }
 
+void HalfwordDataTransferOffset::doDecode(ARM7TDMI &cpu){
+
+}
 
 void HalfwordDataTransferOffset::doExecute(ARM7TDMI &cpu){
     uint32_t baseRegVal = cpu.getReg(rn);

@@ -33,6 +33,10 @@ std::string PSRTransferMSRFlagBits::toString() {
     return PSRTransferMSR::toString() + "," + srcOper;
 }
 
+void PSRTransferMSRFlagBits::doDecode(ARM7TDMI &cpu){
+
+}
+
 void PSRTransferMSRFlagBits::doExecute(ARM7TDMI &cpu){
 
 }

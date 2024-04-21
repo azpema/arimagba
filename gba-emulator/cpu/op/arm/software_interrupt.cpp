@@ -10,6 +10,10 @@ std::string SoftwareInterrupt::toString(){
     return "swi";
 }
 
+void SoftwareInterrupt::doDecode(ARM7TDMI &cpu){
+
+}
+
 void SoftwareInterrupt::doExecute(ARM7TDMI &cpu){
 
 }

@@ -17,6 +17,10 @@ std::string SingleDataSwap::toString(){
             getRegMnemonic(rm) + ",[" + getRegMnemonic(rn) + "]";
 }
 
+void SingleDataSwap::doDecode(ARM7TDMI &cpu){
+
+}
+
 void SingleDataSwap::doExecute(ARM7TDMI &cpu){
 
 }

@@ -25,6 +25,10 @@ std::string MultiplyAccumulate::toString(){
     return mnemonic;
 }
 
+void MultiplyAccumulate::doDecode(ARM7TDMI &cpu){
+
+}
+
 void MultiplyAccumulate::doExecute(ARM7TDMI &cpu){
 
 }

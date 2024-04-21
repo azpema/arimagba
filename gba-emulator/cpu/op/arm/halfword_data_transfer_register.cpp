@@ -31,6 +31,10 @@ uint32_t HalfwordDataTransferRegister::cyclesUsed() const {
     return 1;
 }
 
+void HalfwordDataTransferRegister::doDecode(ARM7TDMI &cpu){
+
+}
+
 void HalfwordDataTransferRegister::doExecute(ARM7TDMI &cpu){
     uint32_t baseRegVal = cpu.getReg(rn);
     uint32_t sourceRegVal = cpu.getReg(rd);

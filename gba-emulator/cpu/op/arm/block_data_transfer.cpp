@@ -43,8 +43,15 @@ std::string BlockDataTransfer::toString(){
     return getOpAddressingModeMnemonic() + getCondFieldMnemonic() + " " + getRegMnemonic(Rn) + getWFlagMnemonic() + "," + getRegisterListMnemonic() + getSFlagMnemonic();
 }
 
-void BlockDataTransfer::doExecute(ARM7TDMI &cpu){
+void BlockDataTransfer::doDecode(ARM7TDMI &cpu){
 
+}
+
+void BlockDataTransfer::doExecute(ARM7TDMI &cpu){
+    uint32_t rnVal = cpu.getReg(Rn);
+    if(L==0 && P==1 && U==0){
+        
+    }
 }
 
 bool BlockDataTransfer::mustFlushPipeline() const{

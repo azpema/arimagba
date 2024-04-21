@@ -10,7 +10,7 @@
 void decodeAllInstructionsThumb(ARM7TDMI &cpu);
 void decodeAllInstructionsArm(ARM7TDMI &cpu);
 
-int main()
+int main(int argc, char** argv)
 {
 	/*
 	GamePak gp = GamePak();
@@ -96,14 +96,11 @@ int main()
 	std::cout << " n" << alu.getN() << " z" << alu.getZ() << " c" << alu.getC() << " v" << alu.getV() << " " << std::endl;
 	*/
 
-	OpCode* op;
 
-	MemoryManager mem;
-
+	MemoryManager mem("files/bios.bin", "files/panda.gba");
 	PPU ppu("GBA", &mem);
 	ARM7TDMI cpu(&mem);
 	cpu.setPC(0x08000000);
-
 
 	bool run = true;
 
@@ -111,11 +108,12 @@ int main()
 	while(run){
 
 		// Handle events
-		SDL_Event e;
-		while (SDL_PollEvent(&e)) {
-    		if (e.type == SDL_QUIT) run = false;
+		if(i % 100 == 0){
+			SDL_Event e;
+			while (SDL_PollEvent(&e)) {
+				if (e.type == SDL_QUIT) run = false;
+			}
 		}
-
 
 		cpu.executeNextInstruction();
 		i++;
@@ -124,7 +122,6 @@ int main()
 			ppu.renderScanline();
 
 	}
-	//cpu.executionLoop();
 
 	SDL_Quit();
 

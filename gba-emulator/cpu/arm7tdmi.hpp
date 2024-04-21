@@ -21,7 +21,12 @@ class ARM7TDMI {
 		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
 		ThumbOpCode* decodeInstructionThumb(uint16_t op, uint32_t pc);
 
-		CPSR& getCPSR();
+		PSR& getCPSR();
+		PSR& getSPSR();
+
+		void setCPSR(uint32_t val);
+		void setSPSR(uint32_t val);
+
 		ALU& getALU();
 		BarrelShifter& getBarrelShifter();
 		MemoryManager& getMemManager();
@@ -84,8 +89,13 @@ class ARM7TDMI {
 		uint32_t r13_abt[2]; 
 		uint32_t r13_irq[2]; 
 		uint32_t r13_und[2]; 
-		uint32_t spsr;
-		CPSR cpsr;
+		PSR cpsr;
+		PSR spsr_fiq;
+		PSR spsr_svc;
+		PSR spsr_abt;
+		PSR spsr_irq;
+		PSR spsr_und;
+
 		ALU alu;
 		MemoryManager *mem;
 		BarrelShifter *barrelShifter;
@@ -98,6 +108,8 @@ class ARM7TDMI {
 		bool insDecodeSet = false;
 		bool insExecuteSet = false;
 		uint32_t fetchPC;
+
+		PSR& getCorrespondingSPSR();
 };	
 
 #endif

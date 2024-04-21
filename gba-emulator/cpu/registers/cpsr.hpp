@@ -4,9 +4,9 @@
 #include <iostream>
 #include <unordered_map>
 
-class CPSR {
+class PSR {
 	public:
-		CPSR();
+		PSR();
         enum Flag {N, Z, C, V, I, F, T};
 
         const static uint32_t MODE_FLAG_USR_VAL = 0b00000000000000000000000000010000;
@@ -36,6 +36,7 @@ class CPSR {
         }; 
 
         uint32_t getValue();
+        void setValue(uint32_t val);
         Mode getMode();
         uint32_t getModeUInt();
         std::string getModeString();

@@ -118,11 +118,14 @@ void DataProcessing::doExecuteAdd(ARM7TDMI &cpu){
     cpu.setReg(rd, addRes);
 }
 
+void DataProcessing::doDecode(ARM7TDMI &cpu){
+
+}
+
 void DataProcessing::doExecute(ARM7TDMI &cpu){
-        // Assign values to op1 and op2
+    // Assign values to op1 and op2
     op1 = cpu.getReg(rn);
     op2 = operand2->getOperandVal(cpu);
-
     switch (dataOpCode)
     {
     case OPCODE_MOV_VAL:

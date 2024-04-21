@@ -8,11 +8,11 @@
 
 */ 
 
-CPSR::CPSR() {
+PSR::PSR() {
     reset();
 }
 
-void CPSR::reset(){
+void PSR::reset(){
     this->value = 0;
     this->setTFlag(false);
     this->setFFlag(true);
@@ -20,34 +20,34 @@ void CPSR::reset(){
     this->setMode(Supervisor);
 }
 
-void CPSR::setCPSRFlags(CPSR::Flag flag, bool val){
+void PSR::setCPSRFlags(PSR::Flag flag, bool val){
     switch (flag)
     {
-    case CPSR::Flag::N:
+    case PSR::Flag::N:
         Utils::setRegBits(value, N_FLAG_MASK, val << N_FLAG_SHIFT);
         break;
 
-    case CPSR::Flag::Z:
+    case PSR::Flag::Z:
         Utils::setRegBits(value, Z_FLAG_MASK, val << Z_FLAG_SHIFT);
         break;
 
-    case CPSR::Flag::C:
+    case PSR::Flag::C:
         Utils::setRegBits(value, C_FLAG_MASK, val << C_FLAG_SHIFT);
         break;
 
-    case CPSR::Flag::V:
+    case PSR::Flag::V:
         Utils::setRegBits(value, V_FLAG_MASK, val << V_FLAG_SHIFT);
         break;
 
-    case CPSR::Flag::I:
+    case PSR::Flag::I:
         Utils::setRegBits(value, I_FLAG_MASK, val << I_FLAG_SHIFT);
         break;
 
-    case CPSR::Flag::F:
+    case PSR::Flag::F:
         Utils::setRegBits(value, F_FLAG_MASK, val << F_FLAG_SHIFT);
         break;
 
-    case CPSR::Flag::T:
+    case PSR::Flag::T:
         Utils::setRegBits(value, T_FLAG_MASK, val << T_FLAG_SHIFT);
         break;
     
@@ -57,11 +57,15 @@ void CPSR::setCPSRFlags(CPSR::Flag flag, bool val){
     }
 }
 
-uint32_t CPSR::getValue(){
+uint32_t PSR::getValue(){
    return value;
 }
 
-CPSR::Mode CPSR::getMode(){
+void PSR::setValue(uint32_t val){
+    value = val;
+}
+
+PSR::Mode PSR::getMode(){
     switch(getModeUInt()) {
         case MODE_FLAG_USR_VAL: return Mode::User;
         case MODE_FLAG_FIQ_VAL: return Mode::FIQ;
@@ -74,72 +78,72 @@ CPSR::Mode CPSR::getMode(){
     }
 }
 
-uint32_t CPSR::getModeUInt(){
+uint32_t PSR::getModeUInt(){
     return Utils::getRegBits(value, MODE_FLAG_MASK, MODE_FLAG_SHIFT);
 }
 
-std::string CPSR::getModeString(){
+std::string PSR::getModeString(){
     uint32_t mode = getModeUInt();
     return mode2String[mode];
 }
 
-bool CPSR::getNFlag(){
+bool PSR::getNFlag(){
     return Utils::getRegBits(value, N_FLAG_MASK, N_FLAG_SHIFT);
 }
 
-bool CPSR::getZFlag(){
+bool PSR::getZFlag(){
     return Utils::getRegBits(value, Z_FLAG_MASK, Z_FLAG_SHIFT);
 }
 
-bool CPSR::getCFlag(){
+bool PSR::getCFlag(){
     return Utils::getRegBits(value, C_FLAG_MASK, C_FLAG_SHIFT);
 }
 
-bool CPSR::getVFlag(){
+bool PSR::getVFlag(){
     return Utils::getRegBits(value, V_FLAG_MASK, V_FLAG_SHIFT);
 }
 
-bool CPSR::getIFlag(){
+bool PSR::getIFlag(){
     return Utils::getRegBits(value, I_FLAG_MASK, I_FLAG_SHIFT);
 }
 
-bool CPSR::getFFlag(){
+bool PSR::getFFlag(){
     return Utils::getRegBits(value, F_FLAG_MASK, F_FLAG_SHIFT);
 }
 
-void CPSR::setNFlag(bool val){
+void PSR::setNFlag(bool val){
     setCPSRFlags(N, val);
 }
 
-void CPSR::setZFlag(bool val){
+void PSR::setZFlag(bool val){
     setCPSRFlags(Z, val);
 }
 
-void CPSR::setCFlag(bool val){
+void PSR::setCFlag(bool val){
     setCPSRFlags(C, val);
 }
 
-void CPSR::setVFlag(bool val){
+void PSR::setVFlag(bool val){
     setCPSRFlags(V, val);
 }
 
-void CPSR::setIFlag(bool val){
+void PSR::setIFlag(bool val){
     setCPSRFlags(I, val);
 }
 
-void CPSR::setFFlag(bool val){
+void PSR::setFFlag(bool val){
     setCPSRFlags(F, val);
 }
 
-void CPSR::setTFlag(bool val){
+void PSR::setTFlag(bool val){
     setCPSRFlags(T, val);
 }
 
-void CPSR::setMode(Mode mode){
+void PSR::setMode(Mode mode){
     Utils::setRegBits(value, MODE_FLAG_MASK, mode);
 }
 
-bool CPSR::isThumbMode(){
+bool PSR::isThumbMode(){
     uint8_t mode = Utils::getRegBits(value, T_FLAG_MASK, T_FLAG_SHIFT);
     if(mode == 1)
         return true;
