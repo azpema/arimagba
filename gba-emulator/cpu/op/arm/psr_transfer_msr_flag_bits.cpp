@@ -2,7 +2,7 @@
 #include "../fields/rotate_imm.hpp"
 #include "../fields/rm.hpp"
 
-PSRTransferMSRFlagBits::PSRTransferMSRFlagBits(uint32_t op): PSRTransferMSR::PSRTransferMSR(op) {
+PSRTransferMSRFlagBits::PSRTransferMSRFlagBits(uint32_t op, ARM7TDMI &cpu): PSRTransferMSR::PSRTransferMSR(op, cpu) {
     I = Utils::getRegBits(op, I_MASK, I_SHIFT);
 
     if(I == 0){
@@ -33,11 +33,11 @@ std::string PSRTransferMSRFlagBits::toString() {
     return PSRTransferMSR::toString() + "," + srcOper;
 }
 
-void PSRTransferMSRFlagBits::doDecode(ARM7TDMI &cpu){
+void PSRTransferMSRFlagBits::doDecode(){
 
 }
 
-void PSRTransferMSRFlagBits::doExecute(ARM7TDMI &cpu){
+void PSRTransferMSRFlagBits::doExecute(){
 
 }
 

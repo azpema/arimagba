@@ -8,10 +8,10 @@
 
 class PSRTransferMSRFull : public PSRTransferMSR {
     public:
-		PSRTransferMSRFull(uint32_t op);
+		PSRTransferMSRFull(uint32_t op, ARM7TDMI &cpu);
         std::string toString() override;
-        void doExecute(ARM7TDMI &cpu) override;
-        void doDecode(ARM7TDMI &cpu) override;
+        void doExecute() override;
+        void doDecode() override;
         bool mustFlushPipeline() const override;
         uint32_t cyclesUsed() const override;
 

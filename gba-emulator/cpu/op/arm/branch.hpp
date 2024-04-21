@@ -16,10 +16,10 @@ namespace ARM {
  
 class Branch : public OpCode {
     public:
-    	Branch(uint32_t op, uint32_t pc);
+    	Branch(uint32_t op, uint32_t pc, ARM7TDMI &cpu);
         std::string toString() override;
-        void doExecute(ARM7TDMI &cpu) override;
-        void doDecode(ARM7TDMI &cpu) override;
+        void doExecute() override;
+        void doDecode() override;
         bool mustFlushPipeline() const override;
         uint32_t cyclesUsed() const override;
 

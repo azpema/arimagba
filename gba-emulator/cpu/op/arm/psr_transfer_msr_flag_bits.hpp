@@ -9,12 +9,12 @@
 
 class PSRTransferMSRFlagBits : public PSRTransferMSR {
     public:
-		PSRTransferMSRFlagBits(uint32_t op);
+		PSRTransferMSRFlagBits(uint32_t op, ARM7TDMI &cpu);
         ~PSRTransferMSRFlagBits();
 
         std::string toString() override;
-        void doExecute(ARM7TDMI &cpu) override;
-        void doDecode(ARM7TDMI &cpu) override;
+        void doExecute() override;
+        void doDecode() override;
         bool mustFlushPipeline() const override;
         uint32_t cyclesUsed() const override;
 

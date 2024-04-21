@@ -8,11 +8,11 @@
 
 class DataProcessing : public OpCode {
     public:
-		DataProcessing(uint32_t op);
+		DataProcessing(uint32_t op, ARM7TDMI &cpu);
         ~DataProcessing();
         std::string toString() override;
-        void doExecute(ARM7TDMI &cpu) override;
-        void doDecode(ARM7TDMI &cpu) override;
+        void doExecute() override;
+        void doDecode() override;
         bool mustFlushPipeline() const override;
         uint32_t cyclesUsed() const override;
 

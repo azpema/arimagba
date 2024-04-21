@@ -1,6 +1,6 @@
 #include "multiply_accumulate_long.hpp"
 
-MultiplyAccumulateLong::MultiplyAccumulateLong(uint32_t op): OpCode::OpCode(op) {
+MultiplyAccumulateLong::MultiplyAccumulateLong(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
     u = Utils::getRegBits(op, U_FLAG_MASK, U_FLAG_SHIFT);
     a = Utils::getRegBits(op, A_FLAG_MASK, A_FLAG_SHIFT);
     s = Utils::getRegBits(op, S_FLAG_MASK, S_FLAG_SHIFT);
@@ -28,11 +28,11 @@ std::string MultiplyAccumulateLong::toString(){
             getRegMnemonic(rs);
 }
 
-void MultiplyAccumulateLong::doDecode(ARM7TDMI &cpu){
+void MultiplyAccumulateLong::doDecode(){
 
 }
 
-void MultiplyAccumulateLong::doExecute(ARM7TDMI &cpu){
+void MultiplyAccumulateLong::doExecute(){
 
 }
 

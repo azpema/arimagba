@@ -1,7 +1,7 @@
 #include "halfword_data_transfer_register.hpp"
 
 
-HalfwordDataTransferRegister::HalfwordDataTransferRegister(uint32_t op): HalfwordDataTransfer::HalfwordDataTransfer(op) {
+HalfwordDataTransferRegister::HalfwordDataTransferRegister(uint32_t op, ARM7TDMI &cpu): HalfwordDataTransfer::HalfwordDataTransfer(op, cpu) {
     rm = Utils::getRegBits(op, RM_FLAG_MASK, RM_FLAG_SHIFT);
 }   
 
@@ -31,11 +31,11 @@ uint32_t HalfwordDataTransferRegister::cyclesUsed() const {
     return 1;
 }
 
-void HalfwordDataTransferRegister::doDecode(ARM7TDMI &cpu){
+void HalfwordDataTransferRegister::doDecode(){
 
 }
 
-void HalfwordDataTransferRegister::doExecute(ARM7TDMI &cpu){
+void HalfwordDataTransferRegister::doExecute(){
     uint32_t baseRegVal = cpu.getReg(rn);
     uint32_t sourceRegVal = cpu.getReg(rd);
     uint32_t offsetRegVal = cpu.getReg(rm);

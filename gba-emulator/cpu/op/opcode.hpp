@@ -14,8 +14,8 @@ class OpCode {
 	public:
 		virtual std::string toString() = 0;
 		std::string toHexString();
-		bool execute(ARM7TDMI &cpu);
-		void decode(ARM7TDMI &cpu);
+		bool execute();
+		void decode();
 		virtual bool mustFlushPipeline() const = 0;
 		virtual uint32_t cyclesUsed() const = 0;
 
@@ -47,11 +47,12 @@ class OpCode {
 		static std::string getRegMnemonic(uint16_t reg);
 
 	protected:
-		OpCode(uint32_t op);
+		OpCode(uint32_t op, ARM7TDMI &cpu);
+		ARM7TDMI &cpu;
 
 	private:
-		virtual void doExecute(ARM7TDMI &cpu) = 0;
-		virtual void doDecode(ARM7TDMI &cpu) = 0;
+		virtual void doExecute() = 0;
+		virtual void doDecode() = 0;
 
 		uint32_t opcode = 0;
 		uint16_t condRaw = 0;

@@ -1,16 +1,16 @@
 #include "undefined.hpp"
 
-Undefined::Undefined(uint32_t op): OpCode::OpCode(op) {}   
+Undefined::Undefined(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {}   
 
 std::string Undefined::toString(){
     return "Undefined";
 }
 
-void Undefined::doDecode(ARM7TDMI &cpu){
+void Undefined::doDecode(){
 
 }
 
-void Undefined::doExecute(ARM7TDMI &cpu){
+void Undefined::doExecute(){
 
 }
 

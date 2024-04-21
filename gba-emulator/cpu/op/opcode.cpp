@@ -4,7 +4,7 @@
 const std::string OpCode::reg2Mnemonic[16] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
                                               "r8", "r9", "r10", "r11", "r12", "sp", "lr", "pc"};
 
-OpCode::OpCode(uint32_t op) {
+OpCode::OpCode(uint32_t op, ARM7TDMI& cpu) : cpu(cpu) {
     opcode = op;
     condRaw = Utils::getRegBits(opcode, COND_FIELD_MASK, COND_FIELD_SHIFT);
     if(condRaw >= 0 and condRaw <= 14){
@@ -18,7 +18,7 @@ std::string OpCode::toHexString(){
     return Utils::toHexString(opcode);
 }
 
-bool OpCode::execute(ARM7TDMI &cpu) {
+bool OpCode::execute(){
     // Execute only if conditions are met
     bool execute = false;
     switch(cond){
@@ -70,7 +70,7 @@ bool OpCode::execute(ARM7TDMI &cpu) {
     }
         
     if(execute){
-        doExecute(cpu);
+        doExecute();
         return true;
     }else {
         std::cout << "DEBUG: Instructions skipped; condition not met" << std::endl;
@@ -79,8 +79,8 @@ bool OpCode::execute(ARM7TDMI &cpu) {
 
 }
 
-void OpCode::decode(ARM7TDMI &cpu) {
-    doDecode(cpu);
+void OpCode::decode() {
+    doDecode();
 }
 
 bool OpCode::checkOpCode(uint32_t op, uint32_t mask, uint32_t format){

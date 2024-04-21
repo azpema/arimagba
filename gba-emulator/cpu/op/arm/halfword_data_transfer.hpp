@@ -8,11 +8,11 @@
 class HalfwordDataTransfer : public OpCode {
     public:
         virtual std::string toString() = 0;
-        virtual void doExecute(ARM7TDMI &cpu) = 0;
-        virtual void doDecode(ARM7TDMI &cpu) = 0;
+        virtual void doExecute() = 0;
+        virtual void doDecode() = 0;
     protected:
         uint16_t p, u, w, l, rn, rd, s, h;
-        HalfwordDataTransfer(uint32_t op);
+        HalfwordDataTransfer(uint32_t op, ARM7TDMI &cpu);
 
         const static uint32_t P_FLAG_MASK = 0b00000001000000000000000000000000; 
         const static uint32_t P_FLAG_SHIFT = 24;

@@ -71,39 +71,39 @@ ARM7TDMI::~ARM7TDMI() {
 
 OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 	if(OpCode::isBranchAndExchange(op)){
-		return new BranchAndExchange(op);
+		return new BranchAndExchange(op, *this);
 	}else if (OpCode::isBlockDataTransfer(op)) {
-		return new BlockDataTransfer(op);
+		return new BlockDataTransfer(op, *this);
 	}else if(OpCode::isBranch(op)){
-		return new ARM::Branch(op, pc);
+		return new ARM::Branch(op, pc, *this);
 	}else if(OpCode::isSoftwareInterrupt(op)){
-		return new ARM::SoftwareInterrupt(op);
+		return new ARM::SoftwareInterrupt(op, *this);
 	}else if(OpCode::isUndefined(op)){
-		return new Undefined(op);
+		return new Undefined(op, *this);
 	}else if(OpCode::isSingleDataTransfer(op)){
-		return new SingleDataTransfer(op);
+		return new SingleDataTransfer(op, *this);
 	}else if(OpCode::isSingleDataSwap(op)){
-		return new SingleDataSwap(op);
+		return new SingleDataSwap(op, *this);
 	}else if(OpCode::isMultiply(op)){
-		return new MultiplyAccumulate(op);
+		return new MultiplyAccumulate(op, *this);
 	}else if(OpCode::isMultiplyLong(op)){
-		return new MultiplyAccumulateLong(op);
+		return new MultiplyAccumulateLong(op, *this);
 	}else if(OpCode::isHalfwordDataTransferRegister(op)){
-		return new HalfwordDataTransferRegister(op);
+		return new HalfwordDataTransferRegister(op, *this);
 	}else if(OpCode::isHalfwordDataTransferOffset(op)){
-		return new HalfwordDataTransferOffset(op);
+		return new HalfwordDataTransferOffset(op, *this);
 	}else if(OpCode::isPSRTransferMRS(op)){
-		return new PSRTransferMRS(op);
+		return new PSRTransferMRS(op, *this);
 	}else if(OpCode::isPSRTransferMSR(op)){
 		if(PSRTransferMSR::isFullTransfer(op)){
-			return new PSRTransferMSRFull(op);
+			return new PSRTransferMSRFull(op, *this);
 		}else if(PSRTransferMSR::isFlagBitsTransfer(op)){
-			return new PSRTransferMSRFlagBits(op);
+			return new PSRTransferMSRFlagBits(op, *this);
 		}else{
 			std::cerr << "ERROR: Unrecognized PSR Transfer MSR format" << std::endl;
 		}
 	}else if(OpCode::isDataProcessing(op)){
-		return new DataProcessing(op);
+		return new DataProcessing(op, *this);
 	}else{
 		//std::cout << "ERROR: Unrecognized instruction" << std::endl;
 		return nullptr;
@@ -357,7 +357,7 @@ void ARM7TDMI::executeNextInstruction(){
 	if(!cpsr.isThumbMode()){
 		// execute
 		if(insDecodeSet){
-			insExecuteSet = opExecute->execute(*this);
+			insExecuteSet = opExecute->execute();
 
 			// print status
 			//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
@@ -379,7 +379,7 @@ void ARM7TDMI::executeNextInstruction(){
 		// decode
 		if(insFetchSet){
 			opExecute = decodeInstructionARM(insDecode, fetchPC);
-			opExecute->decode(*this);
+			opExecute->decode();
 			insDecodeSet = true;
 		}
 		
@@ -410,7 +410,7 @@ void ARM7TDMI::executionLoop(){
 		if(!cpsr.isThumbMode()){
 			// execute
 			if(insDecodeSet){
-				insExecuteSet = opExecute->execute(*this);
+				insExecuteSet = opExecute->execute();
 
 				if(opExecute->toHexString() == "0xEAFFFFFE"){
 					std::cout << "END" << std::endl;

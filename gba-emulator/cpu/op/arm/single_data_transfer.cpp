@@ -1,6 +1,6 @@
 #include "single_data_transfer.hpp"
 
-SingleDataTransfer::SingleDataTransfer(uint32_t op): OpCode::OpCode(op) {
+SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
     I = Utils::getRegBits(op, I_MASK, I_SHIFT);
     P = Utils::getRegBits(op, P_MASK, P_SHIFT);
     U = Utils::getRegBits(op, U_MASK, U_SHIFT);
@@ -79,11 +79,11 @@ std::string SingleDataTransfer::toString(){
     return base + address;
 }
 
-void SingleDataTransfer::doDecode(ARM7TDMI &cpu){
+void SingleDataTransfer::doDecode(){
 
 }
 
-void SingleDataTransfer::doExecute(ARM7TDMI &cpu){
+void SingleDataTransfer::doExecute(){
 
 }
 

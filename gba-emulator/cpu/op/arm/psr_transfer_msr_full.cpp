@@ -1,6 +1,6 @@
 #include "psr_transfer_msr_full.hpp"
 
-PSRTransferMSRFull::PSRTransferMSRFull(uint32_t op): PSRTransferMSR::PSRTransferMSR(op) {
+PSRTransferMSRFull::PSRTransferMSRFull(uint32_t op, ARM7TDMI &cpu): PSRTransferMSR::PSRTransferMSR(op, cpu) {
     rm = Utils::getRegBits(op, RM_MASK, RM_SHIFT);
 }
 
@@ -8,11 +8,11 @@ std::string PSRTransferMSRFull::toString() {
     return PSRTransferMSR::toString() + "," + getRegMnemonic(rm);
 }
 
-void PSRTransferMSRFull::doDecode(ARM7TDMI &cpu){
+void PSRTransferMSRFull::doDecode(){
     rmVal = cpu.getReg(rm);
 }
 
-void PSRTransferMSRFull::doExecute(ARM7TDMI &cpu){
+void PSRTransferMSRFull::doExecute(){
 
     switch(psr){
         // CPSR

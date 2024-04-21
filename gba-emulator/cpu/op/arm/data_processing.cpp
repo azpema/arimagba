@@ -2,7 +2,7 @@
 #include "../../../utils/utils.hpp"
 #include <string>
 
-DataProcessing::DataProcessing(uint32_t op): OpCode::OpCode(op) {
+DataProcessing::DataProcessing(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
     dataOpCode = Utils::getRegBits(op, OPCODE_MASK, OPCODE_SHIFT);
     i = Utils::getRegBits(op, IMMEDIATE_OPERAND_MASK, IMMEDIATE_OPERAND_SHIFT);
     s = Utils::getRegBits(op, SET_CONDITION_MASK, SET_CONDITION_SHIFT);
@@ -118,11 +118,11 @@ void DataProcessing::doExecuteAdd(ARM7TDMI &cpu){
     cpu.setReg(rd, addRes);
 }
 
-void DataProcessing::doDecode(ARM7TDMI &cpu){
+void DataProcessing::doDecode(){
 
 }
 
-void DataProcessing::doExecute(ARM7TDMI &cpu){
+void DataProcessing::doExecute(){
     // Assign values to op1 and op2
     op1 = cpu.getReg(rn);
     op2 = operand2->getOperandVal(cpu);

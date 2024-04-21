@@ -1,7 +1,7 @@
 #include "halfword_data_transfer.hpp"
 #include "../opcode.hpp"
 
-HalfwordDataTransfer::HalfwordDataTransfer(uint32_t op): OpCode::OpCode(op) {
+HalfwordDataTransfer::HalfwordDataTransfer(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
     p = Utils::getRegBits(op, P_FLAG_MASK, P_FLAG_SHIFT);
     u = Utils::getRegBits(op, U_FLAG_MASK, U_FLAG_SHIFT);
     w = Utils::getRegBits(op, W_FLAG_MASK, W_FLAG_SHIFT);

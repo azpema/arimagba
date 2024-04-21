@@ -1,6 +1,6 @@
 #include "halfword_data_transfer_offset.hpp"
 
-HalfwordDataTransferOffset::HalfwordDataTransferOffset(uint32_t op): HalfwordDataTransfer::HalfwordDataTransfer(op) {
+HalfwordDataTransferOffset::HalfwordDataTransferOffset(uint32_t op, ARM7TDMI &cpu): HalfwordDataTransfer::HalfwordDataTransfer(op, cpu) {
     offsetHi = Utils::getRegBits(op, OFFSETHI_FLAG_MASK, OFFSETHI_FLAG_SHIFT);
     offsetLo = Utils::getRegBits(op, OFFSETLO_FLAG_MASK, OFFSETLO_FLAG_SHIFT);
 
@@ -44,11 +44,11 @@ uint32_t HalfwordDataTransferOffset::cyclesUsed() const {
     return 1;
 }
 
-void HalfwordDataTransferOffset::doDecode(ARM7TDMI &cpu){
+void HalfwordDataTransferOffset::doDecode(){
 
 }
 
-void HalfwordDataTransferOffset::doExecute(ARM7TDMI &cpu){
+void HalfwordDataTransferOffset::doExecute(){
     uint32_t baseRegVal = cpu.getReg(rn);
     
     // Pre-indexing

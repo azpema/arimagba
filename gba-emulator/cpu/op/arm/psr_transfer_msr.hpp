@@ -11,10 +11,10 @@ class PSRTransferMSR : public OpCode {
         static bool isFlagBitsTransfer(uint32_t op);
 
     protected:
-        PSRTransferMSR(uint32_t op);
+        PSRTransferMSR(uint32_t op, ARM7TDMI &cpu);
         std::string toString() override;
-        virtual void doExecute(ARM7TDMI &cpu) = 0;
-        virtual void doDecode(ARM7TDMI &cpu) = 0;
+        virtual void doExecute() = 0;
+        virtual void doDecode() = 0;
         bool mustFlushPipeline() const override;
         uint32_t cyclesUsed() const override;
 

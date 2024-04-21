@@ -1,6 +1,6 @@
 #include "block_data_transfer.hpp"
 
-BlockDataTransfer::BlockDataTransfer(uint32_t op): OpCode::OpCode(op) {
+BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
     P = Utils::getRegBits(op, P_MASK, P_SHIFT);
     U = Utils::getRegBits(op, U_MASK, U_SHIFT);
     S = Utils::getRegBits(op, S_MASK, S_SHIFT);
@@ -43,11 +43,11 @@ std::string BlockDataTransfer::toString(){
     return getOpAddressingModeMnemonic() + getCondFieldMnemonic() + " " + getRegMnemonic(Rn) + getWFlagMnemonic() + "," + getRegisterListMnemonic() + getSFlagMnemonic();
 }
 
-void BlockDataTransfer::doDecode(ARM7TDMI &cpu){
+void BlockDataTransfer::doDecode(){
 
 }
 
-void BlockDataTransfer::doExecute(ARM7TDMI &cpu){
+void BlockDataTransfer::doExecute(){
     uint32_t rnVal = cpu.getReg(Rn);
     if(L==0 && P==1 && U==0){
         
