@@ -7,12 +7,10 @@
 
 class GamePak {
 	public:
-		GamePak();
 		GamePak(std::string filePath);
-
+		~GamePak();
 		uint32_t read(uint32_t addr, uint8_t bytes);
 
-		int setFileStream(std::string filePath);
 		int readHeader();
 		int readEntryPoint();
 		int readNintendoLogo();
@@ -28,13 +26,13 @@ class GamePak {
 		int readReservedArea2();
 		int calcComplementCheck();
 
-		void setFileName();
 		void printHeader();
 
-
 	private:
-		std::string fileName;
+		uint32_t fileSize;
 		std::ifstream fileStream;
+
+		uint16_t *gameMem;
 
 		const static int ENTRY_POINT_OFF = 0x000;
 		const static int ENTRY_POINT_SIZE = 4;

@@ -1,32 +1,61 @@
 #include "gamepak.hpp"
 #include <iostream>
 
-GamePak::GamePak() {
-    this->fileStream = std::ifstream(std::string("files/panda.gba"), std::ios::binary);
-
-    if (!this->fileStream.is_open()) {
-        std::cerr << "ERROR: GamePak Failed to open the file." << std::endl;
-    }else {
-        std::cout << "DEBUG: GamePak READ OK" << std::endl;
-    }
-}
-
 GamePak::GamePak(std::string filePath) {
-    this->fileStream = std::ifstream(filePath, std::ios::binary);
+    fileStream = std::ifstream(filePath, std::ios::binary | std::ifstream::ate);
+    if (!fileStream) {
+        std::cerr << "ERROR: GamePak Failed to open the file." << std::endl;
+    }
 
-    if (!this->fileStream.is_open()) {
+    fileSize = fileStream.tellg();
+    fileStream.seekg(0, std::ios::beg);
+    gameMem = new uint16_t[fileSize / sizeof(uint16_t)];
+
+    if (!fileStream.is_open()) {
         std::cerr << "ERROR: GamePak Failed to open the file." << std::endl;
     }else {
-        std::cout << "DEBUG: GamePak READ OK" << std::endl;
+        this->fileStream.read(reinterpret_cast<char *>(gameMem), fileSize);
+        if (this->fileStream) {
+            std::cout << "DEBUG: GamePak READ OK" << std::endl;
+        } else{
+            std::cerr << "ERROR: GamePak reading" << std::endl;
+        }
     }
 }
+
+GamePak::~GamePak(){
+    delete[] gameMem;
+}
+
 
 uint32_t GamePak::read(uint32_t addr, uint8_t bytes) {
-    uint32_t val;
-    this->fileStream.seekg(addr, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(&val), bytes);
+    uint32_t val=0;
+
+    if(addr > fileSize)
+        val = 0;
+    else{
+        if(bytes == 2){
+            if(addr % 2 != 0){
+                std::cerr << "TODO: Unaligned memory access in VRAM::store" << std::endl;
+            }else {
+                val = gameMem[addr / 2];
+            }
+        }else if(bytes == 4){
+            if(addr % 4 != 0){
+                std::cerr << "TODO: Unaligned memory access in VRAM::store" << std::endl;
+            }else{
+                val = gameMem[addr/2];
+                val |= gameMem[addr/2 + 1] << 16;
+            }
+
+        }
+    }
+
+
+
 
     return val;
+
 }
 
 
