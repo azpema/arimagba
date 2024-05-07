@@ -21,10 +21,6 @@ std::string HalfwordDataTransferRegister::toString(){
     return base + address;
 }
 
-bool HalfwordDataTransferRegister::mustFlushPipeline() const {
-    return false;
-}
-
 // Depends on load or store
 uint32_t HalfwordDataTransferRegister::cyclesUsed() const {
     std::cerr << "TODO: HalfwordDataTransferRegister::cyclesUsed" << std::endl;

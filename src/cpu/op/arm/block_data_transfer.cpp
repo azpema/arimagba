@@ -52,10 +52,11 @@ void BlockDataTransfer::doDecode(){
 void BlockDataTransfer::doExecute(){
     if(L==0 && P==1 && U==0){
         uint32_t baseAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
+        uint32_t endAddr = baseAddr;
         for(size_t i=0; i < registerListVec.size(); i++){
             uint32_t regVal = cpu.getReg(registerListVec.at(i));
-            uint32_t addr = baseAddr + i * 4;
-            cpu.getMemManager().store(addr, regVal, 4);
+            cpu.getMemManager().store(endAddr, regVal, 4);
+            endAddr += 4;
         }
 
         if(W==1){
@@ -65,9 +66,14 @@ void BlockDataTransfer::doExecute(){
         uint32_t baseAddr = cpu.getReg(Rn);
         uint32_t endAddr = baseAddr;
         for(size_t i=0; i < registerListVec.size(); i++){
-            endAddr += i * 4;
             uint32_t val = cpu.getMemManager().readWord(endAddr);
             cpu.setReg(registerListVec.at(i), val);
+
+            // If PC value is modified, flush pipeline
+            if(registerListVec.at(i) == 15)
+                mustFlushPipeline = true;
+
+            endAddr += 4;
         }
 
         if(W==1){
@@ -77,10 +83,6 @@ void BlockDataTransfer::doExecute(){
     }else{
         throw std::runtime_error("TODO: BlockDataTransfer::doExecute; L=" + std::to_string(L) + " P=" + std::to_string(P) + " U=" + std::to_string(U));
     }
-}
-
-bool BlockDataTransfer::mustFlushPipeline() const{
-    return false;
 }
 
 uint32_t BlockDataTransfer::cyclesUsed() const {

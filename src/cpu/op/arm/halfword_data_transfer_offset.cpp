@@ -34,10 +34,6 @@ std::string HalfwordDataTransferOffset::toString(){
     return base + address;
 }
 
-bool HalfwordDataTransferOffset::mustFlushPipeline() const {
-    return false;
-}
-
 // Depends on load or store
 uint32_t HalfwordDataTransferOffset::cyclesUsed() const {
     std::cerr << "TODO: HalfwordDataTransferOffset::cyclesUsed" << std::endl;

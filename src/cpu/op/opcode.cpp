@@ -18,6 +18,11 @@ std::string OpCode::toHexString(){
     return Utils::toHexString(opcode);
 }
 
+bool OpCode::getMustFlushPipeline() const{
+    return mustFlushPipeline;
+}
+
+
 bool OpCode::execute(){
     // Execute only if conditions are met
     bool execute = false;

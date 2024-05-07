@@ -25,10 +25,6 @@ void SingleDataSwap::doExecute(){
 
 }
 
-bool SingleDataSwap::mustFlushPipeline() const {
-    return false;
-}
-
 // SWP              1S+2N+1I
 uint32_t SingleDataSwap::cyclesUsed() const {
     return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + 2 * ARM7TDMI::CPU_CYCLES_PER_N_CYCLE + 1 * ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;

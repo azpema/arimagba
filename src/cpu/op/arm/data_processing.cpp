@@ -95,10 +95,6 @@ std::string DataProcessing::getOperand2Mnemonic(){
     }
 }
 
-bool DataProcessing::mustFlushPipeline() const {
-    return false;
-}
-
 //   ALU, 1S, +1S+1N if R15 loaded, +1I if SHIFT(Rs)
 uint32_t DataProcessing::cyclesUsed() const {
     std::cerr << "TODO: DataProcessing::cyclesUsed" << std::endl;

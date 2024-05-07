@@ -6,15 +6,12 @@
 #include "utils/utils.hpp"
 #include "graphics/ppu.hpp"
 #include <bitset>
-#include <filesystem>
 
 void decodeAllInstructionsThumb(ARM7TDMI &cpu);
 void decodeAllInstructionsArm(ARM7TDMI &cpu);
 
 int main(int argc, char** argv)
 {
-	std::cout << "Current path is " << std::filesystem::current_path() << '\n'; // (1)
-
 	std::string gamePath = "../files/panda.gba";
 	if(argc >= 2){
 		gamePath = std::string(argv[1]);

@@ -364,13 +364,13 @@ void ARM7TDMI::executeNextInstruction(){
 			insExecuteSet = opExecute->execute();
 
 			// print status
-			//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
-			//printStatus();
-			//std::cout << "<<<" << std::endl;
+			std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
+			printStatus();
+			std::cout << "<<<" << std::endl;
 		}
 
 		// flush pipeline if needed
-		if(insExecuteSet && opExecute->mustFlushPipeline()){
+		if(insExecuteSet && opExecute->getMustFlushPipeline()){
 			insFetchSet = false;
 			insDecodeSet = false;
 		}
@@ -428,7 +428,7 @@ void ARM7TDMI::executionLoop(){
 			}
 
 			// flush pipeline if needed
-			if(insExecuteSet && opExecute->mustFlushPipeline()){
+			if(insExecuteSet && opExecute->getMustFlushPipeline()){
 				insFetchSet = false;
 				insDecodeSet = false;
 			}

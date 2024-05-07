@@ -21,10 +21,6 @@ std::string PSRTransferMSR::toString(){
     return "msr" + getCondFieldMnemonic() + " " + getPSRMnemonic();
 }
 
-bool PSRTransferMSR::mustFlushPipeline() const {
-    return false;
-}
-
 uint32_t PSRTransferMSR::cyclesUsed() const {
     return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE;
 }

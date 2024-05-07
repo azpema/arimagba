@@ -14,10 +14,6 @@ void Undefined::doExecute(){
 
 }
 
-bool Undefined::mustFlushPipeline() const {
-    return false;
-}
-
 uint32_t Undefined::cyclesUsed() const {
     return 1;
 }

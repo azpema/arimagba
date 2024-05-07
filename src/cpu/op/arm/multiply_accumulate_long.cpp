@@ -36,11 +36,6 @@ void MultiplyAccumulateLong::doExecute(){
 
 }
 
-bool MultiplyAccumulateLong::mustFlushPipeline() const {
-    return false;
-}
-
-
 // MULL             1S+(m+1)I
 // MLAL             1S+(m+2)I
 uint32_t MultiplyAccumulateLong::cyclesUsed() const {

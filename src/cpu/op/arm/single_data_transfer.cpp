@@ -87,10 +87,6 @@ void SingleDataTransfer::doExecute(){
 
 }
 
-bool SingleDataTransfer::mustFlushPipeline() const {
-    return false;
-}
-
 uint32_t SingleDataTransfer::cyclesUsed() const {
     return 1;
 }

@@ -18,10 +18,6 @@ void SoftwareInterrupt::doExecute(){
 
 }
 
-bool SoftwareInterrupt::mustFlushPipeline() const {
-    return false;
-}
-
 uint32_t SoftwareInterrupt::cyclesUsed() const {
     return 1;
 }

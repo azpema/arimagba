@@ -22,10 +22,6 @@ void PSRTransferMRS::doExecute(){
 
 }
 
-bool PSRTransferMRS::mustFlushPipeline() const {
-    return false;
-}
-
 // MSR,MRS          1S
 uint32_t PSRTransferMRS::cyclesUsed() const {
     return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE;

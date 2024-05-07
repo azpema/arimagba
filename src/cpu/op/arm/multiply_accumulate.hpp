@@ -12,7 +12,6 @@ class MultiplyAccumulate : public OpCode {
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;
-        bool mustFlushPipeline() const override;
         uint32_t cyclesUsed() const override;
 
     private:

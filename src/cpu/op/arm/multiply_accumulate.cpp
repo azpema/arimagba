@@ -33,11 +33,6 @@ void MultiplyAccumulate::doExecute(){
 
 }
 
-bool MultiplyAccumulate::mustFlushPipeline() const {
-    return false;
-}
-
-
 // MUL              1S+ml
 // MLA              1S+(m+1)I
 uint32_t MultiplyAccumulate::cyclesUsed() const {

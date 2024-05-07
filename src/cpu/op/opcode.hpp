@@ -16,7 +16,7 @@ class OpCode {
 		std::string toHexString();
 		bool execute();
 		void decode();
-		virtual bool mustFlushPipeline() const = 0;
+		bool getMustFlushPipeline() const;
 		virtual uint32_t cyclesUsed() const = 0;
 
 		static bool isBranchAndExchange(uint32_t op);
@@ -49,6 +49,7 @@ class OpCode {
 	protected:
 		OpCode(uint32_t op, ARM7TDMI &cpu);
 		ARM7TDMI &cpu;
+		bool mustFlushPipeline = false;
 
 	private:
 		virtual void doExecute() = 0;

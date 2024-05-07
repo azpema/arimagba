@@ -15,7 +15,6 @@ class PSRTransferMSR : public OpCode {
         std::string toString() override;
         virtual void doExecute() = 0;
         virtual void doDecode() = 0;
-        bool mustFlushPipeline() const override;
         uint32_t cyclesUsed() const override;
 
         uint16_t psr;

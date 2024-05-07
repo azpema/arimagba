@@ -3,6 +3,7 @@
 
 BranchAndExchange::BranchAndExchange(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
     Rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
+    mustFlushPipeline = true;
 }   
 
 
@@ -16,10 +17,6 @@ void BranchAndExchange::doDecode(){
 
 void BranchAndExchange::doExecute(){
 
-}
-
-bool BranchAndExchange::mustFlushPipeline() const{
-    return true;
 }
 
 // A Branch and Exchange operation takes 3 cycles and is similar to a Branch
