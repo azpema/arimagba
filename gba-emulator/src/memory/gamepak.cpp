@@ -51,23 +51,7 @@ uint32_t GamePak::read(uint32_t addr, uint8_t bytes) {
         }
     }
 
-
-
-
     return val;
-
-}
-
-
-int GamePak::setFileStream(std::string filePath) {
-    this->fileStream = std::ifstream(filePath, std::ios::binary);
-
-    if (!this->fileStream.is_open()) {
-        std::cerr << "Failed to open the file." << std::endl;
-        return 1;
-    }
-
-	return 0;
 }
 
 int GamePak::readEntryPoint() {

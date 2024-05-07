@@ -59,9 +59,13 @@ ARM7TDMI::ARM7TDMI(MemoryManager *memManager) {
 		r13_und[i] = 0; 
 	}
 
+
+	reg[0] = 0x00000CA5;
 	reg[13] = 0x03007F00;
+	reg[14] = 0x08000000;
 	r13_irq[0] = 0x03007FA0;
 	r13_svc[0] = 0x03007FE0;
+
 	barrelShifter = new BarrelShifter();
 }
 

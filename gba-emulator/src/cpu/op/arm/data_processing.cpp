@@ -118,6 +118,11 @@ void DataProcessing::doExecuteAdd(ARM7TDMI &cpu){
     cpu.setReg(rd, addRes);
 }
 
+void DataProcessing::doExecuteOrr(ARM7TDMI &cpu){
+    uint32_t orrRes = op1 | op2;
+    cpu.setReg(rd, orrRes);
+}
+
 void DataProcessing::doDecode(){
 
 }
@@ -160,6 +165,7 @@ void DataProcessing::doExecute(){
     case OPCODE_RSC_VAL:
         break;
     case OPCODE_ORR_VAL:
+        doExecuteOrr(cpu);
         break;
     case OPCODE_BIC_VAL:
         break;

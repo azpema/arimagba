@@ -17,7 +17,8 @@ void PSR::reset(){
     this->setTFlag(false);
     this->setFFlag(true);
     this->setIFlag(true);
-    this->setMode(Supervisor);
+    std::cout << "TODO: Set proper initial CPU mode" << std::endl;
+    this->setMode(System);
 }
 
 void PSR::setCPSRFlags(PSR::Flag flag, bool val){

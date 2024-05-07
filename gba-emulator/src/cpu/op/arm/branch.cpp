@@ -7,6 +7,7 @@ Branch::Branch(uint32_t op, uint32_t pc, ARM7TDMI &cpu): OpCode::OpCode(op, cpu)
     L = Utils::getRegBits(op, LINK_MASK, LINK_SHIFT);
     offsetField = Utils::getRegBits(op, OFFSET_MASK, OFFSET_SHIFT);
     realOffset = static_cast<int32_t>(Utils::twosComplementExtendSignTo(offsetField, 24, 32) << 2) + pc + 8;
+    oldPC = pc;
 }   
 
 std::string Branch::getLinkFlagMnemonic(){
@@ -31,10 +32,10 @@ void Branch::doDecode(){
 }
 
 void Branch::doExecute(){
-    uint32_t oldPC = cpu.getPC();
+    //uint32_t oldPC = cpu.getPC();
     cpu.setPC(realOffset);
 
     if(L == 1){
-        cpu.setLR(oldPC);
+        cpu.setLR(oldPC + 4);
     }
 }

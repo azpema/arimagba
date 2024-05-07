@@ -9,7 +9,7 @@ BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode
     Rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
     registerList = Utils::getRegBits(op, REGISTER_LIST_MASK, REGISTER_LIST_SHIFT);
 
-    for(size_t i = 0; i < 16-1; i++){
+    for(size_t i = 0; i < 16; i++){
         if((registerList >> i) & 0x1 == 0x1)
             registerListVec.push_back(i);    
     }
@@ -47,10 +47,35 @@ void BlockDataTransfer::doDecode(){
 
 }
 
+// Optimizible!!
+// TODO Flush pipeline if PC is written!!!
 void BlockDataTransfer::doExecute(){
-    uint32_t rnVal = cpu.getReg(Rn);
     if(L==0 && P==1 && U==0){
-        
+        uint32_t baseAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
+        for(size_t i=0; i < registerListVec.size(); i++){
+            uint32_t regVal = cpu.getReg(registerListVec.at(i));
+            uint32_t addr = baseAddr + i * 4;
+            cpu.getMemManager().store(addr, regVal, 4);
+        }
+
+        if(W==1){
+            cpu.setReg(Rn, baseAddr);
+        }
+    }else if(L==1 && P==0 && U==1){
+        uint32_t baseAddr = cpu.getReg(Rn);
+        uint32_t endAddr = baseAddr;
+        for(size_t i=0; i < registerListVec.size(); i++){
+            endAddr += i * 4;
+            uint32_t val = cpu.getMemManager().readWord(endAddr);
+            cpu.setReg(registerListVec.at(i), val);
+        }
+
+        if(W==1){
+            cpu.setReg(Rn, endAddr);
+        }
+
+    }else{
+        throw std::runtime_error("TODO: BlockDataTransfer::doExecute; L=" + std::to_string(L) + " P=" + std::to_string(P) + " U=" + std::to_string(U));
     }
 }
 

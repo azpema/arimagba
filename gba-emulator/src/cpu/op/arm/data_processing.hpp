@@ -94,4 +94,5 @@ class DataProcessing : public OpCode {
         void doExecuteCmp(ARM7TDMI &cpu);
         void doExecuteMov(ARM7TDMI &cpu);
         void doExecuteAdd(ARM7TDMI &cpu);
+        void doExecuteOrr(ARM7TDMI &cpu);
 };

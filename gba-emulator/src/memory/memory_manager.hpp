@@ -7,6 +7,7 @@
 #include "bios.hpp"
 #include "gamepak.hpp"
 #include "vram.hpp"
+#include "wram.hpp"
 /*
   General Internal Memory
     00000000-00003FFF   BIOS - System ROM         (16 KBytes)
@@ -39,21 +40,26 @@
 
 class MemoryManager {
     public:
-        MemoryManager(std::string biosPath, std::string gamePath);
+        MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, WRAM &wram);
         uint32_t readWord(uint32_t addr);
         uint16_t readHalfWord(uint32_t addr);
         void store(uint32_t addr, uint32_t val, uint8_t bytes);
 
         uint16_t* getRawVRAM();
+        
     private:
         uint32_t read(uint32_t addr, uint8_t bytes);
         
-        BIOS bios;
-        GamePak gamepak;
-        VRAM vram;
+        BIOS &bios;
+        GamePak &gamepak;
+        VRAM &vram;
+        WRAM &wram;
         // General Internal Memory
         const static uint32_t BIOS_OFFSET_START = 0x00000000;
         const static uint32_t BIOS_OFFSET_END = 0x00003FFF;
+
+        const static uint32_t WRAM_OFFSET_START = 0x03000000;
+        const static uint32_t WRAM_OFFSET_END = 0x03007FFF;
 
         // LCD I/O Registers
         const static uint32_t LCD_REGISTERS_OFFSET_START = 0x04000000;

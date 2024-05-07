@@ -25,7 +25,7 @@ class Branch : public OpCode {
 
     private:
         uint16_t L;
-        uint32_t offsetField;
+        uint32_t offsetField, oldPC;
         int32_t realOffset;
 
         const static uint32_t LINK_MASK = 0b00000001000000000000000000000000; 
