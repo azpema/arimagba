@@ -7,6 +7,13 @@
 #include "../../../utils/utils.hpp"
 
 class PCRelativeLoad : public ThumbOpCode {
+	public:
+		PCRelativeLoad(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint16_t rd, word8, offset;
 
@@ -15,11 +22,6 @@ class PCRelativeLoad : public ThumbOpCode {
 
         const static uint16_t WORD8_MASK = 0b0000000011111111;
         const static uint16_t WORD8_SHIFT = 0;
-
-	public:
-		PCRelativeLoad(uint16_t op);
-        std::string toString();
-
 };
 
 #endif

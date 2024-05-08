@@ -2,7 +2,7 @@
 #include "../../../utils/utils.hpp"
 #include <string>
 
-DataProcessing::DataProcessing(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
+DataProcessing::DataProcessing(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     dataOpCode = Utils::getRegBits(op, OPCODE_MASK, OPCODE_SHIFT);
     i = Utils::getRegBits(op, IMMEDIATE_OPERAND_MASK, IMMEDIATE_OPERAND_SHIFT);
     s = Utils::getRegBits(op, SET_CONDITION_MASK, SET_CONDITION_SHIFT);
@@ -34,14 +34,14 @@ std::string DataProcessing::toString(){
     // <opcode>{cond}{S} Rd,<Op2>
     case OPCODE_MOV_VAL:
     case OPCODE_MVN_VAL:
-        mnemonic += SFlag2Mnemonic[s] + " " + getRegMnemonic(rd) + "," + getOperand2Mnemonic();
+        mnemonic += SFlag2Mnemonic[s] + " " + OpCode::getRegMnemonic(rd) + "," + getOperand2Mnemonic();
         break;
     // <opcode>{cond} Rn,<Op2>
     case OPCODE_CMP_VAL:
     case OPCODE_CMN_VAL:
     case OPCODE_TEQ_VAL:
     case OPCODE_TST_VAL:
-        mnemonic += " " + getRegMnemonic(rn) + "," + getOperand2Mnemonic();
+        mnemonic += " " + OpCode::getRegMnemonic(rn) + "," + getOperand2Mnemonic();
         break;
     // <opcode>{cond}{s} Rd,Rn,<Op2>
     case OPCODE_AND_VAL:
@@ -54,7 +54,7 @@ std::string DataProcessing::toString(){
     case OPCODE_RSC_VAL:
     case OPCODE_ORR_VAL:
     case OPCODE_BIC_VAL:
-        mnemonic += SFlag2Mnemonic[s] + " " + getRegMnemonic(rd) + "," + getRegMnemonic(rn) + "," + getOperand2Mnemonic();
+        mnemonic += SFlag2Mnemonic[s] + " " + OpCode::getRegMnemonic(rd) + "," + OpCode::getRegMnemonic(rn) + "," + getOperand2Mnemonic();
         break;
 
     default:
@@ -70,12 +70,12 @@ std::string DataProcessing::getOpCodeMnemonic(){
 }
 
 std::string DataProcessing::getRdMnemonic(){
-    return getRegMnemonic(rd);
+    return OpCode::getRegMnemonic(rd);
 
 }
 
 std::string DataProcessing::getRnMnemonic(){
-    return getRegMnemonic(rn);
+    return OpCode::getRegMnemonic(rn);
 }
 
 uint32_t DataProcessing::getOperand2Rm(){
@@ -86,7 +86,7 @@ uint32_t DataProcessing::getOperand2Rm(){
 std::string DataProcessing::getOperand2Mnemonic(){
     if(i == 0){
         ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
-        return getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + Utils::toHexString(shiftRm->getShiftAmount());
+        return OpCode::getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + Utils::toHexString(shiftRm->getShiftAmount());
     }else if(i == 1){
         RotateImm* rotateImm = static_cast<RotateImm*>(operand2);
         return "#" + Utils::toHexString(rotateImm->getMnemonicVal()); 

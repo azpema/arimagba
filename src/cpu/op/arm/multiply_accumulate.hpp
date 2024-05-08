@@ -2,11 +2,11 @@
 #define _OPCODE_MULTIPLY_ACCUMULATE_ 
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "../../../utils/utils.hpp"
 
 
-class MultiplyAccumulate : public OpCode {
+class MultiplyAccumulate : public ArmOpcode {
 	public:
 		MultiplyAccumulate(uint32_t op, ARM7TDMI &cpu);
         std::string toString() override;

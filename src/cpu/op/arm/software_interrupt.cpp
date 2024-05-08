@@ -2,7 +2,7 @@
 
 using namespace ARM;
 
-SoftwareInterrupt::SoftwareInterrupt(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
+SoftwareInterrupt::SoftwareInterrupt(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     comment = Utils::getRegBits(op, COMMENT_FIELD_MASK, COMMENT_FIELD_SHIFT);
 }   
 

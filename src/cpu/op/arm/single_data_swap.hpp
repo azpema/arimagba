@@ -2,9 +2,9 @@
 #define _OPCODE_SINGLE_DATA_SWAP_
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 
-class SingleDataSwap : public OpCode {
+class SingleDataSwap : public ArmOpcode {
     public:
 		SingleDataSwap(uint32_t op, ARM7TDMI &cpu);
         std::string toString() override;

@@ -7,6 +7,13 @@
 #include "../../../utils/utils.hpp"
 
 class LoadStoreHalfword : public ThumbOpCode {
+	public:
+		LoadStoreHalfword(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint8_t l, offset5, rb, rd, offsetVal;
 
@@ -25,9 +32,6 @@ class LoadStoreHalfword : public ThumbOpCode {
         std::string op2Mnemonic[2] = {"strh", "ldrh"};
         std::string getOpMnemonic();
 
-	public:
-		LoadStoreHalfword(uint16_t op);
-        std::string toString();
 };
 
 #endif

@@ -6,7 +6,14 @@
 #include "../opcode.hpp"
 #include "../../../utils/utils.hpp"
 
-class LoadStoreRegisterOffset : public ThumbOpCode {
+class LoadStoreRegisterOffset : public ThumbOpCode { 
+	public:
+		LoadStoreRegisterOffset(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint16_t l, b, r0, rb, rd;
 
@@ -29,11 +36,6 @@ class LoadStoreRegisterOffset : public ThumbOpCode {
 
         std::string op2Mnemonic[2] = {"str", "ldr"};
         std::string getOpMnemonic();
-
-	public:
-		LoadStoreRegisterOffset(uint16_t op);
-        std::string toString();
-
 };
 
 #endif

@@ -7,13 +7,13 @@ HalfwordDataTransferRegister::HalfwordDataTransferRegister(uint32_t op, ARM7TDMI
 
 std::string HalfwordDataTransferRegister::toString(){
     std::string base = getOpMnemonic() + getCondFieldMnemonic() + getSFlagMnemonic() + getHFlagMnemonic() +  + " " + \
-                        getRegMnemonic(rd) + ",";
-    std::string address = "[" + getRegMnemonic(rn);
+                        OpCode::getRegMnemonic(rd) + ",";
+    std::string address = "[" + OpCode::getRegMnemonic(rn);
 
     if(p == 1){
-        address += "," + getUFlagMnemonic() + getRegMnemonic(rm) + "]" + getWFlagMnemonic();
+        address += "," + getUFlagMnemonic() + OpCode::getRegMnemonic(rm) + "]" + getWFlagMnemonic();
     }else if(p == 0){
-        address += "]," + getUFlagMnemonic() + getRegMnemonic(rm);
+        address += "]," + getUFlagMnemonic() + OpCode::getRegMnemonic(rm);
     }else{
         std::cerr << "ERROR: Invalid p flag value HalfwordDataTransferRegister" << std::endl;
     }

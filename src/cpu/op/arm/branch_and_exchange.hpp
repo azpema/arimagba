@@ -2,12 +2,12 @@
 #define _OPCODE_BRANCH_EXCHANGE_
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "../../../utils/utils.hpp"
 
 
 
-class BranchAndExchange : public OpCode {
+class BranchAndExchange : public ArmOpcode {
     public:
         BranchAndExchange(uint32_t op, ARM7TDMI &cpu);
         std::string toString() override;

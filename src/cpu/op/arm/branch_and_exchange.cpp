@@ -1,14 +1,12 @@
 #include "branch_and_exchange.hpp"
 
-
-BranchAndExchange::BranchAndExchange(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
+BranchAndExchange::BranchAndExchange(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     Rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
     mustFlushPipeline = true;
 }   
 
-
 std::string BranchAndExchange::toString(){
-    return "bx" + getCondFieldMnemonic() + " " + getRegMnemonic(Rn);
+    return "bx" + getCondFieldMnemonic() + " " + OpCode::getRegMnemonic(Rn);
 }
 
 void BranchAndExchange::doDecode(){
@@ -24,4 +22,3 @@ uint32_t BranchAndExchange::cyclesUsed() const {
     std::cerr << "TODO: BranchAndExchange::cyclesUsed" << std::endl;
     return 3;
 }
-

@@ -2,10 +2,10 @@
 #define _OPCODE_UNDEFINED_ 
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "../../../utils/utils.hpp"
 
-class Undefined : public OpCode {
+class Undefined : public ArmOpcode {
 	public:
 		Undefined(uint32_t op, ARM7TDMI &cpu);
         std::string toString() override;

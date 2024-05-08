@@ -7,6 +7,13 @@
 #include "../../../utils/utils.hpp"
 
 class MoveShiftedRegister : public ThumbOpCode {
+	public:
+		MoveShiftedRegister(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint16_t opField, offset5, rs, rd;
 
@@ -24,11 +31,6 @@ class MoveShiftedRegister : public ThumbOpCode {
 
         std::string op2Mnemonic[3] = {"lsl", "lsr", "asr"};
         std::string getOpMnemonic();
-
-	public:
-		MoveShiftedRegister(uint16_t op);
-        std::string toString();
-
 };
 
 #endif

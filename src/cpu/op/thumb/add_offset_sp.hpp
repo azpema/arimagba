@@ -7,6 +7,12 @@
 #include "../../../utils/utils.hpp"
 
 class AddOffsetSP : public ThumbOpCode {
+    public:
+		AddOffsetSP(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
     private:
         uint16_t s, sWord7, offsetStr;
         int16_t offsetVal;
@@ -19,9 +25,6 @@ class AddOffsetSP : public ThumbOpCode {
 
         std::string s2Mnemonic[2] = {"", "-"};
         std::string getSMnemonic();
-	public:
-		AddOffsetSP(uint16_t op);
-        std::string toString();
 
 };
 

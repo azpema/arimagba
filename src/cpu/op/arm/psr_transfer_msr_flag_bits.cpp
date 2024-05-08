@@ -22,7 +22,7 @@ std::string PSRTransferMSRFlagBits::toString() {
     std::string srcOper = "";
     if(sourceOperand->_type == Operand::RM){
         Rm* rm = static_cast<Rm*>(sourceOperand);
-        srcOper = getRegMnemonic(rm->getRmVal());
+        srcOper = OpCode::getRegMnemonic(rm->getRmVal());
     }else if(sourceOperand->_type == Operand::ROTATE_IMM){
         RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand);
         srcOper = "#" + Utils::toHexString(rotImm->getMnemonicVal());

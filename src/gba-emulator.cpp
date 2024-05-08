@@ -6,13 +6,17 @@
 #include "utils/utils.hpp"
 #include "graphics/ppu.hpp"
 #include <bitset>
+#include <filesystem>
+
 
 void decodeAllInstructionsThumb(ARM7TDMI &cpu);
 void decodeAllInstructionsArm(ARM7TDMI &cpu);
 
 int main(int argc, char** argv)
 {
-	std::string gamePath = "../files/arm.gba";
+    std::cout << "Current path is " << std::filesystem::current_path() << '\n'; // (1)
+
+	std::string gamePath = "../files/panda.gba";
 	if(argc >= 2){
 		gamePath = std::string(argv[1]);
 	}
@@ -55,7 +59,7 @@ int main(int argc, char** argv)
 
 
 
-void decodeAllInstructionsArm(ARM7TDMI &cpu){
+/*void decodeAllInstructionsArm(ARM7TDMI &cpu){
 	OpCode* op;
 	int64_t ins;
 	int pc = 0;
@@ -82,9 +86,9 @@ void decodeAllInstructionsArm(ARM7TDMI &cpu){
 
 		pc += 4;
 	}
-}
+}*/
 
-void decodeAllInstructionsThumb(ARM7TDMI &cpu){
+/*void decodeAllInstructionsThumb(ARM7TDMI &cpu){
 	ThumbOpCode* thumbOp;
 	int64_t ins;
 	int pc = 0;
@@ -118,3 +122,4 @@ void decodeAllInstructionsThumb(ARM7TDMI &cpu){
 		pc += 2;
 	}
 }
+*/

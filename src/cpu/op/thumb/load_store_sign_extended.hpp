@@ -7,6 +7,13 @@
 #include "../../../utils/utils.hpp"
 
 class LoadStoreSignExtended : public ThumbOpCode {
+	public:
+		LoadStoreSignExtended(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint8_t h, s, ro, rb, rd;
 
@@ -28,10 +35,6 @@ class LoadStoreSignExtended : public ThumbOpCode {
         std::string op2Mnemonic[2][2] = {{"strh", "ldrh"},
                                          {"ldsb", "ldsh"}};
         std::string getOpMnemonic();
-
-	public:
-		LoadStoreSignExtended(uint16_t op);
-        std::string toString();
 };
 
 #endif

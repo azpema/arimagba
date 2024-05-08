@@ -7,6 +7,13 @@
 #include "../../../utils/utils.hpp"
 
 class MoveCompAddSubImm : public ThumbOpCode {
+	public:
+		MoveCompAddSubImm(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint16_t opField, rd, offset8;
 
@@ -21,11 +28,6 @@ class MoveCompAddSubImm : public ThumbOpCode {
 
         std::string op2Mnemonic[4] = {"mov", "cmp", "add", "sub"};
         std::string getOpMnemonic();
-
-	public:
-		MoveCompAddSubImm(uint16_t op);
-        std::string toString();
-
 };
 
 #endif

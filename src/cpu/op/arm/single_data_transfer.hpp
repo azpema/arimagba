@@ -2,11 +2,11 @@
 #define _OPCODE_SINGLE_DATA_TRANSFER_
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "../fields/shift_rm.hpp"
 #include "../fields/imm.hpp"
 
-class SingleDataTransfer : public OpCode {
+class SingleDataTransfer : public ArmOpcode {
 	public:
 		SingleDataTransfer(uint32_t op, ARM7TDMI &cpu);
         ~SingleDataTransfer();

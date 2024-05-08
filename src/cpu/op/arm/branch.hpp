@@ -2,7 +2,7 @@
 #define _OPCODE_BRANCH_ 
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "../../../utils/utils.hpp"
 
 /*
@@ -14,7 +14,7 @@
 
 namespace ARM {
  
-class Branch : public OpCode {
+class Branch : public ArmOpcode {
     public:
     	Branch(uint32_t op, uint32_t pc, ARM7TDMI &cpu);
         std::string toString() override;

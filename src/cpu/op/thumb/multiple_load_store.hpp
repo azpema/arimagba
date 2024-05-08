@@ -8,6 +8,13 @@
 #include <vector>
 
 class MultipleLoadStore : public ThumbOpCode {
+	public:
+		MultipleLoadStore(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint8_t l, rb, rList;
         std::vector<uint8_t> registerListVec;
@@ -23,10 +30,6 @@ class MultipleLoadStore : public ThumbOpCode {
 
         std::string op2Mnemonic[2] = {"stmia", "ldmia"};
         std::string getOpMnemonic();
-
-	public:
-		MultipleLoadStore(uint16_t op);
-        std::string toString();
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "add_subtract.hpp"
 
-AddSubtract::AddSubtract(uint16_t op): ThumbOpCode::ThumbOpCode(op) {
+AddSubtract::AddSubtract(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     i = Utils::getRegBits(op, I_MASK, I_SHIFT);
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
     rnOffset3 = Utils::getRegBits(op, RN_OFFSET3_MASK, RN_OFFSET3_SHIFT);
@@ -30,4 +30,16 @@ std::string AddSubtract::toString(){
     }
 
     return mnemonic;
+}
+
+void AddSubtract::doDecode(){
+
+}
+
+void AddSubtract::doExecute(){
+    throw std::runtime_error("Error: Unimplemented instruction: AddSubtract");
+}
+
+uint32_t AddSubtract::cyclesUsed() const {
+    return 1;
 }

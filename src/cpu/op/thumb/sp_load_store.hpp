@@ -7,6 +7,13 @@
 #include "../../../utils/utils.hpp"
 
 class SPLoadStore : public ThumbOpCode {
+    public:
+		SPLoadStore(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint16_t l, rd, word8, offsetVal;
         
@@ -21,9 +28,6 @@ class SPLoadStore : public ThumbOpCode {
 
         std::string l2Mnemonic[2] = {"str", "ldr"};
         std::string getLMnemonic();
-	public:
-		SPLoadStore(uint16_t op);
-        std::string toString();
 };
 
 #endif

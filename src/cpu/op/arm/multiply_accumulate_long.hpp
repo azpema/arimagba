@@ -2,11 +2,11 @@
 #define _OPCODE_MULTIPLY_ACCUMULATE_LONG_ 
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "../../../utils/utils.hpp"
 
 
-class MultiplyAccumulateLong : public OpCode {
+class MultiplyAccumulateLong : public ArmOpcode {
 	public:
 		MultiplyAccumulateLong(uint32_t op, ARM7TDMI &cpu);
         std::string toString() override;

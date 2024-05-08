@@ -7,6 +7,13 @@
 #include "../../../utils/utils.hpp"
 
 class HiRegisterBranchExchange : public ThumbOpCode {
+    public:
+		HiRegisterBranchExchange(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint16_t opField, h1, h2, rsHs, rdHd, rs, rd;
 
@@ -27,11 +34,6 @@ class HiRegisterBranchExchange : public ThumbOpCode {
 
         std::string op2Mnemonic[4] = {"add", "cmp", "mov", "bx"};
         std::string getOpMnemonic();
-
-	public:
-		HiRegisterBranchExchange(uint16_t op);
-        std::string toString();
-
 };
 
 #endif

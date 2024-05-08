@@ -1,6 +1,6 @@
 #include "hi_register_branch_exchange.hpp"
 
-HiRegisterBranchExchange::HiRegisterBranchExchange(uint16_t op): ThumbOpCode::ThumbOpCode(op) {
+HiRegisterBranchExchange::HiRegisterBranchExchange(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
     h1 = Utils::getRegBits(op, H1_MASK, H1_SHIFT);
     h2 = Utils::getRegBits(op, H2_MASK, H2_SHIFT);
@@ -22,4 +22,16 @@ std::string HiRegisterBranchExchange::toString(){
     }
     mnemonic += OpCode::getRegMnemonic(rs);
     return mnemonic;
+}
+
+void HiRegisterBranchExchange::doDecode(){
+
+}
+
+void HiRegisterBranchExchange::doExecute(){
+    throw std::runtime_error("Error: Unimplemented instruction: HiRegisterBranchExchange");
+}
+
+uint32_t HiRegisterBranchExchange::cyclesUsed() const {
+    return 1;
 }

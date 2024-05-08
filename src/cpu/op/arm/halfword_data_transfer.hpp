@@ -2,10 +2,10 @@
 #define _OPCODE_HALFWORD_DATA_TRANSFER_
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "../../../utils/utils.hpp"
 
-class HalfwordDataTransfer : public OpCode {
+class HalfwordDataTransfer : public ArmOpcode {
     public:
         virtual std::string toString() = 0;
         virtual void doExecute() = 0;

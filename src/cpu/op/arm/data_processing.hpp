@@ -1,12 +1,12 @@
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "../fields/operand.hpp"
 #include "../fields/shift_rm.hpp"
 #include "../fields/imm.hpp"
 #include "../fields/rotate_imm.hpp"
 #include <unordered_map>
 
-class DataProcessing : public OpCode {
+class DataProcessing : public ArmOpcode {
     public:
 		DataProcessing(uint32_t op, ARM7TDMI &cpu);
         ~DataProcessing();

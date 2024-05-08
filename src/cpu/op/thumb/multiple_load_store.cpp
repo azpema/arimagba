@@ -1,6 +1,6 @@
 #include "multiple_load_store.hpp"
 
-MultipleLoadStore::MultipleLoadStore(uint16_t op): ThumbOpCode::ThumbOpCode(op) {
+MultipleLoadStore::MultipleLoadStore(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
     rb = Utils::getRegBits(op, RB_MASK, RB_SHIFT);
     rList = Utils::getRegBits(op, RLIST_MASK, RLIST_SHIFT);
@@ -26,4 +26,16 @@ std::string MultipleLoadStore::toString(){
     mnemonic += "}";
     
     return mnemonic;
+}
+
+void MultipleLoadStore::doDecode(){
+
+}
+
+void MultipleLoadStore::doExecute(){
+    throw std::runtime_error("Error: Unimplemented instruction: MultipleLoadStore");
+}
+
+uint32_t MultipleLoadStore::cyclesUsed() const {
+    return 1;
 }

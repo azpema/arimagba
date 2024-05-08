@@ -1,6 +1,6 @@
 #include "single_data_swap.hpp"
 
-SingleDataSwap::SingleDataSwap(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
+SingleDataSwap::SingleDataSwap(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     b = Utils::getRegBits(op, B_MASK, B_SHIFT);
     rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
     rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
@@ -13,8 +13,8 @@ std::string SingleDataSwap::getBFlagMnemonic(){
 }
 
 std::string SingleDataSwap::toString(){
-    return "swp" + getCondFieldMnemonic() + getBFlagMnemonic() + " " + getRegMnemonic(rd) + "," + \
-            getRegMnemonic(rm) + ",[" + getRegMnemonic(rn) + "]";
+    return "swp" + getCondFieldMnemonic() + getBFlagMnemonic() + " " + OpCode::getRegMnemonic(rd) + "," + \
+            OpCode::getRegMnemonic(rm) + ",[" + OpCode::getRegMnemonic(rn) + "]";
 }
 
 void SingleDataSwap::doDecode(){

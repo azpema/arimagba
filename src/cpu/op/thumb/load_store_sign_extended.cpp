@@ -1,6 +1,6 @@
 #include "load_store_sign_extended.hpp"
 
-LoadStoreSignExtended::LoadStoreSignExtended(uint16_t op): ThumbOpCode::ThumbOpCode(op) {
+LoadStoreSignExtended::LoadStoreSignExtended(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     h = Utils::getRegBits(op, H_MASK, H_SHIFT);
     s = Utils::getRegBits(op, S_MASK, S_SHIFT);
     ro = Utils::getRegBits(op, RO_MASK, RO_SHIFT);
@@ -15,4 +15,16 @@ std::string LoadStoreSignExtended::getOpMnemonic(){
 std::string LoadStoreSignExtended::toString(){
     return getOpMnemonic() + " " + OpCode::getRegMnemonic(rd) + ",[" + OpCode::getRegMnemonic(rb) + "," + \
             OpCode::getRegMnemonic(ro) + "]";
+}
+
+void LoadStoreSignExtended::doDecode(){
+
+}
+
+void LoadStoreSignExtended::doExecute(){
+    throw std::runtime_error("Error: Unimplemented instruction: LoadStoreSignExtended");
+}
+
+uint32_t LoadStoreSignExtended::cyclesUsed() const {
+    return 1;
 }

@@ -13,8 +13,8 @@ uint16_t HalfwordDataTransferOffset::getOffsetVal() {
 
 std::string HalfwordDataTransferOffset::toString(){
     std::string base = getOpMnemonic() + getCondFieldMnemonic() + getSFlagMnemonic() + getHFlagMnemonic() +  + " " + \
-                        getRegMnemonic(rd) + ",";
-    std::string address = "[" + getRegMnemonic(rn);
+                        OpCode::getRegMnemonic(rd) + ",";
+    std::string address = "[" + OpCode::getRegMnemonic(rn);
 
     bool showOffset = getOffsetVal() !=0;
 

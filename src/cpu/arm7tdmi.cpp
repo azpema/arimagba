@@ -1,6 +1,8 @@
 #include "arm7tdmi.hpp"
+#include "op/arm/arm_opcode.hpp"
+#include "op/thumb/thumb_opcode.hpp"
 
-
+// ARM
 #include "op/arm/data_processing.hpp"
 #include "op/arm/branch.hpp"
 #include "op/arm/branch_and_exchange.hpp"
@@ -73,32 +75,40 @@ ARM7TDMI::~ARM7TDMI() {
 	delete barrelShifter;
 }
 
+OpCode* ARM7TDMI::decodeInstruction(uint32_t op, uint32_t pc){
+	if(cpsr.isThumbMode()){
+		return decodeInstructionThumb(op, pc);
+	}else{
+		return decodeInstructionARM(op, pc);
+	}
+}
+
 OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
-	if(OpCode::isBranchAndExchange(op)){
+	if(ArmOpcode::isBranchAndExchange(op)){
 		return new BranchAndExchange(op, *this);
-	}else if (OpCode::isBlockDataTransfer(op)) {
+	}else if (ArmOpcode::isBlockDataTransfer(op)) {
 		return new BlockDataTransfer(op, *this);
-	}else if(OpCode::isBranch(op)){
+	}else if(ArmOpcode::isBranch(op)){
 		return new ARM::Branch(op, pc, *this);
-	}else if(OpCode::isSoftwareInterrupt(op)){
+	}else if(ArmOpcode::isSoftwareInterrupt(op)){
 		return new ARM::SoftwareInterrupt(op, *this);
-	}else if(OpCode::isUndefined(op)){
+	}else if(ArmOpcode::isUndefined(op)){
 		return new Undefined(op, *this);
-	}else if(OpCode::isSingleDataTransfer(op)){
+	}else if(ArmOpcode::isSingleDataTransfer(op)){
 		return new SingleDataTransfer(op, *this);
-	}else if(OpCode::isSingleDataSwap(op)){
+	}else if(ArmOpcode::isSingleDataSwap(op)){
 		return new SingleDataSwap(op, *this);
-	}else if(OpCode::isMultiply(op)){
+	}else if(ArmOpcode::isMultiply(op)){
 		return new MultiplyAccumulate(op, *this);
-	}else if(OpCode::isMultiplyLong(op)){
+	}else if(ArmOpcode::isMultiplyLong(op)){
 		return new MultiplyAccumulateLong(op, *this);
-	}else if(OpCode::isHalfwordDataTransferRegister(op)){
+	}else if(ArmOpcode::isHalfwordDataTransferRegister(op)){
 		return new HalfwordDataTransferRegister(op, *this);
-	}else if(OpCode::isHalfwordDataTransferOffset(op)){
+	}else if(ArmOpcode::isHalfwordDataTransferOffset(op)){
 		return new HalfwordDataTransferOffset(op, *this);
-	}else if(OpCode::isPSRTransferMRS(op)){
+	}else if(ArmOpcode::isPSRTransferMRS(op)){
 		return new PSRTransferMRS(op, *this);
-	}else if(OpCode::isPSRTransferMSR(op)){
+	}else if(ArmOpcode::isPSRTransferMSR(op)){
 		if(PSRTransferMSR::isFullTransfer(op)){
 			return new PSRTransferMSRFull(op, *this);
 		}else if(PSRTransferMSR::isFlagBitsTransfer(op)){
@@ -106,7 +116,7 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 		}else{
 			std::cerr << "ERROR: Unrecognized PSR Transfer MSR format" << std::endl;
 		}
-	}else if(OpCode::isDataProcessing(op)){
+	}else if(ArmOpcode::isDataProcessing(op)){
 		return new DataProcessing(op, *this);
 	}else{
 		//std::cout << "ERROR: Unrecognized instruction" << std::endl;
@@ -115,45 +125,45 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 	return nullptr;
 }
 
-ThumbOpCode* ARM7TDMI::decodeInstructionThumb(uint16_t op, uint32_t pc) {
+OpCode* ARM7TDMI::decodeInstructionThumb(uint16_t op, uint32_t pc) {
 	if(ThumbOpCode::isSoftwareInterrupt(op)){
-		return new Thumb::SoftwareInterrupt(op);
+		return new Thumb::SoftwareInterrupt(op, *this);
 	}else if (ThumbOpCode::isAddOffsetToSP(op)) {
-		return new AddOffsetSP(op);
+		return new AddOffsetSP(op, *this);
 	}else if(ThumbOpCode::isPushPopRegisters(op)) {
-		return new PushPopRegisters(op);
+		return new PushPopRegisters(op, *this);
 	}else if(ThumbOpCode::isALUOperations(op)) {
-		return new ALUOperations(op);
+		return new ALUOperations(op, *this);
 	}else if(ThumbOpCode::isHiRegisterBranchExchange(op)) {
-		return new HiRegisterBranchExchange(op);
+		return new HiRegisterBranchExchange(op, *this);
 	}else if(ThumbOpCode::isPCRelativeLoad(op)) {
-		return new PCRelativeLoad(op);
+		return new PCRelativeLoad(op, *this);
 	}else if(ThumbOpCode::isLoadStoreRegisterOffset(op)) {
-		return new LoadStoreRegisterOffset(op);
+		return new LoadStoreRegisterOffset(op, *this);
 	}else if(ThumbOpCode::isLoadStoreSignExtended(op)) {
-		return new LoadStoreSignExtended(op);
+		return new LoadStoreSignExtended(op, *this);
 	}else if(ThumbOpCode::isUnconditionalBranch(op)) {
-		return new Thumb::UnconditionalBranch(op, pc);
+		return new Thumb::UnconditionalBranch(op, pc, *this);
 	}else if(ThumbOpCode::isAddSubtract(op)) {
-		return new AddSubtract(op);
+		return new AddSubtract(op, *this);
 	}else if(ThumbOpCode::isLoadStoreHalfword(op)) {
-		return new LoadStoreHalfword(op);
+		return new LoadStoreHalfword(op, *this);
 	}else if(ThumbOpCode::isSPLoadStore(op)) {
-		return new SPLoadStore(op);
+		return new SPLoadStore(op, *this);
 	}else if(ThumbOpCode::isLoadAddress(op)) {
-		return new LoadAddress(op);
+		return new LoadAddress(op, *this);
 	}else if(ThumbOpCode::isMultipleLoadStore(op)) {
-		return new MultipleLoadStore(op);
+		return new MultipleLoadStore(op, *this);
 	}else if(ThumbOpCode::isConditionalBranch(op)) {
-		return new Thumb::ConditionalBranch(op, pc);
+		return new Thumb::ConditionalBranch(op, pc, *this);
 	}else if(ThumbOpCode::isLongBranchWithLink(op)) {
-		return new Thumb::LongBranchWithLink(op, pc);
+		return new Thumb::LongBranchWithLink(op, pc, *this);
 	}else if(ThumbOpCode::isMoveShiftedRegister(op)) {
-		return new MoveShiftedRegister(op);
+		return new MoveShiftedRegister(op, *this);
 	}else if(ThumbOpCode::isMoveCompAddSubImm(op)) {
-		return new MoveCompAddSubImm(op);
+		return new MoveCompAddSubImm(op, *this);
 	}else if(ThumbOpCode::isLoadStoreImmOffset(op)) {
-		return new LoadStoreImmOffset(op);
+		return new LoadStoreImmOffset(op, *this);
 	}else{
 		//std::cout << "ERROR: Unrecognized instruction" << std::endl;
 		return nullptr;
@@ -358,15 +368,14 @@ MemoryManager& ARM7TDMI::getMemManager(){
 }*/
 
 void ARM7TDMI::executeNextInstruction(){
-	if(!cpsr.isThumbMode()){
 		// execute
 		if(insDecodeSet){
 			insExecuteSet = opExecute->execute();
 
 			// print status
-			std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
-			printStatus();
-			std::cout << "<<<" << std::endl;
+			//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
+			//printStatus();
+			//std::cout << "<<<" << std::endl;
 		}
 
 		// flush pipeline if needed
@@ -382,7 +391,7 @@ void ARM7TDMI::executeNextInstruction(){
 
 		// decode
 		if(insFetchSet){
-			opExecute = decodeInstructionARM(insDecode, fetchPC);
+			opExecute = decodeInstruction(insDecode, fetchPC);
 			opExecute->decode();
 			insDecodeSet = true;
 		}
@@ -395,11 +404,6 @@ void ARM7TDMI::executeNextInstruction(){
 		
 		insFetchSet = true;
 		insDecode = insFetch;
-		
-	}else{
-
-	}
-
 }
 
 

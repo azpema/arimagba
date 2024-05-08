@@ -2,8 +2,18 @@
 #include "../opcode.hpp"
 #include "../../../utils/utils.hpp"
 
-ThumbOpCode::ThumbOpCode(uint32_t op) {
+ThumbOpCode::ThumbOpCode(uint32_t op, ARM7TDMI& cpu) : OpCode::OpCode(op, cpu){
     opcode = op;
+}
+
+// Thumb instructions have no conditions; they are always executed
+bool ThumbOpCode::execute() {
+    doExecute();
+    return true;
+}
+
+void ThumbOpCode::decode() {
+    doDecode();
 }
 
 bool ThumbOpCode::isSoftwareInterrupt(uint16_t op){

@@ -1,14 +1,56 @@
 #ifndef _THUMB_OPCODE_ 
 #define _THUMB_OPCODE_ 
 
+class ARM7TDMI;
+class OpCode;
+
+#include "../opcode.hpp"
 #include <iostream>
 #include "../../../utils/utils.hpp"
+#include "../fields/operand.hpp"
+#include "../../arm7tdmi.hpp"
+
+class ThumbOpCode : public OpCode {
+	public:
+		virtual std::string toString() = 0;
+		bool execute() override;
+		void decode() override;
+		virtual uint32_t cyclesUsed() const = 0;
+
+		static bool isSoftwareInterrupt(uint16_t op);
+		static bool isAddOffsetToSP(uint16_t op);
+		static bool isPushPopRegisters(uint16_t op);
+		static bool isALUOperations(uint16_t op);
+		static bool isHiRegisterBranchExchange(uint16_t op);
+		static bool isPCRelativeLoad(uint16_t op);
+		static bool isLoadStoreRegisterOffset(uint16_t op);
+		static bool isLoadStoreSignExtended(uint16_t op);
+		static bool isUnconditionalBranch(uint16_t op);
+		static bool isAddSubtract(uint16_t op);
+		static bool isLoadStoreHalfword(uint16_t op);
+		static bool isSPLoadStore(uint16_t op);
+		static bool isLoadAddress(uint16_t op);
+		static bool isMultipleLoadStore(uint16_t op);
+		static bool isConditionalBranch(uint16_t op);
+		static bool isLongBranchWithLink(uint16_t op);
+		static bool isMoveShiftedRegister(uint16_t op);
+		static bool isMoveCompAddSubImm(uint16_t op);
+		static bool isLoadStoreImmOffset(uint16_t op);
 
 
-class ThumbOpCode {
+		static std::string getRegMnemonic(uint16_t reg);
+
+		enum OpCodeEnum {SOFTWARE_INTERRUPT, ADD_OFFSET_TO_SP, PUSH_POP_REGISTERS, ALU_OPERATIONS, HI_REGISTER_BRANCH_EXCHANGE,
+							  PC_RELATIVE_LOAD, LOAD_STORE_REGISTER_OFFSET, LOAD_STORE_SIGN_EXTENDED, UNCONDITIONAL_BRANCH,
+							  ADD_SUBTRACT, LOAD_STORE_HALFWORD, SP_LOAD_STORE, LOAD_ADDRESS, MULTIPLE_LOAD_STORE, CONDITIONAL_BRANCH,
+							  LONG_BRANCH_WITH_LINK, MOVE_SHIFTED_REGISTER, MOVE_COMP_ADD_SUB_IMM, LOAD_STORE_IMM_OFFSET};
+		OpCodeEnum _type;
+	protected:
+		ThumbOpCode(uint32_t op, ARM7TDMI &cpu);
+
 	private:
-		uint16_t opcode = 0;
-		
+		virtual void doExecute() = 0;
+		virtual void doDecode() = 0;
 	
 
 		// Software Interrupt
@@ -86,41 +128,6 @@ class ThumbOpCode {
 		// Load/store with immediate offset
 		const static uint16_t LOAD_STORE_IMM_OFFSET_MASK = 0b1110000000000000;
 		const static uint16_t LOAD_STORE_IMM_OFFSET_FORMAT = 0b0110000000000000;
-
-	protected:
-
-		ThumbOpCode(uint32_t op);
-	public:
-		virtual std::string toString() = 0;
-
-		static bool isSoftwareInterrupt(uint16_t op);
-		static bool isAddOffsetToSP(uint16_t op);
-		static bool isPushPopRegisters(uint16_t op);
-		static bool isALUOperations(uint16_t op);
-		static bool isHiRegisterBranchExchange(uint16_t op);
-		static bool isPCRelativeLoad(uint16_t op);
-		static bool isLoadStoreRegisterOffset(uint16_t op);
-		static bool isLoadStoreSignExtended(uint16_t op);
-		static bool isUnconditionalBranch(uint16_t op);
-		static bool isAddSubtract(uint16_t op);
-		static bool isLoadStoreHalfword(uint16_t op);
-		static bool isSPLoadStore(uint16_t op);
-		static bool isLoadAddress(uint16_t op);
-		static bool isMultipleLoadStore(uint16_t op);
-		static bool isConditionalBranch(uint16_t op);
-		static bool isLongBranchWithLink(uint16_t op);
-		static bool isMoveShiftedRegister(uint16_t op);
-		static bool isMoveCompAddSubImm(uint16_t op);
-		static bool isLoadStoreImmOffset(uint16_t op);
-
-
-		static std::string getRegMnemonic(uint16_t reg);
-
-		enum OpCodeEnum {SOFTWARE_INTERRUPT, ADD_OFFSET_TO_SP, PUSH_POP_REGISTERS, ALU_OPERATIONS, HI_REGISTER_BRANCH_EXCHANGE,
-							  PC_RELATIVE_LOAD, LOAD_STORE_REGISTER_OFFSET, LOAD_STORE_SIGN_EXTENDED, UNCONDITIONAL_BRANCH,
-							  ADD_SUBTRACT, LOAD_STORE_HALFWORD, SP_LOAD_STORE, LOAD_ADDRESS, MULTIPLE_LOAD_STORE, CONDITIONAL_BRANCH,
-							  LONG_BRANCH_WITH_LINK, MOVE_SHIFTED_REGISTER, MOVE_COMP_ADD_SUB_IMM, LOAD_STORE_IMM_OFFSET};
-		OpCodeEnum _type;
 
 };
 

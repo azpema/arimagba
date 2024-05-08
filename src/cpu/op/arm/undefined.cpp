@@ -1,6 +1,6 @@
 #include "undefined.hpp"
 
-Undefined::Undefined(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {}   
+Undefined::Undefined(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {}   
 
 std::string Undefined::toString(){
     return "Undefined";

@@ -7,6 +7,13 @@
 #include "../../../utils/utils.hpp"
 
 class LoadAddress : public ThumbOpCode {
+    public:
+		LoadAddress(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+        
     private:
         uint8_t sp, rd, word8;
         uint16_t offsetVal;
@@ -22,9 +29,6 @@ class LoadAddress : public ThumbOpCode {
 
         uint8_t sp2RegVal[2] = {15, 13};
         uint8_t getSPRegVal();
-	public:
-		LoadAddress(uint16_t op);
-        std::string toString();
 };
 
 #endif

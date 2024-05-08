@@ -7,6 +7,13 @@
 #include "../../../utils/utils.hpp"
 
 class LoadStoreImmOffset : public ThumbOpCode {
+	public:
+		LoadStoreImmOffset(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint8_t b, l, offset5, rb, rd, offsetVal;
 
@@ -30,10 +37,6 @@ class LoadStoreImmOffset : public ThumbOpCode {
 
         std::string op2Mnemonic[2] = {"str", "ldr"};
         std::string getOpMnemonic();
-
-	public:
-		LoadStoreImmOffset(uint16_t op);
-        std::string toString();
 };
 
 #endif

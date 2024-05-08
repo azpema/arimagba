@@ -8,6 +8,13 @@
 #include "../../../utils/utils.hpp"
 
 class PushPopRegisters : public ThumbOpCode {
+    public:
+		PushPopRegisters(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint16_t l, r, rList;
         std::vector<uint16_t> registerListVec;
@@ -23,11 +30,6 @@ class PushPopRegisters : public ThumbOpCode {
 
         std::string op2Mnemonic[2] = {"push", "pop"};
         std::string getOpMnemonic();
-
-	public:
-		PushPopRegisters(uint16_t op);
-        std::string toString();
-
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "single_data_transfer.hpp"
 
-SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
+SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     I = Utils::getRegBits(op, I_MASK, I_SHIFT);
     P = Utils::getRegBits(op, P_MASK, P_SHIFT);
     U = Utils::getRegBits(op, U_MASK, U_SHIFT);
@@ -41,7 +41,7 @@ std::string SingleDataTransfer::getLFlagMnemonic(){
 
 std::string SingleDataTransfer::toString(){
     std::string base = getLFlagMnemonic() + getBFlagMnemonic() + getCondFieldMnemonic() \
-            + " " + getRegMnemonic(Rd) + ",";
+            + " " + OpCode::getRegMnemonic(Rd) + ",";
     std::string writeBack = getWFlagMnemonic();
     std::string address = "";
 
@@ -50,11 +50,11 @@ std::string SingleDataTransfer::toString(){
         // Offset is an immediate value
         if(I == 0){
             Imm* imm = static_cast<Imm*>(offsetField);
-            address = "[" + getRegMnemonic(Rn) + "," + getUFlagMnemonic() + Utils::toHexString(imm->getMnemonicVal()) + "]" + writeBack;
+            address = "[" + OpCode::getRegMnemonic(Rn) + "," + getUFlagMnemonic() + Utils::toHexString(imm->getMnemonicVal()) + "]" + writeBack;
         // Offset is a register
         }else if(I == 1){
             ShiftRm* shiftRm = static_cast<ShiftRm*>(offsetField);
-            address += "[" + getRegMnemonic(Rn) + "," + getUFlagMnemonic() + getRegMnemonic(shiftRm->getRm()) + "," + \
+            address += "[" + OpCode::getRegMnemonic(Rn) + "," + getUFlagMnemonic() + OpCode::getRegMnemonic(shiftRm->getRm()) + "," + \
                        shiftRm->getShiftTypeMnemonic() + " #" + Utils::toHexString(shiftRm->getShiftAmount()) + "]" + writeBack;
         }else{
             std::cerr << "ERROR: SingleDataTransfer P=1" << std::endl;
@@ -63,13 +63,13 @@ std::string SingleDataTransfer::toString(){
         
     // Postindexing; add offset after transfer
     }else if(P == 0){
-        address = "[" + getRegMnemonic(Rn) + "],";
+        address = "[" + OpCode::getRegMnemonic(Rn) + "],";
         if(I == 0){
             Imm* imm = static_cast<Imm*>(offsetField);
             address += getUFlagMnemonic() + Utils::toHexString(imm->getMnemonicVal());
         }else if(I == 1){
             ShiftRm* shiftRm = static_cast<ShiftRm*>(offsetField);
-            address += getUFlagMnemonic() + getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + \
+            address += getUFlagMnemonic() + OpCode::getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + \
                        Utils::toHexString(shiftRm->getShiftAmount());
         }else{
             std::cerr << "ERROR: SingleDataTransfer P=0" << std::endl;

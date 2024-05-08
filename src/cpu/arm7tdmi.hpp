@@ -7,19 +7,17 @@ class BarrelShifter;
 #include <iostream>
 #include <memory>
 #include "registers/cpsr.hpp"
-#include "op/opcode.hpp"
-#include "op/thumb/thumb_opcode.hpp"
 #include "../memory/memory_manager.hpp"
 #include "components/alu.hpp"
 #include "components/barrel_shifter.hpp"
+#include "op/opcode.hpp"
 
 class ARM7TDMI {
 	public:
 		ARM7TDMI(MemoryManager *memoryManager);
 		~ARM7TDMI();
 		
-		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
-		ThumbOpCode* decodeInstructionThumb(uint16_t op, uint32_t pc);
+		OpCode* decodeInstruction(uint32_t op, uint32_t pc);
 
 		PSR& getCPSR();
 		PSR& getSPSR();
@@ -110,6 +108,9 @@ class ARM7TDMI {
 		uint32_t fetchPC;
 
 		PSR& getCorrespondingSPSR();
+
+		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
+		OpCode* decodeInstructionThumb(uint16_t op, uint32_t pc);
 };	
 
 #endif

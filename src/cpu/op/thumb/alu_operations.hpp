@@ -7,6 +7,13 @@
 #include "../../../utils/utils.hpp"
 
 class ALUOperations : public ThumbOpCode {
+	public:
+        ALUOperations(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint16_t opField, rs, rd;
 
@@ -24,10 +31,6 @@ class ALUOperations : public ThumbOpCode {
                                        "tst", "neg", "cmp", "cmn",
                                        "orr", "mul", "bic", "mvn"};
         std::string getOpMnemonic();
-
-	public:
-		ALUOperations(uint16_t op);
-        std::string toString();
 
 };
 

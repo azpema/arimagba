@@ -1,6 +1,6 @@
 #include "multiply_accumulate.hpp"
 
-MultiplyAccumulate::MultiplyAccumulate(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
+MultiplyAccumulate::MultiplyAccumulate(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     a = Utils::getRegBits(op, A_FLAG_MASK, A_FLAG_SHIFT);
     s = Utils::getRegBits(op, S_FLAG_MASK, S_FLAG_SHIFT);
     rd = Utils::getRegBits(op, RD_FLAG_MASK, RD_FLAG_SHIFT);
@@ -19,9 +19,9 @@ std::string MultiplyAccumulate::getOpMnemonic(){
 
 std::string MultiplyAccumulate::toString(){
     std::string mnemonic = getOpMnemonic() + getCondFieldMnemonic() + getSFlagMnemonic() + " " + \
-                           getRegMnemonic(rd) + "," + getRegMnemonic(rm) + "," + getRegMnemonic(rs);
+                           OpCode::getRegMnemonic(rd) + "," + OpCode::getRegMnemonic(rm) + "," + OpCode::getRegMnemonic(rs);
     if(a == 1)
-        mnemonic += " " + getRegMnemonic(rn);
+        mnemonic += " " + OpCode::getRegMnemonic(rn);
     return mnemonic;
 }
 

@@ -1,6 +1,6 @@
 #include "block_data_transfer.hpp"
 
-BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
+BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     P = Utils::getRegBits(op, P_MASK, P_SHIFT);
     U = Utils::getRegBits(op, U_MASK, U_SHIFT);
     S = Utils::getRegBits(op, S_MASK, S_SHIFT);
@@ -27,7 +27,7 @@ std::string BlockDataTransfer::getRegisterListMnemonic(){
     std::string regs = "{";
     bool addComma = false;
     for(size_t i = 0; i < registerListVec.size(); i++){
-        regs += getRegMnemonic(registerListVec[i]);
+        regs += OpCode::getRegMnemonic(registerListVec[i]);
         if(i < registerListVec.size() - 1)
             regs += ",";
     }
@@ -40,7 +40,7 @@ std::string BlockDataTransfer::getOpAddressingModeMnemonic(){
 }
 
 std::string BlockDataTransfer::toString(){
-    return getOpAddressingModeMnemonic() + getCondFieldMnemonic() + " " + getRegMnemonic(Rn) + getWFlagMnemonic() + "," + getRegisterListMnemonic() + getSFlagMnemonic();
+    return getOpAddressingModeMnemonic() + getCondFieldMnemonic() + " " + OpCode::getRegMnemonic(Rn) + getWFlagMnemonic() + "," + getRegisterListMnemonic() + getSFlagMnemonic();
 }
 
 void BlockDataTransfer::doDecode(){

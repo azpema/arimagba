@@ -2,10 +2,10 @@
 #define _OPCODE_PSR_TRANSFER_MRS_ 
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "../../../utils/utils.hpp"
 
-class PSRTransferMRS : public OpCode {
+class PSRTransferMRS : public ArmOpcode {
     public:
 		PSRTransferMRS(uint32_t op, ARM7TDMI &cpu);
         std::string toString() override;

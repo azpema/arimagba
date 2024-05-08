@@ -3,10 +3,10 @@
 
 #include <iostream>
 #include <vector>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 
 
-class BlockDataTransfer : public OpCode {
+class BlockDataTransfer : public ArmOpcode {
     public:
 		BlockDataTransfer(uint32_t op, ARM7TDMI &cpu);
         std::string toString() override;

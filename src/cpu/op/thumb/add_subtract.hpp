@@ -7,6 +7,13 @@
 #include "../../../utils/utils.hpp"
 
 class AddSubtract : public ThumbOpCode {
+    public:
+		AddSubtract(uint16_t op, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint16_t i, opField, rnOffset3, rs, rd;
         
@@ -27,11 +34,6 @@ class AddSubtract : public ThumbOpCode {
 
         std::string op2Mnemonic[2] = {"add", "sub"};
         std::string getOpMnemonic();
-
-	public:
-		AddSubtract(uint16_t op);
-        std::string toString();
-
 };
 
 #endif

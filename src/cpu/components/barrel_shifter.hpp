@@ -1,6 +1,8 @@
 #ifndef _BARREL_SHIFTER_ 
 #define _BARREL_SHIFTER_ 
 
+class ARM7TDMI;
+
 #include <iostream>
 #include "../../utils/utils.hpp"
 #include "../arm7tdmi.hpp"

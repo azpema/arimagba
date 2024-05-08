@@ -2,12 +2,12 @@
 #define _OPCODE_SOFTWARE_INTERRUPT_ 
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "../../../utils/utils.hpp"
 
 namespace ARM {
 
-class SoftwareInterrupt : public OpCode {
+class SoftwareInterrupt : public ArmOpcode {
 	public:
 		SoftwareInterrupt(uint32_t op, ARM7TDMI &cpu);
         std::string toString() override;

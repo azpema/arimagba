@@ -2,7 +2,7 @@
 #define _OPCODE_PSR_TRANSFER_MSR_FULL_ 
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "psr_transfer_msr.hpp"
 #include "../../../utils/utils.hpp"
 

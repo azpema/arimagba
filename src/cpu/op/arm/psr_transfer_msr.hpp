@@ -2,10 +2,10 @@
 #define _OPCODE_PSR_TRANSFER_MSR_ 
 
 #include <iostream>
-#include "../opcode.hpp"
+#include "arm_opcode.hpp"
 #include "../../../utils/utils.hpp"
 
-class PSRTransferMSR : public OpCode {
+class PSRTransferMSR : public ArmOpcode {
     public:
         static bool isFullTransfer(uint32_t op);
         static bool isFlagBitsTransfer(uint32_t op);

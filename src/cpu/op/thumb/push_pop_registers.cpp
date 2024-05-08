@@ -1,6 +1,6 @@
 #include "push_pop_registers.hpp"
 
-PushPopRegisters::PushPopRegisters(uint16_t op): ThumbOpCode::ThumbOpCode(op) {
+PushPopRegisters::PushPopRegisters(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
     r = Utils::getRegBits(op, R_MASK, R_SHIFT);
     rList = Utils::getRegBits(op, RLIST_MASK, RLIST_SHIFT);
@@ -35,4 +35,16 @@ std::string PushPopRegisters::toString(){
     mnemonic += "}";
     
     return mnemonic;
+}
+
+void PushPopRegisters::doDecode(){
+
+}
+
+void PushPopRegisters::doExecute(){
+    throw std::runtime_error("Error: Unimplemented instruction: PushPopRegisters");
+}
+
+uint32_t PushPopRegisters::cyclesUsed() const {
+    return 1;
 }

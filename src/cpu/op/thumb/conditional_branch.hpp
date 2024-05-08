@@ -10,6 +10,13 @@
 namespace Thumb {
 
 class ConditionalBranch : public ThumbOpCode {
+    public:
+		ConditionalBranch(uint16_t op, uint32_t pc, ARM7TDMI &cpu);
+        std::string toString() override;
+        void doExecute() override;
+        void doDecode() override;
+        uint32_t cyclesUsed() const override;
+
     private:
         uint8_t cond, sOffset8;
         int16_t offsetVal;
@@ -24,10 +31,6 @@ class ConditionalBranch : public ThumbOpCode {
 
         const static uint16_t SOFFSET8_MASK = 0b0000000011111111; 
         const static uint16_t SOFFSET8_SHIFT = 0;
-
-	public:
-		ConditionalBranch(uint16_t op, uint32_t pc);
-        std::string toString();
 };
 
 }

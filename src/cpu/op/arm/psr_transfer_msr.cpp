@@ -1,7 +1,7 @@
 #include "psr_transfer_msr.hpp"
 #include <bitset>
 
-PSRTransferMSR::PSRTransferMSR(uint32_t op, ARM7TDMI &cpu): OpCode::OpCode(op, cpu) {
+PSRTransferMSR::PSRTransferMSR(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     psr = Utils::getRegBits(op, PSR_MASK, PSR_SHIFT);
 }
 
