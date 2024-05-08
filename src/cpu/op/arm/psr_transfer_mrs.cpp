@@ -19,7 +19,7 @@ void PSRTransferMRS::doDecode(){
 }
 
 void PSRTransferMRS::doExecute(){
-
+    throw std::runtime_error("Error: Unimplemented instruction: PSRTransferMRS");
 }
 
 // MSR,MRS          1S

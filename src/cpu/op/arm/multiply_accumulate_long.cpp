@@ -33,7 +33,7 @@ void MultiplyAccumulateLong::doDecode(){
 }
 
 void MultiplyAccumulateLong::doExecute(){
-
+    throw std::runtime_error("Error: Unimplemented instruction: MultiplyAccumulateLong");
 }
 
 // MULL             1S+(m+1)I

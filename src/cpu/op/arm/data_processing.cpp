@@ -133,37 +133,49 @@ void DataProcessing::doExecute(){
         doExecuteMov(cpu);
         break;
     case OPCODE_MVN_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_MVN_VAL");
         break;
     case OPCODE_CMP_VAL:
         doExecuteCmp(cpu);
         break;
     case OPCODE_CMN_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_CMN_VAL");
         break;
     case OPCODE_TEQ_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_TEQ_VAL");
         break;
     case OPCODE_TST_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_TST_VAL");
         break;
     case OPCODE_AND_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_AND_VAL");
         break;
     case OPCODE_EOR_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_EOR_VAL");
         break;
     case OPCODE_SUB_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_SUB_VAL");
         break;
     case OPCODE_RSB_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_RSB_VAL");
         break;
     case OPCODE_ADD_VAL:
         doExecuteAdd(cpu);
         break;
     case OPCODE_ADC_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_ADC_VAL");
         break;
     case OPCODE_SBC_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_SBC_VAL");
         break;
     case OPCODE_RSC_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_RSC_VAL");
         break;
     case OPCODE_ORR_VAL:
         doExecuteOrr(cpu);
         break;
     case OPCODE_BIC_VAL:
+        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_BIC_VAL");
         break;
     default:
         break;

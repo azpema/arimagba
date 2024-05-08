@@ -1,6 +1,3 @@
 #include "operand.hpp"
 
-
-Operand::Operand(uint16_t val, OperandType _type) {
-    val = val;
-}
+Operand::Operand(uint16_t val, OperandType _type) : val(val), _type(_type) {}

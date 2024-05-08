@@ -1,7 +1,7 @@
 #include "memory_manager.hpp"
 
-MemoryManager::MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, WRAM &wram)
- : bios(bios), gamepak(gamepak), vram(vram), wram(wram) {}
+MemoryManager::MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, WRAM &wram, PaletteRAM &paletteRam)
+ : bios(bios), gamepak(gamepak), vram(vram), wram(wram), paletteRam(paletteRam) {}
 
 uint32_t MemoryManager::readWord(uint32_t addr) {
     return read(addr, 4);
@@ -34,6 +34,8 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
         vram.store(addr - VRAM_OFFSET_START, val, bytes);
     }else if(Utils::inRange(addr, WRAM_OFFSET_START, WRAM_OFFSET_END)){
         wram.store(addr - WRAM_OFFSET_START, val, bytes);
+    }else if(Utils::inRange(addr, PALETTE_RAM_OFFSET_START, PALETTE_RAM_OFFSET_END)){
+        paletteRam.store(addr - PALETTE_RAM_OFFSET_START, val, bytes);
     }else{
         throw std::runtime_error("Error: Unimplemented memory region in MemoryManager::store");
     }

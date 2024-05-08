@@ -145,9 +145,5 @@ void PSR::setMode(Mode mode){
 }
 
 bool PSR::isThumbMode(){
-    uint8_t mode = Utils::getRegBits(value, T_FLAG_MASK, T_FLAG_SHIFT);
-    if(mode == 1)
-        return true;
-    else 
-        return false;
+    return Utils::getRegBits(value, T_FLAG_MASK, T_FLAG_SHIFT) == 1;
 }

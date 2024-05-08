@@ -8,6 +8,7 @@
 #include "gamepak.hpp"
 #include "vram.hpp"
 #include "wram.hpp"
+#include "palette_ram.hpp"
 /*
   General Internal Memory
     00000000-00003FFF   BIOS - System ROM         (16 KBytes)
@@ -40,7 +41,7 @@
 
 class MemoryManager {
     public:
-        MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, WRAM &wram);
+        MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, WRAM &wram, PaletteRAM &paletteRam);
         uint32_t readWord(uint32_t addr);
         uint16_t readHalfWord(uint32_t addr);
         void store(uint32_t addr, uint32_t val, uint8_t bytes);
@@ -54,6 +55,8 @@ class MemoryManager {
         GamePak &gamepak;
         VRAM &vram;
         WRAM &wram;
+        PaletteRAM &paletteRam;
+
         // General Internal Memory
         const static uint32_t BIOS_OFFSET_START = 0x00000000;
         const static uint32_t BIOS_OFFSET_END = 0x00003FFF;
@@ -66,8 +69,8 @@ class MemoryManager {
         const static uint32_t LCD_REGISTERS_OFFSET_END = 0x04000056;
 
         // Internal Display Memory
-        const static uint32_t BG_OBJ_PALETTE_RAM_OFFSET_START = 0x05000000;
-        const static uint32_t BG_OBJ_PALETTE_RAM_OFFSET_END = 0x050003FF;
+        const static uint32_t PALETTE_RAM_OFFSET_START = 0x05000000;
+        const static uint32_t PALETTE_RAM_OFFSET_END = 0x050003FF;
 
         const static uint32_t VRAM_OFFSET_START = 0x06000000;
         const static uint32_t VRAM_OFFSET_END = 0x06017FFF;

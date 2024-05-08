@@ -15,7 +15,7 @@ void SoftwareInterrupt::doDecode(){
 }
 
 void SoftwareInterrupt::doExecute(){
-
+    throw std::runtime_error("Error: Unimplemented instruction: SoftwareInterrupt");
 }
 
 uint32_t SoftwareInterrupt::cyclesUsed() const {

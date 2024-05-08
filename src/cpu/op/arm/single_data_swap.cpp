@@ -22,7 +22,7 @@ void SingleDataSwap::doDecode(){
 }
 
 void SingleDataSwap::doExecute(){
-
+    throw std::runtime_error("Error: Unimplemented instruction: SingleDataSwap");
 }
 
 // SWP              1S+2N+1I

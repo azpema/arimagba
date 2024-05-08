@@ -12,7 +12,7 @@ void decodeAllInstructionsArm(ARM7TDMI &cpu);
 
 int main(int argc, char** argv)
 {
-	std::string gamePath = "../files/panda.gba";
+	std::string gamePath = "../files/arm.gba";
 	if(argc >= 2){
 		gamePath = std::string(argv[1]);
 	}
@@ -21,7 +21,8 @@ int main(int argc, char** argv)
 	GamePak gamepak(gamePath);
 	VRAM vram;
 	WRAM wram;
-	MemoryManager mem(bios, gamepak, vram, wram);
+	PaletteRAM paletteram;
+	MemoryManager mem(bios, gamepak, vram, wram, paletteram);
 	PPU ppu("GBA", &mem);
 	ARM7TDMI cpu(&mem); 
 	cpu.setPC(0x08000000);

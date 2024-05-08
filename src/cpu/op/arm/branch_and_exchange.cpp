@@ -16,7 +16,7 @@ void BranchAndExchange::doDecode(){
 }
 
 void BranchAndExchange::doExecute(){
-
+    throw std::runtime_error("Error: Unimplemented instruction in BranchAndExchange");
 }
 
 // A Branch and Exchange operation takes 3 cycles and is similar to a Branch

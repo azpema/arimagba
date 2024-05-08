@@ -30,7 +30,7 @@ std::string PSRTransferMSRFlagBits::toString() {
         std::cerr << "ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " << sourceOperand->_type << std::endl;
     }
     
-    return PSRTransferMSR::toString() + "," + srcOper;
+    return PSRTransferMSR::toString() + "_flg," + srcOper;
 }
 
 void PSRTransferMSRFlagBits::doDecode(){
@@ -38,7 +38,22 @@ void PSRTransferMSRFlagBits::doDecode(){
 }
 
 void PSRTransferMSRFlagBits::doExecute(){
+    uint32_t newVal = cpu.getCPSR().getValue();
 
+    uint32_t newFlags;
+    if(sourceOperand->_type == Operand::RM){
+        Rm* rm = static_cast<Rm*>(sourceOperand);
+        newFlags = rm->getRmVal();
+    }else if(sourceOperand->_type == Operand::ROTATE_IMM){
+        RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand);
+        newFlags = rotImm->getMnemonicVal();
+    }else{
+        std::cerr << "ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " << sourceOperand->_type << std::endl;
+    }
+
+    // Corresponds to flag bits (NZCV)
+    Utils::setRegBits(newVal, 0xF0000000, newFlags);
+    cpu.getCPSR().setValue(newVal);
 }
 
 // MSR,MRS          1S

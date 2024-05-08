@@ -30,7 +30,7 @@ void MultiplyAccumulate::doDecode(){
 }
 
 void MultiplyAccumulate::doExecute(){
-
+    throw std::runtime_error("Error: Unimplemented instruction: MultiplyAccumulate");
 }
 
 // MUL              1S+ml
