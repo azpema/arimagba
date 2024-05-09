@@ -119,6 +119,15 @@ void DataProcessing::doExecuteOrr(ARM7TDMI &cpu){
     cpu.setReg(rd, orrRes);
 }
 
+void DataProcessing::doExecuteAnd(ARM7TDMI &cpu){
+    uint32_t andRes = cpu.getALU().andOp(op1, op2);
+    cpu.setReg(rd, andRes);
+}
+
+void DataProcessing::doExecuteTst(ARM7TDMI &cpu){
+    cpu.getALU().andOp(op1, op2);
+}
+
 void DataProcessing::doDecode(){
 
 }
@@ -145,10 +154,10 @@ void DataProcessing::doExecute(){
         throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_TEQ_VAL");
         break;
     case OPCODE_TST_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_TST_VAL");
+        doExecuteTst(cpu);
         break;
     case OPCODE_AND_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_AND_VAL");
+        doExecuteAnd(cpu);
         break;
     case OPCODE_EOR_VAL:
         throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_EOR_VAL");
@@ -191,8 +200,20 @@ void DataProcessing::doExecute(){
     case OPCODE_MOV_VAL:
     case OPCODE_BIC_VAL:
     case OPCODE_MVN_VAL:
+    //TODO: "If the S bit is set (and Rd is not R15, see below)"
         if(s == 1){
-            // TODO CPSR flags
+            cpu.getCPSR().setNFlag(cpu.getALU().getN());
+            cpu.getCPSR().setZFlag(cpu.getALU().getZ());
+            /*the C flag will be set to the carry out from the barrel shifter
+             (or preserved when the shift operation is LSL #0)*/
+            if(i == 0){
+                ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
+                if(!((shiftRm->getShiftAmount() == 0 && shiftRm->getShiftType() == 0))){
+                    cpu.getCPSR().setCFlag(cpu.getBarrelShifter().getC());
+                }
+                
+            }
+            
         }
         break;
     case OPCODE_CMP_VAL:

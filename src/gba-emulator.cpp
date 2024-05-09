@@ -8,7 +8,6 @@
 #include <bitset>
 #include <filesystem>
 
-
 void decodeAllInstructionsThumb(ARM7TDMI &cpu);
 void decodeAllInstructionsArm(ARM7TDMI &cpu);
 
@@ -26,7 +25,9 @@ int main(int argc, char** argv)
 	VRAM vram;
 	WRAM wram;
 	PaletteRAM paletteram;
-	MemoryManager mem(bios, gamepak, vram, wram, paletteram);
+	IOregisters io;
+	MemoryManager mem(bios, gamepak, vram, wram, paletteram, io);
+
 	PPU ppu("GBA", &mem);
 	ARM7TDMI cpu(&mem); 
 	cpu.setPC(0x08000000);

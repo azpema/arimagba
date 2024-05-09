@@ -10,6 +10,7 @@ class ALU {
         ALU();
         uint32_t add(uint32_t op1, uint32_t op2);
         uint32_t sub(uint32_t op1, uint32_t op2);
+        uint32_t andOp(uint32_t op1, uint32_t op2);
 
         bool getN();
         bool getZ();

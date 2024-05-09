@@ -9,6 +9,7 @@
 class ShiftRm : public Operand {
     public:
 		ShiftRm(uint16_t val);
+        uint16_t getShiftType();
         std::string getShiftTypeMnemonic();
         bool getC() override;
         uint16_t getShiftAmount();

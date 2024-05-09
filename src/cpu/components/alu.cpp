@@ -45,6 +45,19 @@ uint32_t ALU::sub(uint32_t op1, uint32_t op2){
     return res;
 }
 
+uint32_t ALU::andOp(uint32_t op1, uint32_t op2){
+    uint32_t res = op1 & op2;
+
+    bool op1Sign = Utils::getRegBits(op1, MSB_MASK, MSB_SHIFT) == 1;
+    bool op2Sign = Utils::getRegBits(op2, MSB_MASK, MSB_SHIFT) == 1;
+    bool resSign = Utils::getRegBits(res, MSB_MASK, MSB_SHIFT) == 1;
+
+    n = (Utils::getRegBits(res, MSB_MASK, MSB_SHIFT) == 1);
+    z = (res == 0);
+    
+    return res;
+}
+
 
 bool ALU::getN(){
     return n;

@@ -1,7 +1,7 @@
 #include "memory_manager.hpp"
 
-MemoryManager::MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, WRAM &wram, PaletteRAM &paletteRam)
- : bios(bios), gamepak(gamepak), vram(vram), wram(wram), paletteRam(paletteRam) {}
+MemoryManager::MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, WRAM &wram, PaletteRAM &paletteRam, IOregisters &io)
+ : bios(bios), gamepak(gamepak), vram(vram), wram(wram), paletteRam(paletteRam), io(io) {}
 
 uint32_t MemoryManager::readWord(uint32_t addr) {
     return read(addr, 4);
@@ -20,6 +20,10 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
         std::cerr << "TODO: VRAM Unimplemented memory region in MemoryManager::read" << std::endl;
     }else if(Utils::inRange(addr, WRAM_OFFSET_START, WRAM_OFFSET_END)){
         val = wram.read(addr - WRAM_OFFSET_START, bytes);
+    }else if(Utils::inRange(addr, PALETTE_RAM_OFFSET_START, PALETTE_RAM_OFFSET_END)){
+        val = paletteRam.read(addr - PALETTE_RAM_OFFSET_START, bytes);
+    }else if(Utils::inRange(addr, IO_REGISTERS_OFFSET_START, IO_REGISTERS_OFFSET_END)){
+        val = io.read(addr - IO_REGISTERS_OFFSET_START, bytes);
     }else{
         throw std::runtime_error("Error: Unimplemented memory region in MemoryManager::read");
     }
@@ -28,14 +32,14 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
 }
 
 void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
-    if(Utils::inRange(addr, LCD_REGISTERS_OFFSET_START, LCD_REGISTERS_OFFSET_END)){
-        // IO registers
-    }else if(Utils::inRange(addr, VRAM_OFFSET_START, VRAM_OFFSET_END)){
+    if(Utils::inRange(addr, VRAM_OFFSET_START, VRAM_OFFSET_END)){
         vram.store(addr - VRAM_OFFSET_START, val, bytes);
     }else if(Utils::inRange(addr, WRAM_OFFSET_START, WRAM_OFFSET_END)){
         wram.store(addr - WRAM_OFFSET_START, val, bytes);
     }else if(Utils::inRange(addr, PALETTE_RAM_OFFSET_START, PALETTE_RAM_OFFSET_END)){
         paletteRam.store(addr - PALETTE_RAM_OFFSET_START, val, bytes);
+    }else if(Utils::inRange(addr, IO_REGISTERS_OFFSET_START, IO_REGISTERS_OFFSET_END)){
+        io.store(addr - IO_REGISTERS_OFFSET_START, val, bytes);
     }else{
         throw std::runtime_error("Error: Unimplemented memory region in MemoryManager::store");
     }

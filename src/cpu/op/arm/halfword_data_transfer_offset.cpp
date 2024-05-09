@@ -57,7 +57,6 @@ void HalfwordDataTransferOffset::doExecute(){
 
     if(l == 0){
         // Store to memory
-        uint32_t sourceRegVal = cpu.getReg(rd);
         if(s == 0){
             if(h == 0){
                 // SWP instruction

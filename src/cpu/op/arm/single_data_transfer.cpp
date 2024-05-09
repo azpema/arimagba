@@ -84,6 +84,44 @@ void SingleDataTransfer::doDecode(){
 }
 
 void SingleDataTransfer::doExecute(){
+    uint32_t baseRegVal = cpu.getReg(Rn);
+    uint32_t offsetVal = offsetField->getOperandVal(cpu);
+
+    // Pre-indexing
+    if(P == 1){
+        if(U == 0)
+            baseRegVal -= offsetVal;
+        else if(U == 1)
+            baseRegVal += offsetVal;
+    }
+    if(L == 0){
+        // Store to memory
+        if(B == 0){
+            // Word
+            cpu.getMemManager().store(baseRegVal, cpu.getReg(Rd), 4);
+        }else if(B == 1){
+            // Byte
+            throw std::runtime_error("Error: Unimplemented SingleDataTransfer L==0 B==1");
+        }else{
+            throw std::runtime_error("Error: Invalid B value in SingleDataTransfer::doExecute");
+        }
+
+    }else if(L == 1){
+        // Load from memory
+        throw std::runtime_error("Error: Unimplemented SingleDataTransfer L==1");
+    }else {
+        throw std::runtime_error("Error: Invalid L value in SingleDataTransfer::doExecute");
+    }
+
+    // Post Indexing, Writeback
+    if(P == 0 || W == 1){
+        if(U == 0)
+            baseRegVal -= offsetVal;
+        else if(U == 1)
+            baseRegVal += offsetVal;
+
+        cpu.setReg(Rn, baseRegVal);
+    }
 
 }
 

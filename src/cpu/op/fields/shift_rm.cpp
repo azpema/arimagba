@@ -24,6 +24,10 @@ std::string ShiftRm::getShiftTypeMnemonic(){
     return shiftType2Mnemonic[_shiftType];
 }
 
+uint16_t ShiftRm::getShiftType(){
+    return _shiftType;
+}
+
 uint16_t ShiftRm::getRm(){
     return _rm;
 }
