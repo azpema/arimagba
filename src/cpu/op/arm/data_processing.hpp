@@ -96,4 +96,5 @@ class DataProcessing : public ArmOpcode {
         void doExecuteOrr(ARM7TDMI &cpu);
         void doExecuteAnd(ARM7TDMI &cpu);
         void doExecuteTst(ARM7TDMI &cpu);
+        void doExecuteMvn(ARM7TDMI &cpu);
 };

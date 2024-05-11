@@ -13,9 +13,9 @@ void decodeAllInstructionsArm(ARM7TDMI &cpu);
 
 int main(int argc, char** argv)
 {
-    std::cout << "Current path is " << std::filesystem::current_path() << '\n'; // (1)
+    std::cout << "Current path is " << std::filesystem::current_path() << '\n';
 
-	std::string gamePath = "../files/panda.gba";
+	std::string gamePath = "../files/beeg.gba";
 	if(argc >= 2){
 		gamePath = std::string(argv[1]);
 	}
@@ -23,10 +23,11 @@ int main(int argc, char** argv)
 	BIOS bios("../files/bios.bin");
 	GamePak gamepak(gamePath);
 	VRAM vram;
-	WRAM wram;
+	EWRAM ewram;
+	IWRAM iwram;
 	PaletteRAM paletteram;
 	IOregisters io;
-	MemoryManager mem(bios, gamepak, vram, wram, paletteram, io);
+	MemoryManager mem(bios, gamepak, vram, ewram, iwram, paletteram, io);
 
 	PPU ppu("GBA", &mem);
 	ARM7TDMI cpu(&mem); 

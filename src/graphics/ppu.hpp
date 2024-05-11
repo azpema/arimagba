@@ -13,7 +13,11 @@ class PPU {
         ~PPU();
         void renderScanline();
         
+        
     private:
+        void renderScanlineMode3();
+        void renderScanlineMode4();
+
         MemoryManager *mem;
         SDL_Window *window = nullptr;
         SDL_Renderer *renderer = nullptr;

@@ -4,7 +4,7 @@
 #include <iostream>
 #include "generic_memory.hpp"
 
-class VRAM : public GenericMemory {
+class VRAM : public GenericMemory<0x18000 / 2>{
     public:
         VRAM();
 

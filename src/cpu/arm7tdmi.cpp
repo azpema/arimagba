@@ -118,10 +118,9 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 		}
 	}else if(ArmOpcode::isDataProcessing(op)){
 		return new DataProcessing(op, *this);
-	}else{
-		//std::cout << "ERROR: Unrecognized instruction" << std::endl;
-		return nullptr;
 	}
+
+	std::runtime_error("ERROR: Unrecognized instruction in decodeInstructionARM");
 	return nullptr;
 }
 
@@ -164,10 +163,9 @@ OpCode* ARM7TDMI::decodeInstructionThumb(uint16_t op, uint32_t pc) {
 		return new MoveCompAddSubImm(op, *this);
 	}else if(ThumbOpCode::isLoadStoreImmOffset(op)) {
 		return new LoadStoreImmOffset(op, *this);
-	}else{
-		//std::cout << "ERROR: Unrecognized instruction" << std::endl;
-		return nullptr;
 	}
+
+	std::runtime_error("ERROR: Unrecognized instruction in decodeInstructionARM");
 	return nullptr;
 }
 

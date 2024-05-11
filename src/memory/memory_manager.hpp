@@ -7,7 +7,8 @@
 #include "bios.hpp"
 #include "gamepak.hpp"
 #include "vram.hpp"
-#include "wram.hpp"
+#include "ewram.hpp"
+#include "iwram.hpp"
 #include "palette_ram.hpp"
 #include "io_registers.hpp"
 
@@ -41,22 +42,42 @@
     10000000-FFFFFFFF   Not used (upper 4bits of address bus unused)
 */
 
+/*
+Memory Mirrors
+Most internal memory is mirrored across the whole 24bit/16MB address space in which it is located: 
+  Slow On-board RAM at 2XXXXXXh, 
+  Fast On-Chip RAM at 3XXXXXXh, 
+  Palette RAM at 5XXXXXXh, 
+  VRAM at 6XXXXXXh, 
+  OAM at 7XXXXXXh. 
+Even though VRAM is sized 96K (64K+32K), it is repeated in steps of 128K (64K+32K+32K, the two 32K blocks itself being mirrors of each other).
+
+BIOS ROM, Normal ROM Cartridges, and I/O area are NOT mirrored, the only exception is the undocumented I/O port at 4000800h (repeated each 64K).
+
+The 64K SRAM area is mirrored across the whole 32MB area at E000000h-FFFFFFFh, also, inside of the 64K SRAM field, 32K SRAM chips are repeated twice.
+
+*/
+
 class MemoryManager {
     public:
-        MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, WRAM &wram, PaletteRAM &paletteRam, IOregisters &io);
+        MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, PaletteRAM &paletteRam, IOregisters &io);
         uint32_t readWord(uint32_t addr);
         uint16_t readHalfWord(uint32_t addr);
+        uint16_t readByte(uint32_t addr);
         void store(uint32_t addr, uint32_t val, uint8_t bytes);
 
         uint16_t* getRawVRAM();
-        
+        uint16_t* getPaletteRAM();
+        uint16_t* getIOregisters();
+
     private:
         uint32_t read(uint32_t addr, uint8_t bytes);
         
         BIOS &bios;
         GamePak &gamepak;
         VRAM &vram;
-        WRAM &wram;
+        EWRAM &ewram;
+        IWRAM &iwram;
         PaletteRAM &paletteRam;
         IOregisters &io;
 
@@ -64,8 +85,13 @@ class MemoryManager {
         const static uint32_t BIOS_OFFSET_START = 0x00000000;
         const static uint32_t BIOS_OFFSET_END = 0x00003FFF;
 
-        const static uint32_t WRAM_OFFSET_START = 0x03000000;
-        const static uint32_t WRAM_OFFSET_END = 0x03007FFF;
+        const static uint32_t EWRAM_OFFSET_START = 0x02000000;
+        const static uint32_t EWRAM_OFFSET_END = 0x0203FFFF;
+        const static uint32_t EWRAM_MIRROR_OFFSET_END = 0x02FFFFFF;
+
+        const static uint32_t IWRAM_OFFSET_START = 0x03000000;
+        const static uint32_t IWRAM_OFFSET_END = 0x03007FFF;
+        const static uint32_t IWRAM_MIRROR_OFFSET_END = 0x03FFFFFF;
 
         // I/O Registers
         const static uint32_t IO_REGISTERS_OFFSET_START = 0x04000000;
@@ -74,12 +100,16 @@ class MemoryManager {
         // Internal Display Memory
         const static uint32_t PALETTE_RAM_OFFSET_START = 0x05000000;
         const static uint32_t PALETTE_RAM_OFFSET_END = 0x050003FF;
+        const static uint32_t PALETTE_RAM_MIRROR_OFFSET_END = 0x05FFFFFF;
 
         const static uint32_t VRAM_OFFSET_START = 0x06000000;
         const static uint32_t VRAM_OFFSET_END = 0x06017FFF;
+        const static uint32_t VRAM_MIRROR_OFFSET_END = 0x06FFFFFF;
+
 
         const static uint32_t OAM_OBJ_OFFSET_START = 0x07000000;
         const static uint32_t OAM_OBJ_OFFSET_END = 0x070003FF;
+        const static uint32_t OAM_OBJ_MIRROR_OFFSET_END = 0x07FFFFFF;
 
         // External Memory (Game Pak)
         const static uint32_t GAMEPAK_WAIT_0_OFFSET_START = 0x08000000;

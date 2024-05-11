@@ -108,7 +108,18 @@ void SingleDataTransfer::doExecute(){
 
     }else if(L == 1){
         // Load from memory
-        throw std::runtime_error("Error: Unimplemented SingleDataTransfer L==1");
+                // Store to memory
+        if(B == 0){
+            // Word
+            uint16_t loadVal = cpu.getMemManager().readWord(baseRegVal);
+            cpu.setReg(Rd, loadVal);
+
+        }else if(B == 1){
+            uint16_t loadVal = cpu.getMemManager().readByte(baseRegVal);
+            cpu.setReg(Rd, loadVal);
+        }else{
+            throw std::runtime_error("Error: Invalid B value in SingleDataTransfer::doExecute");
+        }
     }else {
         throw std::runtime_error("Error: Invalid L value in SingleDataTransfer::doExecute");
     }

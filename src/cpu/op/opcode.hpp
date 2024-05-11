@@ -10,6 +10,7 @@ class ARM7TDMI;
 
 class OpCode {
 	public:
+		virtual ~OpCode() {};
 		virtual std::string toString() = 0;
 		std::string toHexString();
 		virtual bool execute() = 0;

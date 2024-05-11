@@ -12,6 +12,7 @@ class ARM7TDMI;
 
 class ArmOpcode : public OpCode {
 	public:
+		virtual ~ArmOpcode() {};
 		virtual std::string toString() = 0;
 		std::string toHexString();
 		bool execute() override;

@@ -128,12 +128,24 @@ void DataProcessing::doExecuteTst(ARM7TDMI &cpu){
     cpu.getALU().andOp(op1, op2);
 }
 
+void DataProcessing::doExecuteMvn(ARM7TDMI &cpu){
+    uint32_t mvnRes = cpu.getALU().mvn(op2);
+    cpu.setReg(rd, mvnRes);
+}
+
 void DataProcessing::doDecode(){
 
 }
 
 void DataProcessing::doExecute(){
     // Assign values to op1 and op2
+    bool rdIsPC = false;
+    if(rd == 15){
+        mustFlushPipeline = true;
+        rdIsPC = true;
+    }
+        
+
     op1 = cpu.getReg(rn);
     op2 = operand2->getOperandVal(cpu);
     switch (dataOpCode)
@@ -142,7 +154,7 @@ void DataProcessing::doExecute(){
         doExecuteMov(cpu);
         break;
     case OPCODE_MVN_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_MVN_VAL");
+        doExecuteMvn(cpu);
         break;
     case OPCODE_CMP_VAL:
         doExecuteCmp(cpu);
@@ -213,7 +225,13 @@ void DataProcessing::doExecute(){
                 }
                 
             }
-            
+            /*
+            When Rd is R15 and the S flag is set the result of the operation is placed in R15 and
+            the SPSR corresponding to the current mode is moved to the CPSR
+            */
+            if(rdIsPC){
+                throw std::runtime_error("ERROR DataProcessing::doExecute 88");
+            }
         }
         break;
     case OPCODE_CMP_VAL:
@@ -229,6 +247,9 @@ void DataProcessing::doExecute(){
             cpu.getCPSR().setZFlag(cpu.getALU().getZ());
             cpu.getCPSR().setCFlag(cpu.getALU().getC());
             cpu.getCPSR().setVFlag(cpu.getALU().getV());
+            if(rdIsPC){
+                throw std::runtime_error("ERROR DataProcessing::doExecute 88");
+            }
         }
         break;
     default:
