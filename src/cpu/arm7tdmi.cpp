@@ -368,24 +368,26 @@ MemoryManager& ARM7TDMI::getMemManager(){
 void ARM7TDMI::executeNextInstruction(){
 		// execute
 		if(insDecodeSet){
-			insExecuteSet = opExecute->execute();
-
 			// print status
-			std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
-			printStatus();
-			std::cout << "<<<" << std::endl;
-		}
+			//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
+			insExecuteSet = opExecute->execute();
+			//printStatus();
+			//std::cout << "<<<" << std::endl;
 
-		// flush pipeline if needed
-		if(insExecuteSet && opExecute->getMustFlushPipeline()){
-			insFetchSet = false;
-			insDecodeSet = false;
-		}
+			// flush pipeline if needed
+			// dont flush is op is not executed
+			if(insExecuteSet && opExecute->getMustFlushPipeline()){
+				insFetchSet = false;
+				insDecodeSet = false;
+			}
 
-		if(insExecuteSet){
-			insExecuteSet = false;
+			if(insExecuteSet){
+				insExecuteSet = false;
+			}
+
 			delete opExecute;
 		}
+
 
 		// decode
 		if(insFetchSet){
