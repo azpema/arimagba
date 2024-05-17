@@ -9,8 +9,11 @@ class ALU {
     public:
         ALU();
         uint32_t add(uint32_t op1, uint32_t op2);
+        uint32_t adc(uint32_t op1, uint32_t op2, uint8_t carry);
         uint32_t sub(uint32_t op1, uint32_t op2);
+        uint32_t sbc(uint32_t op1, uint32_t op2, uint8_t carry);
         uint32_t andOp(uint32_t op1, uint32_t op2);
+        uint32_t mov(uint32_t op);
         uint32_t mvn(uint32_t op2);
 
         bool getN();

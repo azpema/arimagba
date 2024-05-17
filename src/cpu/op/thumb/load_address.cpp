@@ -21,7 +21,12 @@ void LoadAddress::doDecode(){
 }
 
 void LoadAddress::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: LoadAddress");
+    uint32_t rsVal = cpu.getReg(getSPRegVal());
+    // sp refers to PC
+    if(sp == 0)
+        rsVal &= 0xFFFFFFFE;
+    
+    cpu.setReg(rd, cpu.getALU().add(rsVal, offsetVal));
 }
 
 uint32_t LoadAddress::cyclesUsed() const {

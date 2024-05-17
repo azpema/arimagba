@@ -15,12 +15,15 @@ class ShiftRm : public Operand {
         uint16_t getShiftAmount();
         uint16_t getRm();
         uint32_t getOperandVal(ARM7TDMI &cpu) override;
+        enum Type {AMOUNT, REGISTER};
+        Type getType();
+        uint16_t getShiftReg();
     private:
         bool c;
         uint16_t _shift, _rm, _shiftType, _shiftAmount, _shiftReg;
         uint32_t shiftAmount, operand2;
 
-        enum Type {AMOUNT, REGISTER};
+        
         enum Type type;
 
         enum ShiftType {LSL = 0b00, LSR = 0b01, ASR = 0b10, ROR = 0b11};

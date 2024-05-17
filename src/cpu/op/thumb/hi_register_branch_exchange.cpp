@@ -29,7 +29,33 @@ void HiRegisterBranchExchange::doDecode(){
 }
 
 void HiRegisterBranchExchange::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: HiRegisterBranchExchange");
+    uint8_t op = static_cast<HiRegisterBranchExchange::OP>(opField);
+    uint32_t rsVal = cpu.getReg(rs);
+    switch(op){
+        case ADD:
+            throw std::runtime_error("Unimplemented HiRegisterBranchExchange::doExecute");
+        break;
+        case CMP:
+            throw std::runtime_error("Unimplemented HiRegisterBranchExchange::doExecute");
+        break;
+        case MOV:
+            cpu.setReg(rd, rsVal);
+        break;
+        case BX:
+            if(h1 == 1){
+                throw std::runtime_error("Undefined instruction HiRegisterBranchExchange::doExecute BX, H1=1");
+            }
+            cpu.getCPSR().setTFlag(rsVal & 0x1 == 1);
+            cpu.setPC(rsVal);
+            cpu.getCPSR().setTFlag(rsVal & 0x1 == 1);
+            mustFlushPipeline = true;
+        break;
+    }
+
+    // Set CPSR
+    if(op == CMP){
+
+    }
 }
 
 uint32_t HiRegisterBranchExchange::cyclesUsed() const {

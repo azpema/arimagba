@@ -7,6 +7,8 @@ ShiftRm::ShiftRm(uint16_t val) : Operand::Operand(val, OperandType::SHIFT_RM){
     _rm = Utils::getRegBits(val, RM_MASK, RM_SHIFT);
     _shiftType = Utils::getRegBits(_shift, SHIFT_TYPE_MASK, SHIFT_TYPE_SHIFT);
 
+    shiftAmount = 0xDEAD;
+
     // Shift amount
     if((_shift & 0b00000001) == 0b00000000){
         _shiftAmount = Utils::getRegBits(_shift, SHIFT_AMOUNT_MASK, SHIFT_AMOUNT_SHIFT);
@@ -33,7 +35,15 @@ uint16_t ShiftRm::getRm(){
 }
 
 uint16_t ShiftRm::getShiftAmount(){
-    return _shiftAmount;
+    return shiftAmount;
+}
+
+ShiftRm::Type ShiftRm::getType(){
+    return type;
+}
+
+uint16_t ShiftRm::getShiftReg(){
+    return _shiftReg;
 }
 
 bool ShiftRm::getC(){
@@ -52,14 +62,45 @@ uint32_t ShiftRm::getOperandVal(ARM7TDMI &cpu){
         // Only the least significant byte of the contents of Rs is used to determine the shift
         // amount. Rs can be any general register other than R15.
         shiftAmount = cpu.getReg(_shiftReg) & 0xFF;
-
+    }
         // If this byte is zero, the unchanged contents of Rm will be used as the second operand,
         // and the old value of the CPSR C flag will be passed on as the shifter carry output.
-        if(shiftAmount == 0){
-            c = cpu.getCPSR().getCFlag();
-            return rmVal;
+    if(type == AMOUNT && shiftAmount == 0){
+        switch (static_cast<ShiftType>(_shiftType)){
+            case LSL:
+                // LSL#0: No shift performed, ie. directly Op2=Rm, the C flag is NOT affected.
+                return rmVal;
+                break;
+            case LSR:
+                // LSR#0: Interpreted as LSR#32, ie. Op2 becomes zero, C becomes Bit 31 of Rm.
+                res = 0;
+                c = Utils::getRegSingleBit(rmVal, 31);
+                return res;
+                break;
+            case ASR:
+                // LSR#0: Interpreted as LSR#32, ie. Op2 becomes zero, C becomes Bit 31 of Rm.
+                c = Utils::getRegSingleBit(rmVal, 31);
+                res = c * 0xFFFFFFFF;
+                return res;
+                break;
+            case ROR:
+                // ROR#0: Interpreted as RRX#1 (RCR), like ROR#1, but Op2 Bit 31 set to old C.
+                res = cpu.getBarrelShifter().ror(cpu, rmVal, shiftAmount);
+                c = cpu.getBarrelShifter().getC();
+                return res;
+                break;
+            default:
+                std::cerr << "ERROR: Invalid _shiftType value!" << std::endl;
+                break;
         }
-        if(shiftAmount == 32){
+    }
+    if(type == REGISTER){
+        if(shiftAmount == 0){
+            // If this byte is zero, the unchanged contents of Rm will be used as the second operand,
+            // and the old value of the CPSR C flag will be passed on as the shifter carry output
+            c = cpu.getCPSR().getCFlag();
+            return cpu.getReg(_rm);
+        }else if(shiftAmount == 32){
             switch (static_cast<ShiftType>(_shiftType)){
                 case LSL:
                     // LSL by 32 has result zero, carry out equal to bit 0 of Rm
@@ -82,8 +123,7 @@ uint32_t ShiftRm::getOperandVal(ARM7TDMI &cpu){
                     std::cerr << "ERROR: Invalid _shiftType value!" << std::endl;
                     break;
             }
-        }
-        if (shiftAmount > 32){
+        }else if (shiftAmount > 32){
             switch (static_cast<ShiftType>(_shiftType)){
                 case LSL:
                 case LSR:
@@ -109,6 +149,7 @@ uint32_t ShiftRm::getOperandVal(ARM7TDMI &cpu){
             }
         }
     }
+    
 
     switch (static_cast<ShiftType>(_shiftType))
     {

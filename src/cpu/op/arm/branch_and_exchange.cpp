@@ -14,7 +14,10 @@ void BranchAndExchange::doDecode(){
 }
 
 void BranchAndExchange::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction in BranchAndExchange");
+    uint32_t rnVal = cpu.getReg(Rn);
+    cpu.setPC(rnVal);
+    cpu.getCPSR().setTFlag(rnVal & 0x1 == 1);
+    mustFlushPipeline = true;
 }
 
 // A Branch and Exchange operation takes 3 cycles and is similar to a Branch

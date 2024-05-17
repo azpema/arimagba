@@ -24,6 +24,18 @@ class PPU {
 
         const uint32_t SCREEN_WIDTH = 240;
         const uint32_t SCREEN_HEIGHT = 160;
+        
+        volatile uint16_t* io;
+
+        volatile uint16_t* DISPCNT;
+        volatile uint16_t* GREEN_SWAP;
+        volatile uint16_t* DISPSTAT;
+        volatile uint16_t* VCOUNT;
+
+        const uint16_t DCNT_MODE_MASK = 0b0000000000000111;
+        const uint16_t DCNT_MODE_SHIFT = 0; 
+
+        uint8_t getDCNT_MODE();
 
         /*
         4000000h  2    R/W  DISPCNT   LCD Control

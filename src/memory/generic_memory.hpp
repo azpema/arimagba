@@ -56,7 +56,7 @@ class GenericMemory {
                     return;
                 }
                 mem[addr/2] = val & 0xFFFF;
-                mem[addr/2 + 1] = (val & 0xFFFF0000) > 16;
+                mem[addr/2 + 1] = (val & 0xFFFF0000) >> 16;
             }
         }
 

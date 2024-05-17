@@ -112,6 +112,11 @@ bool PSR::getFFlag(){
     return Utils::getRegBits(value, F_FLAG_MASK, F_FLAG_SHIFT);
 }
 
+bool PSR::getTFlag(){
+    return Utils::getRegBits(value, T_FLAG_MASK, T_FLAG_SHIFT);
+}
+
+
 void PSR::setNFlag(bool val){
     setCPSRFlags(N, val);
 }

@@ -47,6 +47,7 @@ class PSR {
 		bool getVFlag();
         bool getIFlag();
         bool getFFlag();
+        bool getTFlag();
 
 		void setNFlag(bool val);
 		void setZFlag(bool val);

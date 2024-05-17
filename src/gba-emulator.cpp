@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 {
     std::cout << "Current path is " << std::filesystem::current_path() << '\n';
 
-	std::string gamePath = "../files/beeg.gba";
+	std::string gamePath = "../files/arm.gba";
 	if(argc >= 2){
 		gamePath = std::string(argv[1]);
 	}
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 		cpu.executeNextInstruction();
 		i++;
 		// Render scanline if necessary cycles have been consumed
-		if(i % 1000 == 0)
+		if(i % 50 == 0)
 			ppu.renderScanline();
 
 	}

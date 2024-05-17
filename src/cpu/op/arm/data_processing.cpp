@@ -14,7 +14,7 @@ DataProcessing::DataProcessing(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode
     }else if (i == 1){
         operand2 = new RotateImm(Utils::getRegBits(op, OPERAND2_MASK, OPERAND2_SHIFT));
     }else{
-        std::cout << "ERROR: Invalid I field value" << std::endl;
+        throw std::runtime_error("ERROR: Invalid i value in DataProcessing::DataProcessing");
     }
 }   
 
@@ -80,13 +80,21 @@ std::string DataProcessing::getRnMnemonic(){
 
 uint32_t DataProcessing::getOperand2Rm(){
     // TODO
-    return -12345;
+    throw std::runtime_error("ERROR: TODO DataProcessing::getOperand2Rm");
 }
 
 std::string DataProcessing::getOperand2Mnemonic(){
     if(i == 0){
         ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
-        return OpCode::getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + Utils::toHexString(shiftRm->getShiftAmount());
+        std::string res = OpCode::getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic();
+        if(shiftRm->getType() == ShiftRm::Type::AMOUNT)
+            res += " #" + Utils::toHexString(shiftRm->getShiftAmount());
+        else if(shiftRm->getType() == ShiftRm::Type::REGISTER){
+            res += " " + OpCode::getRegMnemonic(shiftRm->getShiftReg());
+        }else{
+            throw std::runtime_error("ERROR: Invalid shiftRm->getType() value in DataProcessing::getOperand2Mnemonic");
+        }
+        return res;
     }else if(i == 1){
         RotateImm* rotateImm = static_cast<RotateImm*>(operand2);
         return "#" + Utils::toHexString(rotateImm->getMnemonicVal()); 
@@ -106,7 +114,7 @@ void DataProcessing::doExecuteCmp(ARM7TDMI &cpu){
 }
 
 void DataProcessing::doExecuteMov(ARM7TDMI &cpu){
-    cpu.setReg(rd, op2);
+    cpu.setReg(rd, cpu.getALU().mov(op2));
 }
 
 void DataProcessing::doExecuteAdd(ARM7TDMI &cpu){
@@ -131,6 +139,27 @@ void DataProcessing::doExecuteTst(ARM7TDMI &cpu){
 void DataProcessing::doExecuteMvn(ARM7TDMI &cpu){
     uint32_t mvnRes = cpu.getALU().mvn(op2);
     cpu.setReg(rd, mvnRes);
+}
+
+void DataProcessing::doExecuteSub(ARM7TDMI &cpu){
+    uint32_t subRes = cpu.getALU().sub(op1, op2);
+    cpu.setReg(rd, subRes);
+}
+
+void DataProcessing::doExecuteAdc(ARM7TDMI &cpu){
+    uint32_t adcRes = cpu.getALU().adc(op1, op2, cpu.getCPSR().getCFlag());
+    cpu.setReg(rd, adcRes);
+}
+
+void DataProcessing::doExecuteSbc(ARM7TDMI &cpu){
+    uint32_t carry = cpu.getCPSR().getCFlag();
+    uint32_t sbcRes = cpu.getALU().sbc(op1, op2, carry);
+    cpu.setReg(rd, sbcRes);
+}
+
+void DataProcessing::doExecuteEor(ARM7TDMI &cpu){
+    uint32_t eorRes = op1 ^ op2;
+    cpu.setReg(rd, eorRes); 
 }
 
 void DataProcessing::doDecode(){
@@ -172,10 +201,10 @@ void DataProcessing::doExecute(){
         doExecuteAnd(cpu);
         break;
     case OPCODE_EOR_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_EOR_VAL");
+        doExecuteEor(cpu);
         break;
     case OPCODE_SUB_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_SUB_VAL");
+        doExecuteSub(cpu);
         break;
     case OPCODE_RSB_VAL:
         throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_RSB_VAL");
@@ -184,10 +213,10 @@ void DataProcessing::doExecute(){
         doExecuteAdd(cpu);
         break;
     case OPCODE_ADC_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_ADC_VAL");
+        doExecuteAdc(cpu);
         break;
     case OPCODE_SBC_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_SBC_VAL");
+        doExecuteSbc(cpu);
         break;
     case OPCODE_RSC_VAL:
         throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_RSC_VAL");
@@ -212,6 +241,7 @@ void DataProcessing::doExecute(){
     case OPCODE_MOV_VAL:
     case OPCODE_BIC_VAL:
     case OPCODE_MVN_VAL:
+    std::cout << "TEST BARREL SHIFTER C FLAGS PROPERLY!!!" << std::endl;
     //TODO: "If the S bit is set (and Rd is not R15, see below)"
         if(s == 1){
             cpu.getCPSR().setNFlag(cpu.getALU().getN());
@@ -221,9 +251,13 @@ void DataProcessing::doExecute(){
             if(i == 0){
                 ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
                 if(!((shiftRm->getShiftAmount() == 0 && shiftRm->getShiftType() == 0))){
-                    cpu.getCPSR().setCFlag(cpu.getBarrelShifter().getC());
+                    //cpu.getCPSR().setCFlag(cpu.getBarrelShifter().getC());
+                    cpu.getCPSR().setCFlag(shiftRm->getC());
                 }
-                
+            }else if(i == 1){
+                RotateImm* rotateImm = static_cast<RotateImm*>(operand2);
+                if(rotateImm->getRorShiftAmount() != 0)
+                    cpu.getCPSR().setCFlag(rotateImm->getC());
             }
             /*
             When Rd is R15 and the S flag is set the result of the operation is placed in R15 and

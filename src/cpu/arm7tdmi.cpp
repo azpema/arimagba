@@ -220,17 +220,6 @@ int64_t ARM7TDMI::fetchInstructionArm(uint32_t offset){
 	return mem->readWord(offset);
 }
 
-/*void ARM7TDMI::fetchNextInstruction(){
-	uint32_t ins;
-	if(cpsr.isThumbMode()){
-		ins = bios.readHalfWord(reg[REG_PC]);
-		reg[REG_PC] += 2;
-	}else{
-		ins = bios.readWord(reg[REG_PC]);
-		reg[REG_PC] += 4;
-	}
-}*/
-
 uint32_t ARM7TDMI::getReg(uint16_t n){
 	if(n < 0 || n > 15){
 		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
@@ -349,7 +338,13 @@ void ARM7TDMI::printStatus(){
 	// PC is reduced by 8 to account for pipeline parallelism
 	std::cout << "pc:   " << Utils::toHexString(getPC(), 8) << std::endl;
 	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << std::endl;
-	std::cout << "n:" << cpsr.getNFlag() << " z:" << cpsr.getZFlag() << " c:" << cpsr.getCFlag() << " v:" << cpsr.getVFlag() <<std::endl;
+	std::cout << "n:" << cpsr.getNFlag() << " z:" << cpsr.getZFlag() << " c:" << cpsr.getCFlag() << " v:" << cpsr.getVFlag();
+	std::cout << "\t\ti:" << cpsr.getIFlag() << " f:" << cpsr.getFFlag() << " t:" << cpsr.getTFlag() << "\t\t";
+	if(cpsr.getTFlag() == 0)
+		std::cout << "ARM" << std::endl;
+	else
+		std::cout << "THUMB" << std::endl;
+
 	for(int i=0; i<16; i++){
 		std::cout << "r" + std::to_string(i) + ": " + Utils::toHexString(getReg(i)) + " ";
 	}
@@ -365,14 +360,28 @@ MemoryManager& ARM7TDMI::getMemManager(){
 	op->execute(); 
 }*/
 
+uint32_t ARM7TDMI::fetchNextInstruction(){
+	uint32_t pc = getPC();
+	uint32_t ins;
+	if(cpsr.isThumbMode()){
+		ins = mem->readHalfWord(pc);
+		setPC(getPC() + 2);
+	}else{
+		ins = mem->readWord(pc);
+		setPC(getPC() + 4);
+	}
+	
+	return ins;
+}
+
 void ARM7TDMI::executeNextInstruction(){
 		// execute
 		if(insDecodeSet){
 			// print status
-			//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
+			std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
 			insExecuteSet = opExecute->execute();
-			//printStatus();
-			//std::cout << "<<<" << std::endl;
+			printStatus();
+			std::cout << "<<<" << std::endl;
 
 			// flush pipeline if needed
 			// dont flush is op is not executed
@@ -397,11 +406,9 @@ void ARM7TDMI::executeNextInstruction(){
 		}
 		
 		// fetch
-		insFetch = mem->readWord(getPC());
 		fetchPC = getPC();
-		setPC(getPC() + 4);
-
-		
+		insFetch = fetchNextInstruction();
+	
 		insFetchSet = true;
 		insDecode = insFetch;
 }

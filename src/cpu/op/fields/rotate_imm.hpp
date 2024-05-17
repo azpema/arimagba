@@ -12,6 +12,7 @@ class RotateImm : public Operand {
         uint32_t getMnemonicVal();
 
         uint32_t getOperandVal(ARM7TDMI &cpu) override;
+        uint32_t getRorShiftAmount();
         bool getC() override;
 
     private:

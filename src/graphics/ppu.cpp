@@ -17,6 +17,12 @@ PPU::PPU(std::string title, MemoryManager *memManager){
     if(renderer == nullptr){
         throw std::runtime_error("SDL: Renderer could not be created: " + std::string(SDL_GetError()));
     }
+
+    io = mem->getIOregisters();
+    DISPCNT = io + (0x04000000 - 0x04000000) / 2;
+    GREEN_SWAP = io + (0x04000002 - 0x04000000) / 2;
+    DISPSTAT = io + (0x04000004 - 0x04000000) / 2;
+    VCOUNT = io + (0x04000006 - 0x04000000) / 2;
 }
 
 PPU::~PPU(){
@@ -30,19 +36,31 @@ PPU::~PPU(){
 void PPU::renderScanline(){
     // Check BG Mode in DISPCNT
     // Panda will stop working!!!
-    renderScanlineMode4();
+    if(*VCOUNT <= 160){
+        switch(getDCNT_MODE()){
+            case 3:
+                renderScanlineMode3();
+                break;
+            case 4:
+                renderScanlineMode4();
+                break;
+            default:
+                throw std::runtime_error("ERROR: Unsupported PPU Mode");
+        }
+    }
 
+    
     // Update VCOUNT
-    mem->getIOregisters()[0x03] += 1; 
-    if(mem->getIOregisters()[0x03] == 228)
-        mem->getIOregisters()[0x03] = 0;
+    *VCOUNT += 1; 
+    if(*VCOUNT == 228)
+        *VCOUNT = 0;
 }
 
 
 void PPU::renderScanlineMode3(){
     // Create a texture
     SDL_Texture *texture = SDL_CreateTexture(renderer,
-        SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
+        SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, 1);
 
     void* pixels;
     int pitch;
@@ -51,13 +69,18 @@ void PPU::renderScanlineMode3(){
     SDL_LockTexture(texture, NULL, &pixels, &pitch);
 
     // Copy your pixel data into the texture's pixel data
-    memcpy(pixels, mem->getRawVRAM(), SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint16));
+    memcpy(pixels, mem->getRawVRAM() + SCREEN_WIDTH*(*VCOUNT), SCREEN_WIDTH * sizeof(Uint16));
 
     // Unlock the texture to update the changes
     SDL_UnlockTexture(texture);
 
     // Copy the texture to the renderer
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_Rect rect;
+    rect.x = 0;
+    rect.y = *VCOUNT;
+    rect.w = SCREEN_WIDTH;
+    rect.h = 1;
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
 
     // Present the renderer
     SDL_RenderPresent(renderer);
@@ -78,15 +101,13 @@ void PPU::renderScanlineMode4(){
     // Lock the texture, which allows direct pixel access
     SDL_LockTexture(texture, NULL, &pixels, &pitch);
 
-    uint16_t vcount = mem->getIOregisters()[0x03];
-
     // Get full palette
     uint16_t* paletteRAM = mem->getPaletteRAM();
     // Get VRAM corresponding to scanline
-    uint16_t* VRAM = mem->getRawVRAM() + vcount;
+    uint16_t* VRAM = mem->getRawVRAM() + *VCOUNT;
     // Copy your pixel data into the texture's pixel data
 
-    std::cout << "TODO: Improve mode4 rendering; too slow!" << std::endl;
+    // TODO: Improve mode4 rendering; too slow!"
     uint16_t toPaint[240];
     for(int i=0; i<240/ 2; i++){
         toPaint[i*2] = paletteRAM[VRAM[i]];
@@ -99,10 +120,10 @@ void PPU::renderScanlineMode4(){
 
     // Copy the texture to the renderer
     SDL_Rect rect;
-    rect.x = 0; // x position where the line will be drawn
-    rect.y = vcount;   // y position where the line will be drawn
-    rect.w = SCREEN_WIDTH;   // width of the line (1 pixel)
-    rect.h = 1; // height of the line (600 pixels)
+    rect.x = 0;
+    rect.y = *VCOUNT;
+    rect.w = SCREEN_WIDTH;
+    rect.h = 1;
     SDL_RenderCopy(renderer, texture, NULL, &rect);
 
     // Present the renderer
@@ -112,4 +133,7 @@ void PPU::renderScanlineMode4(){
     SDL_DestroyTexture(texture);
 }
 
+uint8_t PPU::getDCNT_MODE(){
+    return Utils::getRegBits(*DISPCNT, DCNT_MODE_MASK, DCNT_MODE_SHIFT);
+}
 

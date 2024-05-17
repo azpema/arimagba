@@ -32,6 +32,8 @@ class HiRegisterBranchExchange : public ThumbOpCode {
         const static uint16_t RD_HD_MASK = 0b0000000000000111;
         const static uint16_t RD_HD_SHIFT = 0;
 
+        enum OP { ADD = 0, CMP = 1, MOV = 2, BX = 3 };
+
         std::string op2Mnemonic[4] = {"add", "cmp", "mov", "bx"};
         std::string getOpMnemonic();
 };

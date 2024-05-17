@@ -2,23 +2,16 @@
 #define _BIOS_ 
 
 #include <iostream>
-#include <fstream>
-#include <string>
+#include "generic_memory.hpp"
 
-
-class BIOS {
+class BIOS : public GenericMemory<0x4000 / 2>{
     public:
-        BIOS();
-        BIOS(std::string path);
-        int64_t readWord(uint32_t offset);
-        int64_t readHalfWord(uint32_t offset);
+        BIOS(std::string filePath);
         
     private:
-        int64_t readBytes(uint32_t offset, uint32_t nBytes);
-        
-        std::string filePath;
-        std::ifstream fileStream;
-        
+        // 16 bit access
+        const static uint32_t BIOS_SIZE_2WORDS = 0x4000 / 2;
+                
 };
 
 #endif

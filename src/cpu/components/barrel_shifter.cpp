@@ -36,16 +36,25 @@ uint32_t BarrelShifter::asr(uint32_t val, uint32_t n){
 
     c = Utils::getRegSingleBit(val, n-1);
 
-    const uint32_t highBit = Utils::getRegSingleBit(val, 31);
+    /*const uint32_t highBit = Utils::getRegSingleBit(val, 31);
     uint32_t keepSign = Utils::getRegSingleBit(val, 31);
     for(size_t i = 1; i < n; i++){
         keepSign = (keepSign >> 1) | highBit;
     }
     
-    return (val >> n) | keepSign;
+    return (val >> n) | keepSign;*/
+
+    uint32_t res = val;
+    const uint32_t highBit = val & 0x80000000;
+    for(size_t i = 0; i < n; i++){
+        res = (res >> 1) | highBit;
+    }
+
+    return res;
 }
 
 uint32_t BarrelShifter::ror(ARM7TDMI &cpu, uint32_t val, uint32_t n){
+    c = Utils::getRegSingleBit(val, n-1);
     if(n == 0)
         return rrx(cpu, val);
 

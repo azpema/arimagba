@@ -20,7 +20,36 @@ void MoveCompAddSubImm::doDecode(){
 }
 
 void MoveCompAddSubImm::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: MoveCompAddSubImm");
+    uint8_t op = static_cast<MoveCompAddSubImm::Op>(opField);
+    uint32_t val = 0;
+    switch (op)
+    {
+    case MOV:
+        cpu.setReg(rd, offset8);
+        break;
+    case CMP:
+        cpu.getALU().sub(cpu.getReg(rd), offset8);
+        break;
+    case ADD:
+        val = cpu.getALU().add(cpu.getReg(rd), offset8);
+        cpu.setReg(rd, val);
+        break;
+    case SUB:
+        val = cpu.getALU().sub(cpu.getReg(rd), offset8);
+        cpu.setReg(rd, val);
+        break;
+    default:
+        throw std::runtime_error("Error: Unknown OpCode in: MoveCompAddSubImm");
+        break;
+    }
+
+    // Set CPSR flags
+    cpu.getCPSR().setNFlag(cpu.getALU().getN());
+    cpu.getCPSR().setZFlag(cpu.getALU().getZ());
+    if(op != MOV){
+        cpu.getCPSR().setCFlag(cpu.getALU().getC());
+        cpu.getCPSR().setVFlag(cpu.getALU().getV());
+    }
 }
 
 uint32_t MoveCompAddSubImm::cyclesUsed() const {

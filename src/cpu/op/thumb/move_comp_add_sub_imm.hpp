@@ -26,6 +26,8 @@ class MoveCompAddSubImm : public ThumbOpCode {
         const static uint16_t OFFSET8_MASK = 0b0000000011111111; 
         const static uint16_t OFFSET8_SHIFT = 0; 
 
+        enum Op { MOV = 0, CMP = 1, ADD = 2, SUB = 3 };
+
         std::string op2Mnemonic[4] = {"mov", "cmp", "add", "sub"};
         std::string getOpMnemonic();
 };

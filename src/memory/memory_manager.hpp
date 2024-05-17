@@ -70,17 +70,6 @@ class MemoryManager {
         uint16_t* getPaletteRAM();
         uint16_t* getIOregisters();
 
-    private:
-        uint32_t read(uint32_t addr, uint8_t bytes);
-        
-        BIOS &bios;
-        GamePak &gamepak;
-        VRAM &vram;
-        EWRAM &ewram;
-        IWRAM &iwram;
-        PaletteRAM &paletteRam;
-        IOregisters &io;
-
         // General Internal Memory
         const static uint32_t BIOS_OFFSET_START = 0x00000000;
         const static uint32_t BIOS_OFFSET_END = 0x00003FFF;
@@ -114,6 +103,19 @@ class MemoryManager {
         // External Memory (Game Pak)
         const static uint32_t GAMEPAK_WAIT_0_OFFSET_START = 0x08000000;
         const static uint32_t GAMEPAK_WAIT_0_OFFSET_END = 0x09FFFFFF;
+
+    private:
+        uint32_t read(uint32_t addr, uint8_t bytes);
+        
+        BIOS &bios;
+        GamePak &gamepak;
+        VRAM &vram;
+        EWRAM &ewram;
+        IWRAM &iwram;
+        PaletteRAM &paletteRam;
+        IOregisters &io;
+
+
 };
 
 #endif

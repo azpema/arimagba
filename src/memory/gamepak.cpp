@@ -35,19 +35,10 @@ uint32_t GamePak::read(uint32_t addr, uint8_t bytes) {
         val = 0;
     else{
         if(bytes == 2){
-            if(addr % 2 != 0){
-                std::cerr << "TODO: Unaligned memory access in VRAM::store" << std::endl;
-            }else {
-                val = gameMem[addr / 2];
-            }
+            val = gameMem[addr >> 1];
         }else if(bytes == 4){
-            if(addr % 4 != 0){
-                std::cerr << "TODO: Unaligned memory access in VRAM::store" << std::endl;
-            }else{
-                val = gameMem[addr/2];
-                val |= gameMem[addr/2 + 1] << 16;
-            }
-
+            val = gameMem[addr >> 1];
+            val |= gameMem[(addr >> 1) + 1] << 16;
         }
     }
 

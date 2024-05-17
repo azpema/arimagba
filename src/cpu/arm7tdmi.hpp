@@ -31,7 +31,7 @@ class ARM7TDMI {
 
 		int64_t fetchInstructionThumb(uint32_t offset);
 		int64_t fetchInstructionArm(uint32_t offset);
-		void fetchNextInstruction();
+		uint32_t fetchNextInstruction();
 		void executeNextInstruction();
 		void executionLoop();
 		void printStatus();
