@@ -114,7 +114,7 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 		}else if(PSRTransferMSR::isFlagBitsTransfer(op)){
 			return new PSRTransferMSRFlagBits(op, *this);
 		}else{
-			std::cerr << "ERROR: Unrecognized PSR Transfer MSR format" << std::endl;
+			throw std::runtime_error("ERROR: Unrecognized PSR Transfer MSR format");
 		}
 	}else if(ArmOpcode::isDataProcessing(op)){
 		return new DataProcessing(op, *this);

@@ -123,7 +123,7 @@ void DataProcessing::doExecuteAdd(ARM7TDMI &cpu){
 }
 
 void DataProcessing::doExecuteOrr(ARM7TDMI &cpu){
-    uint32_t orrRes = op1 | op2;
+    uint32_t orrRes = cpu.getALU().orr(op1, op2);
     cpu.setReg(rd, orrRes);
 }
 
@@ -158,8 +158,32 @@ void DataProcessing::doExecuteSbc(ARM7TDMI &cpu){
 }
 
 void DataProcessing::doExecuteEor(ARM7TDMI &cpu){
-    uint32_t eorRes = op1 ^ op2;
+    uint32_t eorRes = cpu.getALU().eor(op1, op2);
     cpu.setReg(rd, eorRes); 
+}
+
+void DataProcessing::doExecuteBic(ARM7TDMI &cpu){
+    uint32_t bicRes = cpu.getALU().andOp(op1, ~op2);
+    cpu.setReg(rd, bicRes);
+}
+
+void DataProcessing::doExecuteRsb(ARM7TDMI &cpu){
+    uint32_t rsbRes = cpu.getALU().sub(op2, op1);
+    cpu.setReg(rd, rsbRes);
+}
+
+void DataProcessing::doExecuteRsc(ARM7TDMI &cpu){
+    uint32_t carry = cpu.getCPSR().getCFlag();
+    uint32_t sbcRes = cpu.getALU().sbc(op2, op1, carry);
+    cpu.setReg(rd, sbcRes);
+}
+
+void DataProcessing::doExecuteCmn(ARM7TDMI &cpu){
+    cpu.getALU().add(op1, op2);
+}
+
+void DataProcessing::doExecuteTeq(ARM7TDMI &cpu){
+    cpu.getALU().eor(op1, op2);
 }
 
 void DataProcessing::doDecode(){
@@ -189,10 +213,10 @@ void DataProcessing::doExecute(){
         doExecuteCmp(cpu);
         break;
     case OPCODE_CMN_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_CMN_VAL");
+        doExecuteCmn(cpu);
         break;
     case OPCODE_TEQ_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_TEQ_VAL");
+        doExecuteTeq(cpu);
         break;
     case OPCODE_TST_VAL:
         doExecuteTst(cpu);
@@ -207,7 +231,7 @@ void DataProcessing::doExecute(){
         doExecuteSub(cpu);
         break;
     case OPCODE_RSB_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_RSB_VAL");
+        doExecuteRsb(cpu);
         break;
     case OPCODE_ADD_VAL:
         doExecuteAdd(cpu);
@@ -219,13 +243,13 @@ void DataProcessing::doExecute(){
         doExecuteSbc(cpu);
         break;
     case OPCODE_RSC_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_RSC_VAL");
+        doExecuteRsc(cpu);
         break;
     case OPCODE_ORR_VAL:
         doExecuteOrr(cpu);
         break;
     case OPCODE_BIC_VAL:
-        throw std::runtime_error("Error: Unimplemented instruction: DataProcessing::OPCODE_BIC_VAL");
+        doExecuteBic(cpu);
         break;
     default:
         break;
