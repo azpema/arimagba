@@ -108,6 +108,7 @@ class ARM7TDMI {
 		uint32_t fetchPC;
 
 		PSR& getCorrespondingSPSR();
+		uint32_t getSPSRval();
 
 		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
 		OpCode* decodeInstructionThumb(uint16_t op, uint32_t pc);

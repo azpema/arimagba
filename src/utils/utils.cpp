@@ -6,11 +6,6 @@ uint32_t Utils::clearRegBits(uint32_t &reg, const uint32_t mask){
 }
 
 uint32_t Utils::setRegBits(uint32_t &reg, const uint32_t mask, const uint32_t val){
-    if((mask | val) != mask){
-        std::cout << "ERROR: value exceeds mask!" << std::endl;
-        return -1;
-    }
-
     clearRegBits(reg, mask);
     reg |= val;
     return reg;

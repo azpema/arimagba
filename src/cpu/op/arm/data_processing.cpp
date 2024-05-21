@@ -193,6 +193,7 @@ void DataProcessing::doDecode(){
 void DataProcessing::doExecute(){
     // Assign values to op1 and op2
     bool rdIsPC = false;
+    // Do you really need to flush when rd=15 in cmp r15, r0, for exmple?
     if(rd == 15){
         mustFlushPipeline = true;
         rdIsPC = true;
@@ -201,6 +202,41 @@ void DataProcessing::doExecute(){
 
     op1 = cpu.getReg(rn);
     op2 = operand2->getOperandVal(cpu);
+
+
+    if(i == 0){
+        ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
+        if(shiftRm->getRm() == 15){
+            if(shiftRm->getType() == ShiftRm::Type::AMOUNT){
+                // op2 += 8;
+                // PC is already 8 bytes ahead
+            }else if(shiftRm->getType() == ShiftRm::Type::REGISTER){
+                // op2 += 12;
+                // PC is already 8 bytes ahead
+                op2 += 4;
+            }else{
+                throw std::runtime_error("ERROR: Invalid shiftRm->getType() value in DataProcessing::getOperand2Mnemonic");
+            }
+        }
+        if(rn == 15){
+            if(shiftRm->getType() == ShiftRm::Type::AMOUNT){
+                // op1 += 8;
+                // PC is already 8 bytes ahead
+            }else if(shiftRm->getType() == ShiftRm::Type::REGISTER){
+                // op1 += 12;
+                // PC is already 8 bytes ahead
+                op1 += 4;
+            }else{
+                throw std::runtime_error("ERROR: Invalid shiftRm->getType() value in DataProcessing::getOperand2Mnemonic");
+            }
+        }
+    }else if(i == 1){
+        //throw std::runtime_error("ERROR: Unimplemented DataProcessing::doExecute rn==15 i==1");
+        // TODO ?¿?¿?¿?
+    }else{
+        throw std::runtime_error("ERROR: Invalid I value DataProcessing::doExecute");
+    }
+
     switch (dataOpCode)
     {
     case OPCODE_MOV_VAL:
@@ -283,13 +319,6 @@ void DataProcessing::doExecute(){
                 if(rotateImm->getRorShiftAmount() != 0)
                     cpu.getCPSR().setCFlag(rotateImm->getC());
             }
-            /*
-            When Rd is R15 and the S flag is set the result of the operation is placed in R15 and
-            the SPSR corresponding to the current mode is moved to the CPSR
-            */
-            if(rdIsPC){
-                throw std::runtime_error("ERROR DataProcessing::doExecute 88");
-            }
         }
         break;
     case OPCODE_CMP_VAL:
@@ -305,13 +334,24 @@ void DataProcessing::doExecute(){
             cpu.getCPSR().setZFlag(cpu.getALU().getZ());
             cpu.getCPSR().setCFlag(cpu.getALU().getC());
             cpu.getCPSR().setVFlag(cpu.getALU().getV());
-            if(rdIsPC){
-                throw std::runtime_error("ERROR DataProcessing::doExecute 88");
-            }
         }
         break;
     default:
         std::cerr << "ERROR: Invalid Opcode in DataProcessing::doExecute" << std::endl;
         break;
+    }
+
+    /*
+        When Rd is R15 and the S flag is set the result of the operation is placed in R15 and
+        the SPSR corresponding to the current mode is moved to the CPSR
+    */
+    if(rdIsPC && s==1){
+        PSR::Mode mode = cpu.getCPSR().getMode();
+        if(mode != PSR::Mode::User && mode != PSR::Mode::System){
+            cpu.setCPSR(cpu.getSPSR().getValue());
+        }else{
+            // User and System modes have no SPSR, so do nothing...
+            std::cout << "eee" << std::endl;
+        }
     }
 }

@@ -10,7 +10,6 @@
 #include "op/arm/block_data_transfer.hpp"
 #include "op/arm/psr_transfer_mrs.hpp"
 #include "op/arm/psr_transfer_msr.hpp"
-#include "op/arm/psr_transfer_msr_full.hpp"
 #include "op/arm/psr_transfer_msr_flag_bits.hpp"
 #include "op/arm/undefined.hpp"
 #include "op/arm/software_interrupt.hpp"
@@ -69,6 +68,8 @@ ARM7TDMI::ARM7TDMI(MemoryManager *memManager) {
 	r13_svc[0] = 0x03007FE0;
 
 	barrelShifter = new BarrelShifter();
+
+	spsr_fiq.setValue(0xF00000FF);
 }
 
 ARM7TDMI::~ARM7TDMI() {
@@ -84,6 +85,9 @@ OpCode* ARM7TDMI::decodeInstruction(uint32_t op, uint32_t pc){
 }
 
 OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
+	if(op == 0xE3A08000){
+		std::cout << "hello" << std::endl;
+	}
 	if(ArmOpcode::isBranchAndExchange(op)){
 		return new BranchAndExchange(op, *this);
 	}else if (ArmOpcode::isBlockDataTransfer(op)) {
@@ -109,13 +113,7 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 	}else if(ArmOpcode::isPSRTransferMRS(op)){
 		return new PSRTransferMRS(op, *this);
 	}else if(ArmOpcode::isPSRTransferMSR(op)){
-		if(PSRTransferMSR::isFullTransfer(op)){
-			return new PSRTransferMSRFull(op, *this);
-		}else if(PSRTransferMSR::isFlagBitsTransfer(op)){
-			return new PSRTransferMSRFlagBits(op, *this);
-		}else{
-			throw std::runtime_error("ERROR: Unrecognized PSR Transfer MSR format");
-		}
+		return new PSRTransferMSRFlagBits(op, *this);
 	}else if(ArmOpcode::isDataProcessing(op)){
 		return new DataProcessing(op, *this);
 	}
@@ -194,6 +192,28 @@ PSR& ARM7TDMI::getCorrespondingSPSR(){
 
 PSR& ARM7TDMI::getSPSR(){
 	return getCorrespondingSPSR();
+}
+
+uint32_t ARM7TDMI::getSPSRval(){
+	switch (cpsr.getMode())
+	{
+	case PSR::Mode::FIQ:
+		return spsr_fiq.getValue();
+	case PSR::Mode::Supervisor:
+		return spsr_svc.getValue();
+	case PSR::Mode::Abort:
+		return spsr_abt.getValue();
+	case PSR::Mode::IRQ:
+		return spsr_irq.getValue();
+	case PSR::Mode::Undefined:
+		return spsr_und.getValue();
+	case PSR::Mode::User:
+	case PSR::Mode::System:
+		return 0x00000000;
+	default:
+		throw std::runtime_error("Error: Unrecognized CPSR mode in ARM7TDMI::getCPSR()");
+		break;
+	}
 }
 
 void ARM7TDMI::setCPSR(uint32_t val){
@@ -279,46 +299,52 @@ void ARM7TDMI::setReg(uint16_t n, uint32_t val){
 		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
 		return;
 	}
-	switch (cpsr.getMode())
-	{
-	case PSR::Mode::System:
-	case PSR::Mode::User:
+
+	if(n == 15){
 		reg[n] = val;
-		break;
-	case PSR::Mode::FIQ:
-		if(n>=0 && n<=7)
+	}else{
+		switch (cpsr.getMode())
+		{
+		case PSR::Mode::System:
+		case PSR::Mode::User:
 			reg[n] = val;
-		else if(n>=8 && n<=14)
-			r8_fiq[n - 8] = val;
-		break;
-	case PSR::Mode::Supervisor:
-		if(n>=0 && n<=12)
-			reg[n] = val;
-		else if(n>=13 && n<=14)
-			r13_svc[n - 13] = val;
-		break;
-	case PSR::Mode::Abort:
-		if(n>=0 && n<=12)
-			reg[n] = val;
-		else if(n>=13 && n<=14)
-			r13_abt[n - 13] = val;
-		break;
-	case PSR::Mode::IRQ:
-		if(n>=0 && n<=12)
-			reg[n] = val;
-		else if(n>=13 && n<=14)
-			r13_irq[n - 13] = val;
-		break;
-	case PSR::Mode::Undefined:
-		if(n>=0 && n<=12)
-			reg[n] = val;
-		else if(n>=13 && n<=14)
-			r13_und[n - 13] = val;
-		break;
-	default:
-		std::cerr << "ERROR: Unknown CPSR Mode in CPU getReg" << std::endl;
-		break;
+			break;
+		case PSR::Mode::FIQ:
+			if(n>=0 && n<=7)
+				reg[n] = val;
+			else if(n>=8 && n<=14)
+				r8_fiq[n - 8] = val;
+			break;
+		case PSR::Mode::Supervisor:
+			if(n>=0 && n<=12)
+				reg[n] = val;
+			else if(n>=13 && n<=14)
+				r13_svc[n - 13] = val;
+			break;
+		case PSR::Mode::Abort:
+			if(n>=0 && n<=12)
+				reg[n] = val;
+			else if(n>=13 && n<=14)
+				r13_abt[n - 13] = val;
+			break;
+		case PSR::Mode::IRQ:
+			if(n>=0 && n<=12)
+				reg[n] = val;
+			else if(n>=13 && n<=14)
+				r13_irq[n - 13] = val;
+			break;
+		case PSR::Mode::Undefined:
+			if(n>=0 && n<=12)
+				reg[n] = val;
+			else if(n>=13 && n<=14)
+				r13_und[n - 13] = val;
+			break;
+		default:
+			throw std::runtime_error("ERROR: Invalid CPSR Mode in ARM7TDMI::setReg");
+			break;
+		}
 	}
+
 }
 
 
@@ -338,12 +364,15 @@ void ARM7TDMI::printStatus(){
 	// PC is reduced by 8 to account for pipeline parallelism
 	std::cout << "pc:   " << Utils::toHexString(getPC(), 8) << std::endl;
 	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << std::endl;
+	std::cout << "spsr: " << Utils::toHexString(getSPSRval(), 8) << std::endl;
 	std::cout << "n:" << cpsr.getNFlag() << " z:" << cpsr.getZFlag() << " c:" << cpsr.getCFlag() << " v:" << cpsr.getVFlag();
 	std::cout << "\t\ti:" << cpsr.getIFlag() << " f:" << cpsr.getFFlag() << " t:" << cpsr.getTFlag() << "\t\t";
 	if(cpsr.getTFlag() == 0)
-		std::cout << "ARM" << std::endl;
+		std::cout << "ARM" << "\t\t";
 	else
-		std::cout << "THUMB" << std::endl;
+		std::cout << "THUMB" << "\t\t";
+
+	std::cout << cpsr.getModeString() << std::endl;
 
 	for(int i=0; i<16; i++){
 		std::cout << "r" + std::to_string(i) + ": " + Utils::toHexString(getReg(i)) + " ";

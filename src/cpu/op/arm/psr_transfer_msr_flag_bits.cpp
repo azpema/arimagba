@@ -4,6 +4,7 @@
 
 PSRTransferMSRFlagBits::PSRTransferMSRFlagBits(uint32_t op, ARM7TDMI &cpu): PSRTransferMSR::PSRTransferMSR(op, cpu) {
     I = Utils::getRegBits(op, I_MASK, I_SHIFT);
+    c = Utils::getRegBits(op, C_MASK, C_SHIFT);
 
     if(I == 0){
         sourceOperand = new Rm(Utils::getRegBits(op, SOURCE_OPERAND_MASK, SOURCE_OPERAND_SHIFT));
@@ -30,7 +31,12 @@ std::string PSRTransferMSRFlagBits::toString() {
         std::cerr << "ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " << sourceOperand->_type << std::endl;
     }
     
-    return PSRTransferMSR::toString() + "_flg," + srcOper;
+    std::string cMnemonic = "";
+    if(c == 1){
+        cMnemonic = "c";
+    }
+
+    return PSRTransferMSR::toString() + "_f" + cMnemonic + "," + srcOper;
 }
 
 void PSRTransferMSRFlagBits::doDecode(){
@@ -53,7 +59,20 @@ void PSRTransferMSRFlagBits::doExecute(){
 
     // Corresponds to flag bits (NZCV)
     Utils::setRegBits(newVal, 0xF0000000, newFlags);
-    cpu.getCPSR().setValue(newVal);
+
+    // Set control bits
+    if(c == 1){
+        Utils::setRegBits(newVal, 0x000000FF, newFlags);
+    }
+
+    if(psr == 0){
+        cpu.getCPSR().setValue(newVal);
+    }else if(psr == 1){
+        cpu.setSPSR(newVal);
+    }else{
+        throw new std::runtime_error("ERROR: Invalid PSR value in PSRTransferMSRFlagBits::doExecute");
+    }
+    
 }
 
 // MSR,MRS          1S

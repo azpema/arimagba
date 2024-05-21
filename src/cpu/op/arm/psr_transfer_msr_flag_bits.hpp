@@ -19,10 +19,14 @@ class PSRTransferMSRFlagBits : public PSRTransferMSR {
 
     private:
         uint16_t I;
+        uint8_t c;
         Operand* sourceOperand;
 
         const static uint32_t I_MASK = 0b00000010000000000000000000000000; 
         const static uint32_t I_SHIFT = 25;
+
+        const static uint32_t C_MASK = 0b00000000000000010000000000000000; 
+        const static uint32_t C_SHIFT = 16;
 
         const static uint32_t SOURCE_OPERAND_MASK = 0b00000000000000000000111111111111;
         const static uint32_t SOURCE_OPERAND_SHIFT = 0;
