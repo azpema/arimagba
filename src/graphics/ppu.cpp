@@ -49,13 +49,22 @@ void PPU::renderScanline(){
         }
     }
 
-    
+    std::cout << *VCOUNT << std::endl;
     // Update VCOUNT
     *VCOUNT += 1; 
-    if(*VCOUNT == 228)
+    if(*VCOUNT == VCOUNT_START_VBLANK)
+        setVBlankFlag(true);
+    else if(*VCOUNT == VCOUNT_END_VBLANK){
+        setVBlankFlag(false);
+    }
+    else if(*VCOUNT == 228)
         *VCOUNT = 0;
 }
 
+void PPU::setVBlankFlag(bool val){
+    uint32_t regVal = *DISPSTAT;
+    *DISPSTAT = Utils::setRegBits(regVal, DSTAT_IN_VBL_MASK, val);
+}
 
 void PPU::renderScanlineMode3(){
     // Create a texture

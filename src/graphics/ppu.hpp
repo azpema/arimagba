@@ -32,10 +32,36 @@ class PPU {
         volatile uint16_t* DISPSTAT;
         volatile uint16_t* VCOUNT;
 
+        // ***************** VCOUNT ***************** 
+        const uint8_t VCOUNT_START_VBLANK = 160;
+        const uint8_t VCOUNT_END_VBLANK = 227;
+
         const uint16_t DCNT_MODE_MASK = 0b0000000000000111;
         const uint16_t DCNT_MODE_SHIFT = 0; 
 
+        // ***************** DISPSTAT ***************** 
+        /*
+            Bit   Name  Expl.
+            0     DSTAT_IN_VBL      V-Blank flag   (Read only) (1=VBlank) (set in line 160..226; not 227)
+            1     DSTAT_IN_HBL      H-Blank flag   (Read only) (1=HBlank) (toggled in all lines, 0..227)
+            2     DSTAT_IN_VCT      V-Counter flag (Read only) (1=Match)  (set in selected line)     (R)
+            3     DSTAT_VBL_IRQ     V-Blank IRQ Enable         (1=Enable)                          (R/W)
+            4     DSTAT_HBL_IRQ     H-Blank IRQ Enable         (1=Enable)                          (R/W)
+            5     DSTAT_VCT_IRQ     V-Counter IRQ Enable       (1=Enable)                          (R/W)
+            6                       Not used (0) / DSi: LCD Initialization Ready (0=Busy, 1=Ready)   (R)
+            7                       Not used (0) / NDS: MSB of V-Vcount Setting (LYC.Bit8) (0..262)(R/W)
+            8-15  DSTAT_VCT#        V-Count Setting (LYC)      (0..227)                            (R/W)
+        */
+        // VBlank status
+        const uint16_t DSTAT_IN_VBL_MASK = 0b0000000000000001;
+        const uint16_t DSTAT_IN_VBL_SHIFT = 0;
+
+        // HBlank status
+        const uint16_t DSTAT_IN_HBL_MASK = 0b0000000000000010;
+        const uint16_t DSTAT_IN_HBL_SHIFT = 1;
+
         uint8_t getDCNT_MODE();
+        void setVBlankFlag(bool val);
 
         /*
         4000000h  2    R/W  DISPCNT   LCD Control
@@ -79,6 +105,8 @@ class PPU {
         4000054h  2    W    BLDY      Brightness (Fade-In/Out) Coefficient
         4000056h       -    -         Not used
         */
+
+       
 };
 
 #endif
