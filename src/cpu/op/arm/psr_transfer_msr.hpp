@@ -4,21 +4,30 @@
 #include <iostream>
 #include "arm_opcode.hpp"
 #include "../../../utils/utils.hpp"
+#include "../fields/operand.hpp"
+#include "../fields/rotate_imm.hpp"
+#include "../fields/rm.hpp"
+
 
 class PSRTransferMSR : public ArmOpcode {
     public:
-        static bool isFullTransfer(uint32_t op);
-        static bool isFlagBitsTransfer(uint32_t op);
+        //static bool isFullTransfer(uint32_t op);
+        //static bool isFlagBitsTransfer(uint32_t op);
 
-    protected:
+    public:
         PSRTransferMSR(uint32_t op, ARM7TDMI &cpu);
+        ~PSRTransferMSR() override;
         std::string toString() override;
-        virtual void doExecute() = 0;
-        virtual void doDecode() = 0;
+        void doExecute() override;
+        void doDecode() override;
         uint32_t cyclesUsed() const override;
-
-        uint16_t psr;
+        
     private:
+        uint16_t psr;
+        uint16_t I;
+        uint8_t c;
+        Operand* sourceOperand;
+
         const static uint32_t PSR_MASK = 0b00000000010000000000000000000000;
         const static uint32_t PSR_SHIFT = 22; 
 
@@ -30,6 +39,15 @@ class PSRTransferMSR : public ArmOpcode {
 
         const static uint32_t FLAG_BITS_TRANSFER_MASK = 0b00001101101111111111000000000000;
         const static uint32_t FLAG_BITS_TRANSFER_FORMAT = 0b00000001001010001111000000000000;
+
+        const static uint32_t I_MASK = 0b00000010000000000000000000000000; 
+        const static uint32_t I_SHIFT = 25;
+
+        const static uint32_t C_MASK = 0b00000000000000010000000000000000; 
+        const static uint32_t C_SHIFT = 16;
+
+        const static uint32_t SOURCE_OPERAND_MASK = 0b00000000000000000000111111111111;
+        const static uint32_t SOURCE_OPERAND_SHIFT = 0;
 
         std::string PSR2Mnemonic[2] = {"cpsr", "spsr"};
         std::string getPSRMnemonic();

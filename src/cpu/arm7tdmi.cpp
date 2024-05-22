@@ -10,7 +10,6 @@
 #include "op/arm/block_data_transfer.hpp"
 #include "op/arm/psr_transfer_mrs.hpp"
 #include "op/arm/psr_transfer_msr.hpp"
-#include "op/arm/psr_transfer_msr_flag_bits.hpp"
 #include "op/arm/undefined.hpp"
 #include "op/arm/software_interrupt.hpp"
 #include "op/arm/multiply_accumulate.hpp"
@@ -113,7 +112,7 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 	}else if(ArmOpcode::isPSRTransferMRS(op)){
 		return new PSRTransferMRS(op, *this);
 	}else if(ArmOpcode::isPSRTransferMSR(op)){
-		return new PSRTransferMSRFlagBits(op, *this);
+		return new PSRTransferMSR(op, *this);
 	}else if(ArmOpcode::isDataProcessing(op)){
 		return new DataProcessing(op, *this);
 	}
