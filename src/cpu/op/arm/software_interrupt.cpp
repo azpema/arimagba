@@ -7,7 +7,7 @@ SoftwareInterrupt::SoftwareInterrupt(uint32_t op, ARM7TDMI &cpu): ArmOpcode::Arm
 }   
 
 std::string SoftwareInterrupt::toString(){
-    return "swi";
+    return "swi " + Utils::toHexString(comment);
 }
 
 void SoftwareInterrupt::doDecode(){
