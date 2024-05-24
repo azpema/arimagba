@@ -8,7 +8,6 @@ Branch::Branch(uint32_t op, uint32_t pc, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op
     offsetField = Utils::getRegBits(op, OFFSET_MASK, OFFSET_SHIFT);
     realOffset = static_cast<int32_t>(Utils::twosComplementExtendSignTo(offsetField, 24, 32) << 2) + pc + 8;
     oldPC = pc;
-    mustFlushPipeline = true;
 }   
 
 std::string Branch::getLinkFlagMnemonic(){
@@ -30,6 +29,7 @@ void Branch::doDecode(){
 
 void Branch::doExecute(){
     //uint32_t oldPC = cpu.getPC();
+    cpu.setMustFlushPipeline(true);
     cpu.setPC(realOffset);
 
     if(L == 1){

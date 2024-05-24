@@ -71,7 +71,7 @@ void BlockDataTransfer::doExecute(){
 
             // If PC value is modified, flush pipeline
             if(registerListVec.at(i) == 15)
-                mustFlushPipeline = true;
+                cpu.setMustFlushPipeline(true);
 
             endAddr += 4;
         }

@@ -2,7 +2,6 @@
 
 BranchAndExchange::BranchAndExchange(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     Rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
-    mustFlushPipeline = true;
 }   
 
 std::string BranchAndExchange::toString(){
@@ -17,7 +16,7 @@ void BranchAndExchange::doExecute(){
     uint32_t rnVal = cpu.getReg(Rn);
     cpu.setPC(rnVal);
     cpu.getCPSR().setTFlag(rnVal & 0x1 == 1);
-    mustFlushPipeline = true;
+    cpu.setMustFlushPipeline(true);
 }
 
 // A Branch and Exchange operation takes 3 cycles and is similar to a Branch

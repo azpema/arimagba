@@ -12,10 +12,6 @@ std::string OpCode::toHexString(){
     return Utils::toHexString(opcode);
 }
 
-bool OpCode::getMustFlushPipeline() const{
-    return mustFlushPipeline;
-}
-
 std::string OpCode::getRegMnemonic(uint16_t reg){
     return reg2Mnemonic[reg];
 }

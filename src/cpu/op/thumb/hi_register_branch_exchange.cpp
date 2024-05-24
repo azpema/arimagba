@@ -48,7 +48,7 @@ void HiRegisterBranchExchange::doExecute(){
             cpu.getCPSR().setTFlag(rsVal & 0x1 == 1);
             cpu.setPC(rsVal);
             cpu.getCPSR().setTFlag(rsVal & 0x1 == 1);
-            mustFlushPipeline = true;
+            cpu.setMustFlushPipeline(true);
         break;
     }
 

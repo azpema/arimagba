@@ -67,12 +67,16 @@ ARM7TDMI::ARM7TDMI(MemoryManager *memManager) {
 	r13_svc[0] = 0x03007FE0;
 
 	barrelShifter = new BarrelShifter();
+	exceptionHandler = new ExceptionHandler();
 
 	spsr_fiq.setValue(0xF00000FF);
 }
 
 ARM7TDMI::~ARM7TDMI() {
 	delete barrelShifter;
+	delete exceptionHandler;
+	// TODO ???
+	delete mem;
 }
 
 OpCode* ARM7TDMI::decodeInstruction(uint32_t op, uint32_t pc){
@@ -231,6 +235,10 @@ BarrelShifter& ARM7TDMI::getBarrelShifter(){
 	return *barrelShifter;
 }
 
+ExceptionHandler& ARM7TDMI::getExceptionHandler(){
+	return *exceptionHandler;
+}
+
 int64_t ARM7TDMI::fetchInstructionThumb(uint32_t offset){
 	return mem->readHalfWord(offset);
 }
@@ -346,6 +354,13 @@ void ARM7TDMI::setReg(uint16_t n, uint32_t val){
 
 }
 
+bool ARM7TDMI::getMustFlushPipeline() const{
+    return mustFlushPipeline;
+}
+
+void ARM7TDMI::setMustFlushPipeline(bool val){
+    mustFlushPipeline = val;
+}
 
 uint32_t ARM7TDMI::getPC(){
 	return reg[15];
@@ -360,21 +375,45 @@ void ARM7TDMI::setLR(uint32_t lr){
 }
 
 void ARM7TDMI::printStatus(){
+	std::string n = "-";
+	if(cpsr.getNFlag()) n="N";  
+
+	std::string z = "-";
+	if(cpsr.getZFlag()) z="Z";
+
+	std::string c = "-";
+	if(cpsr.getCFlag()) c="C";
+
+	std::string v = "-";
+	if(cpsr.getVFlag()) v="V";
+
+	std::string i = "-";
+	if(!cpsr.getIFlag()) i="I";
+
+	std::string f = "-";
+	if(!cpsr.getFFlag()) f="F";
+
+	std::string t = "-";
+	if(cpsr.getTFlag()) t="T";
+
+
 	// PC is reduced by 8 to account for pipeline parallelism
 	std::cout << "pc:   " << Utils::toHexString(getPC(), 8) << std::endl;
-	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << std::endl;
-	std::cout << "spsr: " << Utils::toHexString(getSPSRval(), 8) << std::endl;
-	std::cout << "n:" << cpsr.getNFlag() << " z:" << cpsr.getZFlag() << " c:" << cpsr.getCFlag() << " v:" << cpsr.getVFlag();
-	std::cout << "\t\ti:" << cpsr.getIFlag() << " f:" << cpsr.getFFlag() << " t:" << cpsr.getTFlag() << "\t\t";
+	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << "\t" << "[" << n << c << z << v << i << f << t << "]" << "\t";
 	if(cpsr.getTFlag() == 0)
-		std::cout << "ARM" << "\t\t";
+		std::cout << "ARM" << "\t";
 	else
-		std::cout << "THUMB" << "\t\t";
+		std::cout << "THUMB" << "\t";
 
 	std::cout << cpsr.getModeString() << std::endl;
+	
+	std::cout << "spsr: " << Utils::toHexString(getSPSRval(), 8) << std::endl;
 
 	for(int i=0; i<16; i++){
-		std::cout << "r" + std::to_string(i) + ": " + Utils::toHexString(getReg(i)) + " ";
+		std::cout << std::setw(3);
+		std::cout << "r" + std::to_string(i) << ": " << Utils::toHexString(getReg(i), 8) << " ";
+		if(i !=0 && (i+1) % 4 == 0)
+			std::cout << std::endl;
 	}
 	std::cout << std::endl;
 }
@@ -413,9 +452,10 @@ void ARM7TDMI::executeNextInstruction(){
 
 			// flush pipeline if needed
 			// dont flush is op is not executed
-			if(insExecuteSet && opExecute->getMustFlushPipeline()){
+			if(insExecuteSet && getMustFlushPipeline()){
 				insFetchSet = false;
 				insDecodeSet = false;
+				setMustFlushPipeline(false);
 			}
 
 			if(insExecuteSet){
@@ -467,9 +507,10 @@ void ARM7TDMI::executionLoop(){
 			}
 
 			// flush pipeline if needed
-			if(insExecuteSet && opExecute->getMustFlushPipeline()){
+			if(insExecuteSet && getMustFlushPipeline()){
 				insFetchSet = false;
 				insDecodeSet = false;
+				setMustFlushPipeline(false);
 			}
 
 			if(insExecuteSet){

@@ -3,6 +3,7 @@
 
 class OpCode;
 class BarrelShifter;
+class ExceptionHandler;
 
 #include <iostream>
 #include <memory>
@@ -10,6 +11,7 @@ class BarrelShifter;
 #include "../memory/memory_manager.hpp"
 #include "components/alu.hpp"
 #include "components/barrel_shifter.hpp"
+#include "components/exception_handler.hpp"
 #include "op/opcode.hpp"
 
 class ARM7TDMI {
@@ -28,12 +30,15 @@ class ARM7TDMI {
 		ALU& getALU();
 		BarrelShifter& getBarrelShifter();
 		MemoryManager& getMemManager();
+		ExceptionHandler& getExceptionHandler();
 
 		int64_t fetchInstructionThumb(uint32_t offset);
 		int64_t fetchInstructionArm(uint32_t offset);
 		uint32_t fetchNextInstruction();
 		void executeNextInstruction();
 		void executionLoop();
+		bool getMustFlushPipeline() const;
+		void setMustFlushPipeline(bool val);
 		void printStatus();
 
 		uint32_t getReg(uint16_t n);
@@ -97,6 +102,7 @@ class ARM7TDMI {
 		ALU alu;
 		MemoryManager *mem;
 		BarrelShifter *barrelShifter;
+		ExceptionHandler *exceptionHandler;
 		const uint16_t REG_PC = 15;
 
 		// Pipeline
@@ -106,6 +112,7 @@ class ARM7TDMI {
 		bool insDecodeSet = false;
 		bool insExecuteSet = false;
 		uint32_t fetchPC;
+		bool mustFlushPipeline = false;
 
 		PSR& getCorrespondingSPSR();
 		uint32_t getSPSRval();

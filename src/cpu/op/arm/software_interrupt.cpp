@@ -1,4 +1,5 @@
 #include "software_interrupt.hpp"
+#include "../../components/exception_handler.hpp"
 
 using namespace ARM;
 
@@ -15,7 +16,7 @@ void SoftwareInterrupt::doDecode(){
 }
 
 void SoftwareInterrupt::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: SoftwareInterrupt");
+    cpu.getExceptionHandler().raiseException(cpu, ExceptionHandler::SWI);
 }
 
 uint32_t SoftwareInterrupt::cyclesUsed() const {

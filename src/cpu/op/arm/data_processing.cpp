@@ -195,7 +195,7 @@ void DataProcessing::doExecute(){
     bool rdIsPC = false;
     // Do you really need to flush when rd=15 in cmp r15, r0, for exmple?
     if(rd == 15){
-        mustFlushPipeline = true;
+        cpu.setMustFlushPipeline(true);
         rdIsPC = true;
     }
         

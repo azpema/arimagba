@@ -34,7 +34,13 @@ uint32_t GamePak::read(uint32_t addr, uint8_t bytes) {
     if(addr > fileSize)
         val = 0;
     else{
-        if(bytes == 2){
+        if(bytes == 1){
+            if(addr % 2 == 0){
+                val = gameMem[addr >> 1] & 0xFF;
+            }else{
+                val = (gameMem[addr >> 1] & 0xFF00) >> 8; 
+            }
+        }else if(bytes == 2){
             val = gameMem[addr >> 1];
         }else if(bytes == 4){
             val = gameMem[addr >> 1];
