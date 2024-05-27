@@ -10,7 +10,7 @@ uint32_t Rm::getOperandVal(ARM7TDMI &cpu){
 }
 
 uint16_t Rm::getRmVal(){
-    return rmVal;
+    return val;
 }
 
 bool Rm::getC(){

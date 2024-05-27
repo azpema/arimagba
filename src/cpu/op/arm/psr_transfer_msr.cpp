@@ -67,7 +67,7 @@ void PSRTransferMSR::doExecute(){
     uint32_t newFlags;
     if(sourceOperand->_type == Operand::RM){
         Rm* rm = static_cast<Rm*>(sourceOperand);
-        newFlags = rm->getRmVal();
+        newFlags = cpu.getReg(rm->getRmVal());
     }else if(sourceOperand->_type == Operand::ROTATE_IMM){
         RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand);
         newFlags = rotImm->getMnemonicVal();

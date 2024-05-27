@@ -301,7 +301,6 @@ void DataProcessing::doExecute(){
     case OPCODE_MOV_VAL:
     case OPCODE_BIC_VAL:
     case OPCODE_MVN_VAL:
-    std::cout << "TEST BARREL SHIFTER C FLAGS PROPERLY!!!" << std::endl;
     //TODO: "If the S bit is set (and Rd is not R15, see below)"
         if(s == 1){
             cpu.getCPSR().setNFlag(cpu.getALU().getN());

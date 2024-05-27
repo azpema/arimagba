@@ -445,10 +445,10 @@ void ARM7TDMI::executeNextInstruction(){
 		// execute
 		if(insDecodeSet){
 			// print status
-			std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
+			//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
 			insExecuteSet = opExecute->execute();
-			printStatus();
-			std::cout << "<<<" << std::endl;
+			//printStatus();
+			//std::cout << "<<<" << std::endl;
 
 			// flush pipeline if needed
 			// dont flush is op is not executed
@@ -476,7 +476,7 @@ void ARM7TDMI::executeNextInstruction(){
 		// fetch
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
-	
+
 		insFetchSet = true;
 		insDecode = insFetch;
 }

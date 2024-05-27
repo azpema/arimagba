@@ -18,6 +18,10 @@ class ALU {
         uint32_t orr(uint32_t op1, uint32_t op2);
         uint32_t eor(uint32_t op1, uint32_t op2);
 
+        uint32_t mul(uint32_t op1, uint32_t op2);
+        uint32_t mla(uint32_t op1, uint32_t op2, uint32_t accum);
+
+
         bool getN();
         bool getZ();
         bool getC();

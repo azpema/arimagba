@@ -62,6 +62,7 @@ class PPU {
 
         uint8_t getDCNT_MODE();
         void setVBlankFlag(bool val);
+        void setHBlankFlag(bool val);
 
         /*
         4000000h  2    R/W  DISPCNT   LCD Control

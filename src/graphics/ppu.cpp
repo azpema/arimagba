@@ -49,7 +49,6 @@ void PPU::renderScanline(){
         }
     }
 
-    std::cout << *VCOUNT << std::endl;
     // Update VCOUNT
     *VCOUNT += 1; 
     if(*VCOUNT == VCOUNT_START_VBLANK)
@@ -59,11 +58,21 @@ void PPU::renderScanline(){
     }
     else if(*VCOUNT == 228)
         *VCOUNT = 0;
+
+    //TODO REMOVE
+    //setHBlankFlag(true);
 }
 
 void PPU::setVBlankFlag(bool val){
+    uint32_t bitVal = val << DSTAT_IN_VBL_SHIFT;
     uint32_t regVal = *DISPSTAT;
-    *DISPSTAT = Utils::setRegBits(regVal, DSTAT_IN_VBL_MASK, val);
+    *DISPSTAT = Utils::setRegBits(regVal, DSTAT_IN_VBL_MASK, bitVal);
+}
+
+void PPU::setHBlankFlag(bool val){
+    uint32_t bitVal = val << DSTAT_IN_HBL_SHIFT;
+    uint32_t regVal = *DISPSTAT;
+    *DISPSTAT = Utils::setRegBits(regVal, DSTAT_IN_HBL_MASK, bitVal);
 }
 
 void PPU::renderScanlineMode3(){
@@ -113,14 +122,14 @@ void PPU::renderScanlineMode4(){
     // Get full palette
     uint16_t* paletteRAM = mem->getPaletteRAM();
     // Get VRAM corresponding to scanline
-    uint16_t* VRAM = mem->getRawVRAM() + *VCOUNT;
+    uint16_t* VRAM = mem->getRawVRAM() + SCREEN_WIDTH/2*(*VCOUNT);
     // Copy your pixel data into the texture's pixel data
 
     // TODO: Improve mode4 rendering; too slow!"
     uint16_t toPaint[240];
     for(int i=0; i<240/ 2; i++){
-        toPaint[i*2] = paletteRAM[VRAM[i]];
-        toPaint[i*2+1] = paletteRAM[VRAM[i]];
+        toPaint[i*2] = paletteRAM[VRAM[i] & 0xFF];
+        toPaint[i*2+1] = paletteRAM[(VRAM[i] & 0xFF00) > 8 ];
     }
     memcpy(pixels, &toPaint, SCREEN_WIDTH * 1 * sizeof(Uint16));
 

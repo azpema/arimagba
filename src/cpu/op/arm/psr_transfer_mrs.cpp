@@ -19,7 +19,13 @@ void PSRTransferMRS::doDecode(){
 }
 
 void PSRTransferMRS::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: PSRTransferMRS");
+    if(psr == 0){
+        throw std::runtime_error("Error: Unimplemented instruction: PSRTransferMRS CPSR");
+    }else if(psr == 1){
+        cpu.setReg(Rd, cpu.getSPSR().getValue());
+    }
+
+
 }
 
 // MSR,MRS          1S

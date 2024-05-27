@@ -122,6 +122,28 @@ uint32_t ALU::eor(uint32_t op1, uint32_t op2){
     return res;
 }
 
+uint32_t ALU::mul(uint32_t op1, uint32_t op2){
+    uint64_t res = op1 * op2;
+    res &= 0xFFFFFFFF;
+
+    n = (Utils::getRegBits(res, MSB_MASK, MSB_SHIFT) == 1);
+    z = (res == 0);
+    /*The C (Carry) flag is set to a meaningless value and the V (oVerflow) flag is unaffected.*/
+    
+    return res;
+}
+
+uint32_t ALU::mla(uint32_t op1, uint32_t op2, uint32_t accum){
+    uint64_t res = op1 * op2 + accum;
+    res &= 0xFFFFFFFF;
+
+    n = (Utils::getRegBits(res, MSB_MASK, MSB_SHIFT) == 1);
+    z = (res == 0);
+    /*The C (Carry) flag is set to a meaningless value and the V (oVerflow) flag is unaffected.*/
+    
+    return res ;
+}
+
 bool ALU::getN(){
     return n;
 }
