@@ -9,6 +9,8 @@
 class SingleDataTransfer : public ArmOpcode {
 	public:
 		SingleDataTransfer(uint32_t op, ARM7TDMI &cpu);
+        SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 
+                           uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu);
         ~SingleDataTransfer();
         std::string toString() override;
         void doExecute() override;
@@ -16,7 +18,7 @@ class SingleDataTransfer : public ArmOpcode {
         uint32_t cyclesUsed() const override;
 
     private:
-        uint16_t I, P, U, B, W, L, Rn, Rd;
+        uint8_t I, P, U, B, W, L, Rn, Rd;
         Operand *offsetField;
 
         const static uint32_t I_MASK = 0b00000010000000000000000000000000; 

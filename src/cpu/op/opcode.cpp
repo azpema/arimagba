@@ -8,6 +8,19 @@ OpCode::OpCode(uint32_t op, ARM7TDMI& cpu) : cpu(cpu) {
     opcode = op;
 }
 
+OpCode::OpCode(ARM7TDMI& cpu) : cpu(cpu) {
+    opcode = 0xDEADBEEF;
+}
+
+void OpCode::setRawVal(uint32_t val){
+    opcode = val;
+}
+
+uint32_t OpCode::getRawVal(){
+    return opcode;
+}
+
+
 std::string OpCode::toHexString(){
     return Utils::toHexString(opcode);
 }

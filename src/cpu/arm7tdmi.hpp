@@ -93,6 +93,9 @@ class ARM7TDMI {
 		uint32_t r13_irq[2]; 
 		uint32_t r13_und[2]; 
 		PSR cpsr;
+		// // ARM test 254
+		// https://github.com/jsmolka/gba-tests/blob/master/arm/psr_transfer.asm
+		PSR spsr_sys_usr;
 		PSR spsr_fiq;
 		PSR spsr_svc;
 		PSR spsr_abt;

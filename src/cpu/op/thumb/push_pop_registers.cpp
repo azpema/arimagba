@@ -42,7 +42,7 @@ void PushPopRegisters::doDecode(){
 }
 
 void PushPopRegisters::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: PushPopRegisters");
+    //throw std::runtime_error("Error: Unimplemented instruction: PushPopRegisters");
 }
 
 uint32_t PushPopRegisters::cyclesUsed() const {

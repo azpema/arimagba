@@ -12,6 +12,9 @@ class Operand {
 		Operand(uint16_t val, OperandType _type);
         virtual uint32_t getOperandVal(ARM7TDMI &cpu) = 0;
         virtual bool getC() = 0;
+
+        uint16_t getRawVal();
+        void setRawVal(uint16_t val);
     protected:
         uint16_t val;
 };

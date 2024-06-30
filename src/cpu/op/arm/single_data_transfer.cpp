@@ -17,7 +17,42 @@ SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::A
     }else if(I == 1){
         offsetField = new ShiftRm(off);
     }
-}   
+}
+
+SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 
+    uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu) : ArmOpcode::ArmOpcode(cpu){
+
+    this->I = i;
+    this->P = p;
+    this->U = u;
+    this->B = b;
+    this->W = w;
+    this->L = l;
+    this->Rn = rn;
+    this->Rd = rd;
+
+
+    if(I == 0){
+        this->offsetField = new Imm(offset);
+    }else if(I == 1){
+        this->offsetField = new ShiftRm(offset);
+    }
+
+    uint32_t raw = Condition::AL << COND_FIELD_SHIFT;
+    Utils::setRegBits(raw, I_MASK, i << I_SHIFT);
+    Utils::setRegBits(raw, P_MASK, p << P_SHIFT);
+    Utils::setRegBits(raw, U_MASK, u << U_SHIFT);
+    Utils::setRegBits(raw, B_MASK, b << B_SHIFT);
+    Utils::setRegBits(raw, W_MASK, w << W_SHIFT);
+    Utils::setRegBits(raw, L_MASK, l << L_SHIFT);
+    Utils::setRegBits(raw, RN_MASK, rn << RN_SHIFT);
+    Utils::setRegBits(raw, RD_MASK, rd << RD_SHIFT);
+    Utils::setRegBits(raw, OFFSET_MASK, offset << OFFSET_SHIFT);
+
+    setRawVal(raw);
+}
+
+
 
 SingleDataTransfer::~SingleDataTransfer(){
     delete offsetField;
@@ -101,7 +136,7 @@ void SingleDataTransfer::doExecute(){
             cpu.getMemManager().store(baseRegVal, cpu.getReg(Rd), 4);
         }else if(B == 1){
             // Byte
-            throw std::runtime_error("Error: Unimplemented SingleDataTransfer L==0 B==1");
+            cpu.getMemManager().store(baseRegVal, cpu.getReg(Rd) & 0xFF, 1);
         }else{
             throw std::runtime_error("Error: Invalid B value in SingleDataTransfer::doExecute");
         }

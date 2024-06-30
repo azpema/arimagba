@@ -187,6 +187,11 @@ PSR& ARM7TDMI::getCorrespondingSPSR(){
 		return spsr_irq;
 	case PSR::Mode::Undefined:
 		return spsr_und;
+	// ARM test 254
+	// https://github.com/jsmolka/gba-tests/blob/master/arm/psr_transfer.asm
+	case PSR::Mode::System:
+	case PSR::Mode::User:
+		return spsr_sys_usr;
 	default:
 		throw std::runtime_error("Error: Unrecognized CPSR mode in ARM7TDMI::getCPSR()");
 		break;
@@ -427,6 +432,18 @@ MemoryManager& ARM7TDMI::getMemManager(){
 	op->execute(); 
 }*/
 
+/*
+Mis-aligned PC/R15 (branch opcodes, or MOV/ALU/LDR with Rd=R15)
+For ARM code, the low bits of the target address should be usually zero, otherwise, R15 is forcibly aligned by clearing the lower two bits.
+
+For THUMB code, the low bit of the target address may/should/must be set, the bit is (or is not) interpreted as thumb-bit (depending on the opcode),
+ and R15 is then forcibly aligned by clearing the lower bit.
+
+In short, R15 will be always forcibly aligned, so mis-aligned branches won’t have effect on subsequent opcodes that use R15, or [R15+disp] as operand.
+
+*/
+
+
 uint32_t ARM7TDMI::fetchNextInstruction(){
 	uint32_t pc = getPC();
 	uint32_t ins;
@@ -445,10 +462,10 @@ void ARM7TDMI::executeNextInstruction(){
 		// execute
 		if(insDecodeSet){
 			// print status
-			//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
+			std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
 			insExecuteSet = opExecute->execute();
-			//printStatus();
-			//std::cout << "<<<" << std::endl;
+			printStatus();
+			std::cout << "<<<" << std::endl;
 
 			// flush pipeline if needed
 			// dont flush is op is not executed
@@ -476,6 +493,14 @@ void ARM7TDMI::executeNextInstruction(){
 		// fetch
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
+
+		if(fetchPC == 0x08001F0C){
+			std::cout << "HEMEN" << std::endl;
+		}
+
+		if(insFetch == 0xE15FF000){
+			std::cout << "HEMEN" << std::endl;
+		}
 
 		insFetchSet = true;
 		insDecode = insFetch;

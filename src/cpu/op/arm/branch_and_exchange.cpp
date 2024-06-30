@@ -14,7 +14,7 @@ void BranchAndExchange::doDecode(){
 
 void BranchAndExchange::doExecute(){
     uint32_t rnVal = cpu.getReg(Rn);
-    cpu.setPC(rnVal);
+    cpu.setPC(rnVal & 0xFFFFFFFE);
     cpu.getCPSR().setTFlag(rnVal & 0x1 == 1);
     cpu.setMustFlushPipeline(true);
 }

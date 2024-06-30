@@ -1,4 +1,5 @@
 #include "pc_relative_load.hpp"
+#include "../arm/single_data_transfer.hpp"
 
 PCRelativeLoad::PCRelativeLoad(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
@@ -17,7 +18,15 @@ void PCRelativeLoad::doDecode(){
 }
 
 void PCRelativeLoad::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: PCRelativeLoad");
+    uint8_t i = 0;
+    uint8_t p = 1;
+    uint8_t u = 1;
+    uint8_t b = 0;
+    uint8_t w = 0;
+    uint8_t l = 1;
+    SingleDataTransfer opArm = SingleDataTransfer(i, p, u, b, w, l, 15, rd, offset, cpu);
+    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    opArm.doExecute();  
 }
 
 uint32_t PCRelativeLoad::cyclesUsed() const {

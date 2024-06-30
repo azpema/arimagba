@@ -10,6 +10,17 @@ RotateImm::RotateImm(uint16_t val) : Operand::Operand(val, OperandType::ROTATE_I
     c = ((operandVal & 0x80000000) >> 31) == 1;
 }
 
+RotateImm::RotateImm(uint8_t rot, uint8_t imm) : Operand::Operand(0xDEADBEEF, OperandType::ROTATE_IMM){
+    this->rotate = rot;
+    this->imm = imm;
+
+    uint32_t raw = 0;
+    Utils::setRegBits(raw, ROTATE_MASK, rot);
+    Utils::setRegBits(raw, IMM_MASK, rot);
+    setRawVal(raw);
+}
+
+
 uint32_t RotateImm::getMnemonicVal(){
     return operandVal;
 }

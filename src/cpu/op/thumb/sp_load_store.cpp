@@ -1,4 +1,6 @@
 #include "sp_load_store.hpp"
+#include "../arm/single_data_transfer.hpp"
+#include "../fields/imm.hpp"
 
 SPLoadStore::SPLoadStore(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
@@ -21,7 +23,15 @@ void SPLoadStore::doDecode(){
 }
 
 void SPLoadStore::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: SPLoadStore");
+    uint8_t i = 0;
+    uint8_t p = 1;
+    uint8_t u = 1;
+    uint8_t b = 0;
+    uint8_t w = 0;
+    SingleDataTransfer opArm = SingleDataTransfer(i, p, u, b, w, l, 13, rd, offsetVal, cpu);
+    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    opArm.doExecute();  
+
 }
 
 uint32_t SPLoadStore::cyclesUsed() const {

@@ -21,8 +21,13 @@ class OpCode {
 
 		static std::string getRegMnemonic(uint16_t reg);
 
+		void setRawVal(uint32_t val);
+		uint32_t getRawVal();
+
 	protected:
 		OpCode(uint32_t op, ARM7TDMI &cpu);
+		OpCode(ARM7TDMI &cpu);
+
 		ARM7TDMI &cpu;
 		
 		uint32_t opcode = 0;

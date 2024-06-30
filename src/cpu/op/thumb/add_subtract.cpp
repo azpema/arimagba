@@ -1,4 +1,6 @@
 #include "add_subtract.hpp"
+#include "../arm/data_processing.hpp"
+#include "../fields/rotate_imm.hpp"
 
 AddSubtract::AddSubtract(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     i = Utils::getRegBits(op, I_MASK, I_SHIFT);
@@ -37,7 +39,23 @@ void AddSubtract::doDecode(){
 }
 
 void AddSubtract::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: AddSubtract");
+
+    if(opField == 0){
+        if(i == 1){
+            uint8_t s = 1;
+            RotateImm imm = RotateImm(0, rnOffset3);
+            DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_ADD_VAL, s, rs, rd, imm.getRawVal(), cpu);
+            opArm.doExecute();
+            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        }else{
+            throw std::runtime_error("ERROR: AddSubtract::doExecute todo");
+        }
+        
+    }else if(opField == 1){
+        throw std::runtime_error("ERROR: AddSubtract::doExecute todo");
+    }else{
+        throw std::runtime_error("ERROR: Invalid AddSubtract::doExecute opField value");
+    }
 }
 
 uint32_t AddSubtract::cyclesUsed() const {

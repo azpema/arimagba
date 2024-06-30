@@ -22,6 +22,8 @@ void MoveShiftedRegister::doDecode(){
 
 void MoveShiftedRegister::doExecute(){
     throw std::runtime_error("Error: Unimplemented instruction: MoveShiftedRegister");
+    //OpCode armOp = DataProcessing(op, cpu);
+    
 }
 
 uint32_t MoveShiftedRegister::cyclesUsed() const {

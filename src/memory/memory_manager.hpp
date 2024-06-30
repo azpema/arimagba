@@ -9,6 +9,7 @@
 #include "vram.hpp"
 #include "ewram.hpp"
 #include "iwram.hpp"
+#include "sram.hpp"
 #include "palette_ram.hpp"
 #include "io_registers.hpp"
 
@@ -60,7 +61,7 @@ The 64K SRAM area is mirrored across the whole 32MB area at E000000h-FFFFFFFh, a
 
 class MemoryManager {
     public:
-        MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, PaletteRAM &paletteRam, IOregisters &io);
+        MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, SRAM &sram, PaletteRAM &paletteRam, IOregisters &io);
         uint32_t readWord(uint32_t addr);
         uint16_t readHalfWord(uint32_t addr);
         uint16_t readByte(uint32_t addr);
@@ -104,6 +105,17 @@ class MemoryManager {
         const static uint32_t GAMEPAK_WAIT_0_OFFSET_START = 0x08000000;
         const static uint32_t GAMEPAK_WAIT_0_OFFSET_END = 0x09FFFFFF;
 
+        const static uint32_t GAMEPAK_SRAM_OFFSET_START = 0x0E000000;
+        const static uint32_t GAMEPAK_SRAM_OFFSET_END = 0x0E00FFFF;
+        const static uint32_t GAMEPAK_SRAM_MIRROR_OFFSET_END = 0x0FFFFFFF;
+
+        // Unused memory
+        const static uint32_t UNUSED_MEMORY_1_OFFSET_START = 0x00004000;
+        const static uint32_t UNUSED_MEMORY_1_OFFSET_END = 0x01FFFFFF;
+
+        const static uint32_t UNUSED_MEMORY_2_OFFSET_START = 0x10000000;
+        const static uint32_t UNUSED_MEMORY_2_OFFSET_END = 0xFFFFFFFF;
+
     private:
         uint32_t read(uint32_t addr, uint8_t bytes);
         
@@ -112,6 +124,7 @@ class MemoryManager {
         VRAM &vram;
         EWRAM &ewram;
         IWRAM &iwram;
+        SRAM &sram;
         PaletteRAM &paletteRam;
         IOregisters &io;
 

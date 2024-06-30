@@ -48,6 +48,10 @@ class ArmOpcode : public OpCode {
 
 	protected:
 		ArmOpcode(uint32_t op, ARM7TDMI &cpu);
+		ArmOpcode(ARM7TDMI &cpu);
+
+		const static uint32_t COND_FIELD_MASK = 0b11110000000000000000000000000000;
+		const static uint32_t COND_FIELD_SHIFT = 28;
 
 	private:
 		virtual void doExecute() = 0;
@@ -132,9 +136,6 @@ class ArmOpcode : public OpCode {
 		// Data Processing
 		const static uint32_t DATA_PROCESSING_MASK = 0b00001100000000000000000000000000;
 		const static uint32_t DATA_PROCESSING_FORMAT = 0b00000000000000000000000000000000;
-
-		const static uint32_t COND_FIELD_MASK = 0b11110000000000000000000000000000;
-		const static uint32_t COND_FIELD_SHIFT = 28;
 
 		const static uint32_t BRANCH = 0b00001010000000000000000000000000;
 		const static uint32_t BRANCH_OFFSET = 0b00000000111111111111111111111111;

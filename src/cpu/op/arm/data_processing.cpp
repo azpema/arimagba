@@ -16,7 +16,34 @@ DataProcessing::DataProcessing(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode
     }else{
         throw std::runtime_error("ERROR: Invalid i value in DataProcessing::DataProcessing");
     }
-}   
+}
+
+DataProcessing::DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu){
+    this->dataOpCode = opCode;
+    this->i = i;
+    this->s = s;
+    this->rn = rn;
+    this->rd = rd;
+
+    if(i == 0){
+        this->operand2 = new ShiftRm(operand2);
+    }else if (i == 1){
+        this->operand2 = new RotateImm(operand2);
+    }else{
+        throw std::runtime_error("ERROR: Invalid i value in DataProcessing::DataProcessing");
+    }
+
+    uint32_t raw = Condition::AL << COND_FIELD_SHIFT;
+    Utils::setRegBits(raw, OPCODE_MASK, opCode << OPCODE_SHIFT);
+    Utils::setRegBits(raw, IMMEDIATE_OPERAND_MASK, i << IMMEDIATE_OPERAND_SHIFT);
+    Utils::setRegBits(raw, SET_CONDITION_MASK, s << SET_CONDITION_SHIFT);
+    Utils::setRegBits(raw, RN_MASK, rn << RN_SHIFT);
+    Utils::setRegBits(raw, RD_MASK, rd << RD_SHIFT);
+    Utils::setRegBits(raw, OPERAND2_MASK, operand2 << OPERAND2_SHIFT);
+
+    setRawVal(raw);
+}
+
 
 DataProcessing::~DataProcessing() {
     delete operand2;
@@ -192,14 +219,11 @@ void DataProcessing::doDecode(){
 
 void DataProcessing::doExecute(){
     // Assign values to op1 and op2
-    bool rdIsPC = false;
     // Do you really need to flush when rd=15 in cmp r15, r0, for exmple?
-    if(rd == 15){
+    if(rd == 15 && dataOpCode != OPCODE_CMP_VAL){
         cpu.setMustFlushPipeline(true);
-        rdIsPC = true;
     }
         
-
     op1 = cpu.getReg(rn);
     op2 = operand2->getOperandVal(cpu);
 
@@ -344,7 +368,7 @@ void DataProcessing::doExecute(){
         When Rd is R15 and the S flag is set the result of the operation is placed in R15 and
         the SPSR corresponding to the current mode is moved to the CPSR
     */
-    if(rdIsPC && s==1){
+    if(rd == 15 && (s==1 || OPCODE_CMP_VAL)){
         PSR::Mode mode = cpu.getCPSR().getMode();
         if(mode != PSR::Mode::User && mode != PSR::Mode::System){
             cpu.setCPSR(cpu.getSPSR().getValue());

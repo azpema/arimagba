@@ -25,9 +25,10 @@ int main(int argc, char** argv)
 	VRAM vram;
 	EWRAM ewram;
 	IWRAM iwram;
+	SRAM sram;
 	PaletteRAM paletteram;
 	IOregisters io;
-	MemoryManager mem(bios, gamepak, vram, ewram, iwram, paletteram, io);
+	MemoryManager mem(bios, gamepak, vram, ewram, iwram, sram, paletteram, io);
 
 	PPU ppu("GBA", &mem);
 	ARM7TDMI cpu(&mem); 

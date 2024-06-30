@@ -9,6 +9,7 @@
 class DataProcessing : public ArmOpcode {
     public:
 		DataProcessing(uint32_t op, ARM7TDMI &cpu);
+        DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2, ARM7TDMI &cpu);
         ~DataProcessing();
         std::string toString() override;
         void doExecute() override;
@@ -20,6 +21,23 @@ class DataProcessing : public ArmOpcode {
         std::string getRnMnemonic();
         std::string getOperand2Mnemonic();
         uint32_t getOperand2();
+
+        const static uint16_t OPCODE_AND_VAL = 0x0;
+        const static uint16_t OPCODE_EOR_VAL = 0x1;
+        const static uint16_t OPCODE_SUB_VAL = 0x2;
+        const static uint16_t OPCODE_RSB_VAL = 0x3;
+        const static uint16_t OPCODE_ADD_VAL = 0x4;
+        const static uint16_t OPCODE_ADC_VAL = 0x5;
+        const static uint16_t OPCODE_SBC_VAL = 0x6;
+        const static uint16_t OPCODE_RSC_VAL = 0x7;
+        const static uint16_t OPCODE_TST_VAL = 0x8;
+        const static uint16_t OPCODE_TEQ_VAL = 0x9;
+        const static uint16_t OPCODE_CMP_VAL = 0xA;
+        const static uint16_t OPCODE_CMN_VAL = 0xB;
+        const static uint16_t OPCODE_ORR_VAL = 0xC;
+        const static uint16_t OPCODE_MOV_VAL = 0xD;
+        const static uint16_t OPCODE_BIC_VAL = 0xE;
+        const static uint16_t OPCODE_MVN_VAL = 0xF;
 
     private:
         uint16_t i, s, rn, rd, dataOpCode;
@@ -44,23 +62,6 @@ class DataProcessing : public ArmOpcode {
         const static uint32_t OPERAND2_MASK = 0b00000000000000000000111111111111;
         const static uint32_t OPERAND2_SHIFT = 0;
 
-
-        const static uint16_t OPCODE_AND_VAL = 0x0;
-        const static uint16_t OPCODE_EOR_VAL = 0x1;
-        const static uint16_t OPCODE_SUB_VAL = 0x2;
-        const static uint16_t OPCODE_RSB_VAL = 0x3;
-        const static uint16_t OPCODE_ADD_VAL = 0x4;
-        const static uint16_t OPCODE_ADC_VAL = 0x5;
-        const static uint16_t OPCODE_SBC_VAL = 0x6;
-        const static uint16_t OPCODE_RSC_VAL = 0x7;
-        const static uint16_t OPCODE_TST_VAL = 0x8;
-        const static uint16_t OPCODE_TEQ_VAL = 0x9;
-        const static uint16_t OPCODE_CMP_VAL = 0xA;
-        const static uint16_t OPCODE_CMN_VAL = 0xB;
-        const static uint16_t OPCODE_ORR_VAL = 0xC;
-        const static uint16_t OPCODE_MOV_VAL = 0xD;
-        const static uint16_t OPCODE_BIC_VAL = 0xE;
-        const static uint16_t OPCODE_MVN_VAL = 0xF;
 
         std::unordered_map<uint16_t, std::string> dataOpCode2Mnemonic = {
             {0x0, "and"},

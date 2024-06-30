@@ -12,13 +12,14 @@ LongBranchWithLink::LongBranchWithLink(uint16_t op, uint32_t pc, ARM7TDMI &cpu):
     }else if(h == 1){
         offsetVal = offset << 1;
     }else{
-        std::cerr << "ERROR: Long branch with link invalid H value" << std::endl;
+        std::runtime_error("ERROR: Invalid h value in LongBranchWithLink::LongBranchWithLink");
     }
 }   
 
 
 std::string LongBranchWithLink::toString(){
-    return "KA";
+    // TODO set proper decoded value
+    return "bl h=" + std::to_string(h) + " " + std::to_string(offsetVal);
 }
 
 void LongBranchWithLink::doDecode(){
@@ -26,7 +27,17 @@ void LongBranchWithLink::doDecode(){
 }
 
 void LongBranchWithLink::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: LongBranchWithLink");
+    std::cerr << "CHECK LONGBRANCHWITHLINK" << std::endl;
+    if(h == 0){
+        cpu.setLR(cpu.getPC() + offsetVal);
+    }else if(h == 1){
+        // PC is 4 steps ahead (THUMB)
+        uint32_t temp = cpu.getPC() - 2;
+        cpu.setPC(cpu.getReg(14) + offsetVal);
+        cpu.setLR(temp | 1);
+    }else{
+        std::runtime_error("ERROR: Invalid h value in LongBranchWithLink::doExecute");
+    }
 }
 
 uint32_t LongBranchWithLink::cyclesUsed() const {

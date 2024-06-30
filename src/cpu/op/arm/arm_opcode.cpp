@@ -7,7 +7,17 @@ ArmOpcode::ArmOpcode(uint32_t op, ARM7TDMI& cpu) : OpCode::OpCode(op, cpu) {
     if(condRaw >= 0 and condRaw <= 14){
         cond = static_cast<Condition>(condRaw);
     }else{
-        std::cerr << "ERROR: OpCode invalid condition" << std::endl;
+        throw std::runtime_error("ERROR: OpCode invalid condition in ArmOpcode");
+    }
+}
+
+ArmOpcode::ArmOpcode(ARM7TDMI& cpu) : OpCode::OpCode(cpu) {
+    opcode = Condition::AL << COND_FIELD_SHIFT;
+    condRaw = Utils::getRegBits(opcode, COND_FIELD_MASK, COND_FIELD_SHIFT);
+    if(condRaw >= 0 and condRaw <= 14){
+        cond = static_cast<Condition>(condRaw);
+    }else{
+        throw std::runtime_error("ERROR: OpCode invalid condition in ArmOpcode");
     }
 }
 
