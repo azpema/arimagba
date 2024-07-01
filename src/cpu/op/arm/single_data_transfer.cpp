@@ -146,7 +146,7 @@ void SingleDataTransfer::doExecute(){
                 // Store to memory
         if(B == 0){
             // Word
-            uint16_t loadVal = cpu.getMemManager().readWord(baseRegVal);
+            uint32_t loadVal = cpu.getMemManager().readWord(baseRegVal);
             cpu.setReg(Rd, loadVal);
 
         }else if(B == 1){
