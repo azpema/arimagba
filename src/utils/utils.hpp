@@ -14,6 +14,7 @@ public:
 
     static uint32_t rotateRight(uint32_t reg, uint32_t nTimes);
     static int32_t twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint32_t toBits);
+    static int64_t twosComplementExtendSignTo64Bits(int32_t val, uint32_t fromBits);
     static std::string toHexString(uint32_t val, uint32_t paddingNum = 0);
     
     static bool inRange(uint32_t val, uint32_t from, uint32_t to);

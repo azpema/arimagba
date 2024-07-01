@@ -33,7 +33,59 @@ void MultiplyAccumulateLong::doDecode(){
 }
 
 void MultiplyAccumulateLong::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: MultiplyAccumulateLong");
+
+    if(rs == 15 || rm == 15 || rdLo == 15 || rdHi == 15){
+        throw std::runtime_error("Error: MultiplyAccumulateLong: R15 must not be used as an operand or as a destination register");
+    }
+
+    if(rdHi == rdLo || rdHi == rm || rdLo == rm){
+        throw std::runtime_error("Error: MultiplyAccumulateLong:  RdHi, RdLo, and Rm must all specify different registers");
+    }
+
+    uint64_t uRes = 0;
+    int64_t sRes = 0;
+    uint32_t rsVal = cpu.getReg(rs);
+    uint32_t rmVal = cpu.getReg(rm);
+    uint32_t rdLoVal, rdHiVal;
+    if(a == 1){
+        rdLoVal = cpu.getReg(rdLo);
+        rdHiVal = cpu.getReg(rdHi);
+    }
+
+    if(u == 0){
+        uRes = static_cast<uint64_t>(rsVal) * static_cast<uint64_t>(rmVal);
+        if(a == 1){
+            uRes += (static_cast<uint64_t>(rdHiVal) << 32) + static_cast<uint64_t>(rdLoVal);
+        }
+        cpu.setReg(rdLo, uRes & 0xFFFFFFFF);
+        cpu.setReg(rdHi, (uRes & 0xFFFFFFFF00000000) >> 32);
+    }else if(u == 1){
+        sRes = static_cast<int64_t>(static_cast<int32_t>(rsVal)) * static_cast<int64_t>(static_cast<int32_t>(rmVal));
+        if(a == 1){
+            sRes += (static_cast<int64_t>(static_cast<int32_t>(rdHiVal)) << 32) + static_cast<int64_t>(static_cast<int32_t>(rdLoVal));
+            //throw std::runtime_error("Error: CHECK THIS: MultiplyAccumulateLong");
+        }
+        cpu.setReg(rdLo, sRes & 0xFFFFFFFF);
+        cpu.setReg(rdHi, (sRes & 0xFFFFFFFF00000000) >> 32);
+    }else{
+        throw std::runtime_error("Error: Unknown U flag: MultiplyAccumulateLong");
+    }
+
+    if(s == 1){
+        if(u == 0){
+            cpu.getCPSR().setNFlag((uRes >> (64 - 1)) == 1);
+            cpu.getCPSR().setZFlag(uRes == 0);
+            // Both the C and V flags are set to meaningless values.
+            //cpu.getCPSR().setCFlag();
+            //cpu.getCPSR().setVFlag();
+        }else{
+            cpu.getCPSR().setNFlag((static_cast<uint64_t>(sRes) >> (64 - 1)) == 1);
+            cpu.getCPSR().setZFlag(sRes == 0);
+            // Both the C and V flags are set to meaningless values.
+            //cpu.getCPSR().setCFlag();
+            //cpu.getCPSR().setVFlag();
+        }
+    }
 }
 
 // MULL             1S+(m+1)I

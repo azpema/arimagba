@@ -393,10 +393,10 @@ void ARM7TDMI::printStatus(){
 	if(cpsr.getVFlag()) v="V";
 
 	std::string i = "-";
-	if(!cpsr.getIFlag()) i="I";
+	if(cpsr.getIFlag()) i="I";
 
 	std::string f = "-";
-	if(!cpsr.getFFlag()) f="F";
+	if(cpsr.getFFlag()) f="F";
 
 	std::string t = "-";
 	if(cpsr.getTFlag()) t="T";
@@ -404,7 +404,7 @@ void ARM7TDMI::printStatus(){
 
 	// PC is reduced by 8 to account for pipeline parallelism
 	std::cout << "pc:   " << Utils::toHexString(getPC(), 8) << std::endl;
-	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << "\t" << "[" << n << c << z << v << i << f << t << "]" << "\t";
+	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << "\t" << "[" << n << z << c << v << i << f << t << "]" << "\t";
 	if(cpsr.getTFlag() == 0)
 		std::cout << "ARM" << "\t";
 	else
