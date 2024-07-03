@@ -140,6 +140,10 @@ void SingleDataTransfer::doExecute(){
             baseRegVal -= offsetVal;
         else if(U == 1)
             baseRegVal += offsetVal;
+
+        if(W == 1 && L == 1){
+            cpu.setReg(Rn, baseRegVal);
+        }
     }
     if(L == 0){
         // Store to memory
@@ -166,7 +170,6 @@ void SingleDataTransfer::doExecute(){
         }
     }else if(L == 1){
         // Load from memory
-                // Store to memory
         if(B == 0){
             // Word
             // LDR Force alignment
@@ -195,9 +198,11 @@ void SingleDataTransfer::doExecute(){
             baseRegVal -= offsetVal;
         else if(U == 1)
             baseRegVal += offsetVal;
+
+         cpu.setReg(Rn, baseRegVal);
     }
 
-    if(P == 0 || W == 1){
+    if(W == 1 && L == 0){
         cpu.setReg(Rn, baseRegVal);
     }
 

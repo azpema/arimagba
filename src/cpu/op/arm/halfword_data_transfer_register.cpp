@@ -41,6 +41,10 @@ void HalfwordDataTransferRegister::doExecute(){
             baseRegVal -= offsetRegVal;
         else if(u == 1)
             baseRegVal += offsetRegVal;
+
+        if(w == 1 && l == 1){
+            cpu.setReg(rn, baseRegVal);
+        }
     }
 
     if(l == 0){
@@ -92,12 +96,16 @@ void HalfwordDataTransferRegister::doExecute(){
     }
 
     // Post Indexing, Writeback
-    if(p == 0 || w == 1){
+    if(p == 0){
         if(u == 0)
             baseRegVal -= offsetRegVal;
         else if(u == 1)
             baseRegVal += offsetRegVal;
 
+        cpu.setReg(rn, baseRegVal);
+    }
+
+    if(w == 1 && l == 0){
         cpu.setReg(rn, baseRegVal);
     }
 }
