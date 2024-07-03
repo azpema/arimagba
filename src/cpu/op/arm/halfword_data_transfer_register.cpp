@@ -48,6 +48,7 @@ void HalfwordDataTransferRegister::doExecute(){
         if(s == 0){
             if(h == 0){
                 // SWP instruction
+                throw std::runtime_error("Error: Unimplemented HalfwordDataTransferRegister l=0 s=0 h=0");
             }else if( h == 1){
                 // Unsigned halfwords
                 cpu.getMemManager().store(baseRegVal, cpu.getReg(rd), 2);
@@ -55,10 +56,10 @@ void HalfwordDataTransferRegister::doExecute(){
         }else if(s == 1){
             if(h == 0){
                 // Signed byte
-
+                throw std::runtime_error("Error: Unimplemented HalfwordDataTransferRegister l=0 s=1 h=0");
             }else if( h == 1){
                 // Signed halfwords
-
+                throw std::runtime_error("Error: Unimplemented HalfwordDataTransferRegister l=0 s=1 h=1");
             }
         }
 
@@ -67,6 +68,7 @@ void HalfwordDataTransferRegister::doExecute(){
         if(s == 0){
             if(h == 0){
                 // SWP instruction
+                throw std::runtime_error("Error: Unimplemented HalfwordDataTransferRegister l=1 s=0 h=0");
             }else if( h == 1){
                 // Unsigned halfwords
                 uint16_t loadVal = cpu.getMemManager().readHalfWord(baseRegVal);
@@ -75,10 +77,10 @@ void HalfwordDataTransferRegister::doExecute(){
         }else if(s == 1){
             if(h == 0){
                 // Signed byte
-
+                throw std::runtime_error("Error: Unimplemented HalfwordDataTransferRegister l=1 s=1 h=0");
             }else if( h == 1){
                 // Signed halfwords
-
+                throw std::runtime_error("Error: Unimplemented HalfwordDataTransferRegister l=1 s=1 h=1");
             }
         }
     }

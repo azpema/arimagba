@@ -117,6 +117,18 @@ std::string SingleDataTransfer::toString(){
 void SingleDataTransfer::doDecode(){
 
 }
+/*
+TODO:
+Mis-aligned STR,STRH,STM,LDM,LDRD,STRD,PUSH,POP (forced align)
+The mis-aligned low bit(s) are ignored, the memory access goes to a forcibly aligned (rounded-down) memory address.
+
+For LDRD/STRD, it isn’t clearly defined if the address must be aligned by 8 (on the NDS, align-4 seems to be okay)
+ (align-8 may be required on other CPUs with 64bit databus).
+
+Mis-aligned LDR,SWP (rotated read)
+ Reads from forcibly aligned address “addr AND (NOT 3)”, and does then rotate the data as “ROR (addr AND 3)*8”.
+ That effect is internally used by LDRB and LDRH opcodes (which do then mask-out the unused bits).
+*/
 
 void SingleDataTransfer::doExecute(){
     uint32_t baseRegVal = cpu.getReg(Rn);
@@ -133,24 +145,36 @@ void SingleDataTransfer::doExecute(){
         // Store to memory
         if(B == 0){
             // Word
+            // STR Force alignment
+            baseRegVal &= 0xFFFFFFFC;
             cpu.getMemManager().store(baseRegVal, cpu.getReg(Rd), 4);
         }else if(B == 1){
             // Byte
+            // STH Force alignment
+            baseRegVal &= 0xFFFFFFFE;
             cpu.getMemManager().store(baseRegVal, cpu.getReg(Rd) & 0xFF, 1);
         }else{
             throw std::runtime_error("Error: Invalid B value in SingleDataTransfer::doExecute");
         }
+
 
     }else if(L == 1){
         // Load from memory
                 // Store to memory
         if(B == 0){
             // Word
-            uint32_t loadVal = cpu.getMemManager().readWord(baseRegVal);
+            // LDR Force alignment
+            uint32_t loadVal = cpu.getMemManager().readWord(baseRegVal & 0xFFFFFFFC);
+            if((baseRegVal & 0x3) != 0){
+                loadVal = Utils::rotateRight(loadVal, (baseRegVal & 0x3)*8);
+            }
             cpu.setReg(Rd, loadVal);
 
         }else if(B == 1){
-            uint16_t loadVal = cpu.getMemManager().readByte(baseRegVal);
+            uint16_t loadVal = cpu.getMemManager().readByte(baseRegVal & 0xFFFFFFFE);
+            if((baseRegVal & 0x1) != 0){
+                loadVal = Utils::rotateRight(loadVal, (baseRegVal & 0x1)*8);
+            }
             cpu.setReg(Rd, loadVal);
         }else{
             throw std::runtime_error("Error: Invalid B value in SingleDataTransfer::doExecute");
@@ -160,12 +184,14 @@ void SingleDataTransfer::doExecute(){
     }
 
     // Post Indexing, Writeback
-    if(P == 0 || W == 1){
+    if(P == 0){
         if(U == 0)
             baseRegVal -= offsetVal;
         else if(U == 1)
             baseRegVal += offsetVal;
+    }
 
+    if(P == 0 || W == 1){
         cpu.setReg(Rn, baseRegVal);
     }
 
