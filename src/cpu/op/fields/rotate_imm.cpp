@@ -10,7 +10,7 @@ RotateImm::RotateImm(uint16_t val) : Operand::Operand(val, OperandType::ROTATE_I
     c = ((operandVal & 0x80000000) >> 31) == 1;
 }
 
-RotateImm::RotateImm(uint8_t rot, uint8_t imm) : Operand::Operand(0xDEADBEEF, OperandType::ROTATE_IMM){
+RotateImm::RotateImm(uint8_t rot, uint8_t imm) : Operand::Operand(0xDEAD, OperandType::ROTATE_IMM){
     this->rotate = rot;
     this->imm = imm;
 

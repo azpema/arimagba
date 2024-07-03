@@ -31,19 +31,3 @@ std::string HalfwordDataTransfer::getWFlagMnemonic(){
 std::string HalfwordDataTransfer::getOpMnemonic(){
     return op2Mnemonic[l];
 }
-
-/*std::string HalfwordDataTransfer::toString(){
-    std::string base = getOpMnemonic() + getCondFieldMnemonic() + getSFlagMnemonic() + getHFlagMnemonic() +  + " " + \
-                        getRegMnemonic(rd) + ",";
-    std::string address = "[" + getRegMnemonic(rn);
-
-    if(p == 1){
-        address += "," + getUFlagMnemonic() + getRegMnemonic(rm) + "]" + getWFlagMnemonic();
-    }else if(p == 0){
-        address += "]," + getUFlagMnemonic() + getRegMnemonic(rm);
-    }else{
-        std::cerr << "ERROR: Invalid p flag value HalfwordDataTransferRegister" << std::endl;
-    }
-
-    return base + address;
-}*/

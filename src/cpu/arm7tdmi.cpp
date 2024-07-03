@@ -494,70 +494,11 @@ void ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-		if(fetchPC == 0x080011E8){
+		// Test 360
+		if(fetchPC == 0x08001318){
 			std::cout << "HEMEN" << std::endl;
 		}
 
 		insFetchSet = true;
 		insDecode = insFetch;
 }
-
-
-void ARM7TDMI::executionLoop(){
-	uint32_t insFetch, insDecode;
-	OpCode *opExecute = nullptr;
-	bool insFetchSet = false;
-	bool insDecodeSet = false;
-	bool insExecuteSet = false;
-	uint32_t fetchPC;
-	while(true){
-		if(!cpsr.isThumbMode()){
-			// execute
-			if(insDecodeSet){
-				insExecuteSet = opExecute->execute();
-
-				if(opExecute->toHexString() == "0xEAFFFFFE"){
-					std::cout << "END" << std::endl;
-					return;
-				}
-
-				// print status
-				//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
-				//printStatus();
-				//std::cout << "<<<" << std::endl;
-			}
-
-			// flush pipeline if needed
-			if(insExecuteSet && getMustFlushPipeline()){
-				insFetchSet = false;
-				insDecodeSet = false;
-				setMustFlushPipeline(false);
-			}
-
-			if(insExecuteSet){
-				insExecuteSet = false;
-				delete opExecute;
-			}
-
-			// decode
-			if(insFetchSet){
-				opExecute = decodeInstructionARM(insDecode, fetchPC);
-				insDecodeSet = true;
-			}
-			
-			// fetch
-			insFetch = mem->readWord(getPC());
-  			fetchPC = getPC();
-			setPC(getPC() + 4);
-
-			
-			insFetchSet = true;
-			insDecode = insFetch;
-			
-		}else{
-
-		}
-	}
-	
-}
-
