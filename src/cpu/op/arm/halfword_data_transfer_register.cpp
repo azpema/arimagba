@@ -46,12 +46,18 @@ void HalfwordDataTransferRegister::doExecute(){
     if(l == 0){
         // Store to memory
         if(s == 0){
+            uint32_t storeVal = cpu.getReg(rd);
+            if(rd == 15){
+                // PC is already 8 bytes ahead, so add 4 to reach 12bytes
+                storeVal += 4;
+            }
+                
             if(h == 0){
                 // SWP instruction
                 throw std::runtime_error("Error: Unimplemented HalfwordDataTransferRegister l=0 s=0 h=0");
             }else if( h == 1){
                 // Unsigned halfwords
-                cpu.getMemManager().store(baseRegVal, cpu.getReg(rd), 2);
+                cpu.getMemManager().store(baseRegVal, storeVal, 2);
             }
         }else if(s == 1){
             if(h == 0){

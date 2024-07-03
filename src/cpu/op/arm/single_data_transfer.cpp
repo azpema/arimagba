@@ -146,9 +146,11 @@ void SingleDataTransfer::doExecute(){
         /* When R15 is the source register (Rd) of a register store (STR) instruction, the stored
            value will be address of the instruction plus 12. */
         uint32_t storeVal = cpu.getReg(Rd);
-        if(Rd == 15)
+        if(Rd == 15){
             // PC is already 8 bytes ahead, so add 4 to reach 12bytes
             storeVal += 4;
+        }
+            
         if(B == 0){
             // Word
             // STR Force alignment
