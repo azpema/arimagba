@@ -46,7 +46,8 @@ void HalfwordDataTransferOffset::doDecode(){
 
 void HalfwordDataTransferOffset::doExecute(){
     uint32_t baseRegVal = cpu.getReg(rn);
-    
+    uint32_t loadVal = 0xDEADBEEF;
+
     // Pre-indexing
     if(p == 1){
         if(u == 0)
@@ -92,8 +93,7 @@ void HalfwordDataTransferOffset::doExecute(){
                 throw std::runtime_error("Error: Unimplemented HalfwordDataTransferOffset l=1 s=0 h=0");
             }else if( h == 1){
                 // Unsigned halfwords
-                uint16_t loadVal = cpu.getMemManager().readHalfWord(baseRegVal);
-                cpu.setReg(rd, loadVal);
+                loadVal = cpu.getMemManager().readHalfWord(baseRegVal);
             }
         }else if(s == 1){
             if(h == 0){
@@ -120,4 +120,7 @@ void HalfwordDataTransferOffset::doExecute(){
         cpu.setReg(rn, baseRegVal);
     }
 
+    if(l == 1){
+        cpu.setReg(rd, loadVal);
+    }
 }

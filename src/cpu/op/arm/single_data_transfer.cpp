@@ -133,6 +133,7 @@ Mis-aligned LDR,SWP (rotated read)
 void SingleDataTransfer::doExecute(){
     uint32_t baseRegVal = cpu.getReg(Rn);
     uint32_t offsetVal = offsetField->getOperandVal(cpu);
+    uint32_t loadVal = 0xDEADBEEF;
 
     // Pre-indexing
     if(P == 1){
@@ -173,18 +174,15 @@ void SingleDataTransfer::doExecute(){
         if(B == 0){
             // Word
             // LDR Force alignment
-            uint32_t loadVal = cpu.getMemManager().readWord(baseRegVal & 0xFFFFFFFC);
+            loadVal = cpu.getMemManager().readWord(baseRegVal & 0xFFFFFFFC);
             if((baseRegVal & 0x3) != 0){
                 loadVal = Utils::rotateRight(loadVal, (baseRegVal & 0x3)*8);
             }
-            cpu.setReg(Rd, loadVal);
-
         }else if(B == 1){
-            uint16_t loadVal = cpu.getMemManager().readByte(baseRegVal & 0xFFFFFFFE);
+            loadVal = cpu.getMemManager().readByte(baseRegVal & 0xFFFFFFFE);
             if((baseRegVal & 0x1) != 0){
                 loadVal = Utils::rotateRight(loadVal, (baseRegVal & 0x1)*8);
             }
-            cpu.setReg(Rd, loadVal);
         }else{
             throw std::runtime_error("Error: Invalid B value in SingleDataTransfer::doExecute");
         }
@@ -204,6 +202,10 @@ void SingleDataTransfer::doExecute(){
 
     if(W == 1 && L == 0){
         cpu.setReg(Rn, baseRegVal);
+    }
+
+    if(L == 1){
+        cpu.setReg(Rd, loadVal);
     }
 
 }
