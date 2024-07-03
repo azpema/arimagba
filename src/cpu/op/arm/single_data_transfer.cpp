@@ -143,21 +143,25 @@ void SingleDataTransfer::doExecute(){
     }
     if(L == 0){
         // Store to memory
+        /* When R15 is the source register (Rd) of a register store (STR) instruction, the stored
+           value will be address of the instruction plus 12. */
+        uint32_t storeVal = cpu.getReg(Rd);
+        if(Rd == 15)
+            // PC is already 8 bytes ahead, so add 4 to reach 12bytes
+            storeVal += 4;
         if(B == 0){
             // Word
             // STR Force alignment
             baseRegVal &= 0xFFFFFFFC;
-            cpu.getMemManager().store(baseRegVal, cpu.getReg(Rd), 4);
+            cpu.getMemManager().store(baseRegVal, storeVal, 4);
         }else if(B == 1){
             // Byte
             // STH Force alignment
             baseRegVal &= 0xFFFFFFFE;
-            cpu.getMemManager().store(baseRegVal, cpu.getReg(Rd) & 0xFF, 1);
+            cpu.getMemManager().store(baseRegVal, storeVal & 0xFF, 1);
         }else{
             throw std::runtime_error("Error: Invalid B value in SingleDataTransfer::doExecute");
         }
-
-
     }else if(L == 1){
         // Load from memory
                 // Store to memory
