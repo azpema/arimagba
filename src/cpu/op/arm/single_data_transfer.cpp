@@ -163,8 +163,6 @@ void SingleDataTransfer::doExecute(){
             cpu.getMemManager().store(baseRegVal, storeVal, 4);
         }else if(B == 1){
             // Byte
-            // STH Force alignment
-            baseRegVal &= 0xFFFFFFFE;
             cpu.getMemManager().store(baseRegVal, storeVal & 0xFF, 1);
         }else{
             throw std::runtime_error("Error: Invalid B value in SingleDataTransfer::doExecute");
@@ -179,10 +177,7 @@ void SingleDataTransfer::doExecute(){
                 loadVal = Utils::rotateRight(loadVal, (baseRegVal & 0x3)*8);
             }
         }else if(B == 1){
-            loadVal = cpu.getMemManager().readByte(baseRegVal & 0xFFFFFFFE);
-            if((baseRegVal & 0x1) != 0){
-                loadVal = Utils::rotateRight(loadVal, (baseRegVal & 0x1)*8);
-            }
+            loadVal = cpu.getMemManager().readByte(baseRegVal);
         }else{
             throw std::runtime_error("Error: Invalid B value in SingleDataTransfer::doExecute");
         }
