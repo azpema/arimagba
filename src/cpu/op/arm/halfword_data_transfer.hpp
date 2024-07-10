@@ -11,6 +11,7 @@ class HalfwordDataTransfer : public ArmOpcode {
         virtual void doExecute() = 0;
         virtual void doDecode() = 0;
     protected:
+        void _doExecute(uint32_t offsetVal);
         uint16_t p, u, w, l, rn, rd, s, h;
         HalfwordDataTransfer(uint32_t op, ARM7TDMI &cpu);
 

@@ -31,3 +31,116 @@ std::string HalfwordDataTransfer::getWFlagMnemonic(){
 std::string HalfwordDataTransfer::getOpMnemonic(){
     return op2Mnemonic[l];
 }
+
+void HalfwordDataTransfer::_doExecute(uint32_t offsetVal){
+    uint32_t baseRegVal = cpu.getReg(rn);
+    uint32_t loadVal = 0xDEADBEEF;
+
+    // Pre-indexing
+    if(p == 1){
+        if(u == 0)
+            baseRegVal -= offsetVal;
+        else if(u == 1)
+            baseRegVal += offsetVal;
+
+        if(w == 1 && l == 1){
+            cpu.setReg(rn, baseRegVal);
+        }
+    }
+
+    if(l == 0){
+        // Store to memory
+        uint32_t storeVal = cpu.getReg(rd);
+        if(rd == 15){
+            // PC is already 8 bytes ahead, so add 4 to reach 12bytes
+            storeVal += 4;
+        }
+        if(s == 0){
+            if(h == 0){
+                // SWP instruction
+                throw std::runtime_error("Error: Unimplemented HalfwordDataTransferOffset l=0 s=0 h=0");
+            }else if( h == 1){
+                // Unsigned halfwords
+                baseRegVal &= 0xFFFFFFFC;
+                cpu.getMemManager().store(baseRegVal, storeVal, 2);
+            }
+        }else if(s == 1){
+            if(h == 0){
+                // Signed byte
+                throw std::runtime_error("Error: Unimplemented HalfwordDataTransferOffset l=0 s=1 h=0");
+            }else if( h == 1){
+                // Signed halfwords
+                throw std::runtime_error("Error: Unimplemented HalfwordDataTransferOffset l=0 s=0 h=1");
+            }
+        }
+
+    }else if(l == 1){
+        // Load from memory
+        if(s == 0){
+            if(h == 0){
+                // SWP instruction
+                throw std::runtime_error("Error: Unimplemented HalfwordDataTransferOffset l=1 s=0 h=0");
+            }else if( h == 1){
+                // Unsigned halfwords
+                loadVal = cpu.getMemManager().readHalfWord(baseRegVal & 0xFFFFFFFE);
+                if((baseRegVal & 0x1) != 0){
+                    loadVal = Utils::rotateRight(loadVal, (baseRegVal & 0x1)*8);
+                }
+            }
+        }else if(s == 1){
+            if(h == 0){
+                /*
+                  Signed byte
+
+                  The LDRSB instruction loads the selected Byte into bits 7 to 0 of the destination
+                  register and bits 31 to 8 of the destination register are set to the value of bit 7, the sign
+                  bit
+                */ 
+                loadVal = cpu.getMemManager().readByte(baseRegVal);
+                uint8_t signBit = Utils::getRegSingleBit(loadVal, 7);
+
+                Utils::setRegBits(loadVal, 0xFFFFFF00, signBit ? 0xFFFFFF00 : 0);
+                
+            }else if( h == 1){
+                /*
+                  Signed halfwords
+
+                  The LDRSH instruction loads the selected Half-word into bits 15 to 0 of the destination
+                  register and bits 31 to 16 of the destination register are set to the value of bit 15, the
+                  sign bit
+                */
+               // Misaligned
+               if((baseRegVal & 0x1) != 0){
+                    loadVal = cpu.getMemManager().readByte(baseRegVal);
+                    uint8_t signBit = Utils::getRegSingleBit(loadVal, 7);
+
+                    Utils::setRegBits(loadVal, 0xFFFFFF00, signBit ? 0xFFFFFF00 : 0);
+                }else{
+                    loadVal = cpu.getMemManager().readHalfWord(baseRegVal);
+                    uint8_t signBit = Utils::getRegSingleBit(loadVal, 15);
+
+                    Utils::setRegBits(loadVal, 0xFFFF0000, signBit ? 0xFFFF0000 : 0);
+                }
+                
+            }
+        }
+    }
+
+    // Post Indexing, Writeback
+    if(p == 0){
+        if(u == 0)
+            baseRegVal -= offsetVal;
+        else if(u == 1)
+            baseRegVal += offsetVal;
+
+        cpu.setReg(rn, baseRegVal);
+    }
+
+    if(w == 1 && l == 0){
+        cpu.setReg(rn, baseRegVal);
+    }
+
+    if(l == 1){
+        cpu.setReg(rd, loadVal);
+    }
+}
