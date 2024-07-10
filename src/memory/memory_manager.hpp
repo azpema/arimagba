@@ -65,6 +65,7 @@ class MemoryManager {
         uint32_t readWord(uint32_t addr);
         uint16_t readHalfWord(uint32_t addr);
         uint16_t readByte(uint32_t addr);
+        uint32_t read(uint32_t addr, uint8_t bytes);
         void store(uint32_t addr, uint32_t val, uint8_t bytes);
 
         uint16_t* getRawVRAM();
@@ -117,7 +118,6 @@ class MemoryManager {
         const static uint32_t UNUSED_MEMORY_2_OFFSET_END = 0xFFFFFFFF;
 
     private:
-        uint32_t read(uint32_t addr, uint8_t bytes);
         
         BIOS &bios;
         GamePak &gamepak;

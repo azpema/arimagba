@@ -21,10 +21,13 @@ class GenericMemory {
             uint32_t val=0;
             if(bytes == 1){
                 // TODO What if address is unaligned?
-                if(addr % 2 != 0){
-                    throw std::runtime_error("TODO: Unaligned memory access in GenericMemory::read bytes==1");
+                if(addr % 2 == 0){
+                    //std::runtime_error("TODO: Unaligned memory access in GenericMemory::read bytes==1");
+                    val = mem[addr/2] & 0x00FF;
+                }else if(addr % 2 == 1){
+                    val = (mem[addr/2] & 0xFF00) >> 8;
                 }
-                val = mem[addr/2] & 0x00FF;
+                
             }else if(bytes == 2){
                 if(addr % 2 != 0){
                     throw std::runtime_error("TODO: Unaligned memory access in GenericMemory::read bytes==2");
@@ -47,10 +50,12 @@ class GenericMemory {
 
         void store(uint32_t addr, uint32_t val, uint8_t bytes){
             if(bytes == 1){
-                if(addr % 2 != 0){
-                    throw std::runtime_error("TODO: Unaligned memory access in GenericMemory::store bytes==1");
+                if(addr % 2 == 0){
+                    mem[addr / 2] = (mem[addr/2] & 0xFF00) | val;
+                }else if(addr % 2 == 1){
+                    mem[addr / 2] = (mem[addr/2] & 0x00FF) | (val << 8);
                 }
-                mem[addr / 2] = (mem[addr/2] & 0xFF00) | val;
+                
             }else if(bytes == 2){
                 if(addr % 2 != 0){
                     throw std::runtime_error("TODO: Unaligned memory access in GenericMemory::store bytes==2");
