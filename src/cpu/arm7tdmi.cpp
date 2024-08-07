@@ -478,11 +478,14 @@ void ARM7TDMI::executeNextInstruction(){
 			}
 
 			delete opExecute;
+			opExecute = nullptr;
 		}
 
 
 		// decode
 		if(insFetchSet){
+			if(opExecute != nullptr)
+				delete opExecute;
 			opExecute = decodeInstruction(insDecode, fetchPC);
 			opExecute->decode();
 			insDecodeSet = true;
