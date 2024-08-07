@@ -75,8 +75,6 @@ ARM7TDMI::ARM7TDMI(MemoryManager *memManager) {
 ARM7TDMI::~ARM7TDMI() {
 	delete barrelShifter;
 	delete exceptionHandler;
-	// TODO ???
-	delete mem;
 }
 
 OpCode* ARM7TDMI::decodeInstruction(uint32_t op, uint32_t pc){
