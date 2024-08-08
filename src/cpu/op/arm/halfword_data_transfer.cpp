@@ -61,8 +61,7 @@ void HalfwordDataTransfer::_doExecute(uint32_t offsetVal){
                 throw std::runtime_error("Error: Unimplemented HalfwordDataTransferOffset l=0 s=0 h=0");
             }else if( h == 1){
                 // Unsigned halfwords
-                baseRegVal &= 0xFFFFFFFC;
-                cpu.getMemManager().store(baseRegVal, storeVal, 2);
+                cpu.getMemManager().store(baseRegVal & 0xFFFFFFFE, storeVal, 2);
             }
         }else if(s == 1){
             if(h == 0){
