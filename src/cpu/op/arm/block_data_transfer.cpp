@@ -55,7 +55,7 @@ void BlockDataTransfer::doExecute(){
         uint32_t endAddr = baseAddr;
         for(size_t i=0; i < registerListVec.size(); i++){
             uint32_t regVal = cpu.getReg(registerListVec.at(i));
-            cpu.getMemManager().store(baseAddr, regVal, 4);
+            cpu.getMemManager().store(baseAddr & 0xFFFFFFFC, regVal, 4);
             baseAddr += 4;
         }
 
@@ -66,7 +66,7 @@ void BlockDataTransfer::doExecute(){
         uint32_t baseAddr = cpu.getReg(Rn);
         uint32_t endAddr = baseAddr;
         for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t val = cpu.getMemManager().readWord(endAddr);
+            uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
             cpu.setReg(registerListVec.at(i), val);
 
             // If PC value is modified, flush pipeline
@@ -98,7 +98,7 @@ void BlockDataTransfer::doExecute(){
         uint32_t endAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
         for(size_t i=0; i < registerListVec.size(); i++){
             uint32_t regVal = cpu.getReg(registerListVec.at(i));
-            cpu.getMemManager().store(baseAddr, regVal, 4);
+            cpu.getMemManager().store(baseAddr & 0xFFFFFFFC, regVal, 4);
             baseAddr += 4;
         }
 
@@ -110,7 +110,7 @@ void BlockDataTransfer::doExecute(){
         uint32_t endAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
         uint32_t baseAddr = endAddr + 4;
         for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t val = cpu.getMemManager().readWord(baseAddr);
+            uint32_t val = cpu.getMemManager().readWord(baseAddr & 0xFFFFFFFC);
             cpu.setReg(registerListVec.at(i), val);
 
             // If PC value is modified, flush pipeline
@@ -129,7 +129,7 @@ void BlockDataTransfer::doExecute(){
         uint32_t endAddr = baseAddr;
         for(size_t i=0; i < registerListVec.size(); i++){
             uint32_t regVal = cpu.getReg(registerListVec.at(i));
-            cpu.getMemManager().store(endAddr, regVal, 4);
+            cpu.getMemManager().store(endAddr & 0xFFFFFFFC, regVal, 4);
 
             // If PC value is modified, flush pipeline
             if(registerListVec.at(i) == 15)
@@ -147,7 +147,7 @@ void BlockDataTransfer::doExecute(){
         uint32_t endAddr = baseAddr;
         for(size_t i=0; i < registerListVec.size(); i++){
             uint32_t regVal = cpu.getReg(registerListVec.at(i));
-            cpu.getMemManager().store(endAddr, regVal, 4);
+            cpu.getMemManager().store(endAddr & 0xFFFFFFFC, regVal, 4);
 
             // If PC value is modified, flush pipeline
             if(registerListVec.at(i) == 15)
@@ -164,7 +164,7 @@ void BlockDataTransfer::doExecute(){
         uint32_t baseAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
         uint32_t endAddr = baseAddr;
         for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t val = cpu.getMemManager().readWord(endAddr);
+            uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
             cpu.setReg(registerListVec.at(i), val);
             endAddr += 4;
         }
@@ -177,7 +177,7 @@ void BlockDataTransfer::doExecute(){
         uint32_t baseAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
         uint32_t endAddr = baseAddr;
         for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t val = cpu.getMemManager().readWord(endAddr);
+            uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
             cpu.setReg(registerListVec.at(i), val);
             endAddr -= 4;
         }
