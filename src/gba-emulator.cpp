@@ -1,7 +1,4 @@
-﻿// gba-emulator.cpp: define el punto de entrada de la aplicación.
-//
-
-#include "gba-emulator.h"
+﻿#include "gba-emulator.h"
 #include "cpu/arm7tdmi.hpp"
 #include "utils/utils.hpp"
 #include "graphics/ppu.hpp"
@@ -50,7 +47,7 @@ int main(int argc, char** argv)
 		cpu.executeNextInstruction();
 		i++;
 		// Render scanline if necessary cycles have been consumed
-		if(i % 50 == 0)
+		if(i % 500 == 0)
 			ppu.renderScanline();
 
 	}
