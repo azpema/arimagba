@@ -59,6 +59,15 @@ void BlockDataTransfer::doExecute(){
         registerListVec.push_back(15);
     }
 
+    bool regListHasBase = false;
+    bool baseRegFirst = false;
+    auto baseRegIterator = std::find(registerListVec.begin(), registerListVec.end(), Rn);
+    if(baseRegIterator != registerListVec.end()){
+        regListHasBase = true;
+        if(baseRegIterator - registerListVec.begin() == 0)
+            baseRegFirst = true;
+    }
+
     std::vector<uint32_t> regVals;
     bool regListHasPc = false;
     if(std::find(registerListVec.begin(), registerListVec.end(), 15) != registerListVec.end()){
@@ -66,52 +75,59 @@ void BlockDataTransfer::doExecute(){
     }
 
     if(L == 0){
+        uint32_t endAddr, baseAddr;
+        // Pre calculate end address for possible writeback
+        // STMDB / STMFD
+        if(P==1 && U==0){
+            baseAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
+            endAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
+        // STMIB / STMFA
+        }else if(P==1 && U==1){
+            baseAddr = cpu.getReg(Rn) + 4;
+            endAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
+        // STMED / STMDA
+        }else if(P==0 && U==0){
+            baseAddr = cpu.getReg(Rn);
+            endAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
+        // STMEA / STMIA
+        }else if(P==0 && U==1){
+            baseAddr = cpu.getReg(Rn);
+            endAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
+        }
+
         for(size_t i=0; i < registerListVec.size(); i++){
             uint32_t regVal = cpu.getReg(registerListVec.at(i), S == 1);
             /*
             * Whenever R15 is stored to memory the stored value is the address of the STM
             * instruction plus 12. PC is already 8 bytes ahead due to instruction pipelining
             */
+            
+            if(regListHasBase && !baseRegFirst){
+                if(registerListVec.at(i) == Rn){
+                    regVal = endAddr;
+                }
+            }
+            
             if(registerListVec.at(i) == 15){
                 regVal += 4;
             }
                 
             regVals.push_back(regVal);
         }
-        uint32_t endAddr;
-
-        if(P==1 && U==0){
-            uint32_t baseAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
-            endAddr = baseAddr;
-            for(const uint32_t regVal : regVals){
-                cpu.getMemManager().store(baseAddr & 0xFFFFFFFC, regVal, 4);
-                baseAddr += 4;
-            }
-
-        }else if(P==1 && U==1){
-            uint32_t baseAddr = cpu.getReg(Rn) + 4;
-            endAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
-            for(const uint32_t regVal : regVals){
-                cpu.getMemManager().store(baseAddr & 0xFFFFFFFC, regVal, 4);
-                baseAddr += 4;
-            }
-        }
-        else if(P==0 && U==0){
-            uint32_t baseAddr = cpu.getReg(Rn);
-            endAddr = baseAddr;
-            for(const uint32_t regVal : regVals){
-                cpu.getMemManager().store(endAddr & 0xFFFFFFFC, regVal, 4);
-                endAddr -= 4;
-            }
-        }else if(P==0 && U==1){
-            uint32_t baseAddr = cpu.getReg(Rn);
-            endAddr = baseAddr;
-            for(const uint32_t regVal : regVals){
-                cpu.getMemManager().store(endAddr & 0xFFFFFFFC, regVal, 4);
-                endAddr += 4;
-            }
+        
+        int8_t baseAddrSign = 1;
+        if(P==0 && U==0){
+            baseAddrSign = -1;
         }
 
+        for(const uint32_t regVal : regVals){
+            cpu.getMemManager().store(baseAddr & 0xFFFFFFFC, regVal, 4);
+            baseAddr += baseAddrSign * 4; 
+        }
+
+        /*
+        Writeback with Rb included in Rlist: Store OLD base if Rb is FIRST entry in Rlist, otherwise store NEW base (STM/ARMv4), no writeback (LDM/ARMv4).
+        */
         if(W==1 && S != 1 && !emptyList){
             cpu.setReg(Rn, endAddr);
         }
@@ -133,7 +149,7 @@ void BlockDataTransfer::doExecute(){
                 endAddr += 4;
             }
 
-            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList){
+            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
                 cpu.setReg(Rn, endAddr);
             }
 
@@ -146,7 +162,7 @@ void BlockDataTransfer::doExecute(){
                 baseAddr += 4;
             }
 
-            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList){
+            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
                 cpu.setReg(Rn, endAddr);
             }
 
@@ -159,7 +175,7 @@ void BlockDataTransfer::doExecute(){
                 endAddr += 4;
             }
 
-            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList){
+            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
                 cpu.setReg(Rn, baseAddr);
             }
             
@@ -172,7 +188,7 @@ void BlockDataTransfer::doExecute(){
                 endAddr -= 4;
             }
 
-            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList){
+            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
                 cpu.setReg(Rn, baseAddr);
             }
         }
