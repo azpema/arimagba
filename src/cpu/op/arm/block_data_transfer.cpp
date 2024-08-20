@@ -76,39 +76,43 @@ void BlockDataTransfer::doExecute(){
 
     if(L == 0){
         uint32_t endAddr, baseAddr;
+        int32_t emptyListOffset;
         // Pre calculate end address for possible writeback
         // STMDB / STMFD
         if(P==1 && U==0){
-            baseAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
-            endAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
+            emptyListOffset = emptyList ? -0x40 : -registerListVec.size() * 4;
+            baseAddr = cpu.getReg(Rn) + emptyListOffset;
+            endAddr = baseAddr;
         // STMIB / STMFA
         }else if(P==1 && U==1){
-            baseAddr = cpu.getReg(Rn) + 4;
-            endAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
+            emptyListOffset = emptyList ? 0x04 : 0;
+            baseAddr = cpu.getReg(Rn) + 4 + emptyListOffset;
+            endAddr = cpu.getReg(Rn) + emptyListOffset + registerListVec.size() * 4;
         // STMED / STMDA
         }else if(P==0 && U==0){
-            baseAddr = cpu.getReg(Rn);
-            endAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
+            emptyListOffset = emptyList ? -0x3c : 0;
+            baseAddr = cpu.getReg(Rn) + emptyListOffset;
+            endAddr = baseAddr - registerListVec.size() * 4;
         // STMEA / STMIA
         }else if(P==0 && U==1){
             baseAddr = cpu.getReg(Rn);
-            endAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
+            endAddr = baseAddr + registerListVec.size() * 4;
         }
 
-        for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t regVal = cpu.getReg(registerListVec.at(i), S == 1);
+        for(const uint32_t regNum : registerListVec){
+            uint32_t regVal = cpu.getReg(regNum, S == 1);
             /*
             * Whenever R15 is stored to memory the stored value is the address of the STM
             * instruction plus 12. PC is already 8 bytes ahead due to instruction pipelining
             */
             
             if(regListHasBase && !baseRegFirst){
-                if(registerListVec.at(i) == Rn){
+                if(regNum == Rn){
                     regVal = endAddr;
                 }
             }
             
-            if(registerListVec.at(i) == 15){
+            if(regNum == 15){
                 regVal += 4;
             }
                 
@@ -206,7 +210,11 @@ void BlockDataTransfer::doExecute(){
     }
 
     if(emptyList){
-        cpu.setReg(Rn, cpu.getReg(Rn) + 0x40);
+        if(U == 0){
+            cpu.setReg(Rn, cpu.getReg(Rn) - 0x40);
+        }else if(U == 1){
+            cpu.setReg(Rn, cpu.getReg(Rn) + 0x40);
+        }
     }
     
 }
