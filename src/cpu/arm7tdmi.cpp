@@ -86,9 +86,6 @@ OpCode* ARM7TDMI::decodeInstruction(uint32_t op, uint32_t pc){
 }
 
 OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
-	if(op == 0xE3A08000){
-		std::cout << "hello" << std::endl;
-	}
 	if(ArmOpcode::isBranchAndExchange(op)){
 		return new BranchAndExchange(op, *this);
 	}else if (ArmOpcode::isBlockDataTransfer(op)) {
@@ -250,7 +247,7 @@ int64_t ARM7TDMI::fetchInstructionArm(uint32_t offset){
 	return mem->readWord(offset);
 }
 
-uint32_t ARM7TDMI::getReg(uint16_t n){
+uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
 	if(n < 0 || n > 15){
 		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
 		return 0;
@@ -259,101 +256,111 @@ uint32_t ARM7TDMI::getReg(uint16_t n){
 	if(n == 15)
 		return reg[15];
 
-	switch (cpsr.getMode())
-	{
-	case PSR::Mode::System:
-	case PSR::Mode::User:
+	if(!userBank){
+		switch (cpsr.getMode())
+		{
+		case PSR::Mode::System:
+		case PSR::Mode::User:
+			return reg[n];
+			break;
+		case PSR::Mode::FIQ:
+			if(n>=0 && n<=7)
+				return reg[n];
+			else if(n>=8 && n<=14)
+				return r8_fiq[n - 8];
+			break;
+		case PSR::Mode::Supervisor:
+			if(n>=0 && n<=12)
+				return reg[n];
+			else if(n>=13 && n<=14)
+				return r13_svc[n - 13];
+			break;
+		case PSR::Mode::Abort:
+			if(n>=0 && n<=12)
+				return reg[n];
+			else if(n>=13 && n<=14)
+				return r13_abt[n - 13];
+			break;
+		case PSR::Mode::IRQ:
+			if(n>=0 && n<=12)
+				return reg[n];
+			else if(n>=13 && n<=14)
+				return r13_irq[n - 13];
+			break;
+		case PSR::Mode::Undefined:
+			if(n>=0 && n<=12)
+				return reg[n];
+			else if(n>=13 && n<=14)
+				return r13_und[n - 13];
+			break;
+		default:
+			std::cerr << "ERROR: Unknown CPSR Mode in CPU getReg" << std::endl;
+			return 0;
+			break;
+		}
+	}else{
 		return reg[n];
-		break;
-	case PSR::Mode::FIQ:
-		if(n>=0 && n<=7)
-			return reg[n];
-		else if(n>=8 && n<=14)
-			return r8_fiq[n - 8];
-		break;
-	case PSR::Mode::Supervisor:
-		if(n>=0 && n<=12)
-			return reg[n];
-		else if(n>=13 && n<=14)
-			return r13_svc[n - 13];
-		break;
-	case PSR::Mode::Abort:
-		if(n>=0 && n<=12)
-			return reg[n];
-		else if(n>=13 && n<=14)
-			return r13_abt[n - 13];
-		break;
-	case PSR::Mode::IRQ:
-		if(n>=0 && n<=12)
-			return reg[n];
-		else if(n>=13 && n<=14)
-			return r13_irq[n - 13];
-		break;
-	case PSR::Mode::Undefined:
-		if(n>=0 && n<=12)
-			return reg[n];
-		else if(n>=13 && n<=14)
-			return r13_und[n - 13];
-		break;
-	default:
-		std::cerr << "ERROR: Unknown CPSR Mode in CPU getReg" << std::endl;
-		return 0;
-		break;
 	}
+
 	
 	return 0;
 }
 
-void ARM7TDMI::setReg(uint16_t n, uint32_t val){
+void ARM7TDMI::setReg(uint16_t n, uint32_t val, bool userBank){
 	if(n < 0 || n > 15){
 		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
 		return;
 	}
 
-	if(n == 15){
-		reg[n] = val;
-	}else{
-		switch (cpsr.getMode())
-		{
-		case PSR::Mode::System:
-		case PSR::Mode::User:
+	if(!userBank){
+		if(n == 15){
 			reg[n] = val;
-			break;
-		case PSR::Mode::FIQ:
-			if(n>=0 && n<=7)
+		}else{
+			switch (cpsr.getMode())
+			{
+			case PSR::Mode::System:
+			case PSR::Mode::User:
 				reg[n] = val;
-			else if(n>=8 && n<=14)
-				r8_fiq[n - 8] = val;
-			break;
-		case PSR::Mode::Supervisor:
-			if(n>=0 && n<=12)
-				reg[n] = val;
-			else if(n>=13 && n<=14)
-				r13_svc[n - 13] = val;
-			break;
-		case PSR::Mode::Abort:
-			if(n>=0 && n<=12)
-				reg[n] = val;
-			else if(n>=13 && n<=14)
-				r13_abt[n - 13] = val;
-			break;
-		case PSR::Mode::IRQ:
-			if(n>=0 && n<=12)
-				reg[n] = val;
-			else if(n>=13 && n<=14)
-				r13_irq[n - 13] = val;
-			break;
-		case PSR::Mode::Undefined:
-			if(n>=0 && n<=12)
-				reg[n] = val;
-			else if(n>=13 && n<=14)
-				r13_und[n - 13] = val;
-			break;
-		default:
-			throw std::runtime_error("ERROR: Invalid CPSR Mode in ARM7TDMI::setReg");
-			break;
+				break;
+			case PSR::Mode::FIQ:
+				if(n>=0 && n<=7)
+					reg[n] = val;
+				else if(n>=8 && n<=14)
+					r8_fiq[n - 8] = val;
+				break;
+			case PSR::Mode::Supervisor:
+				if(n>=0 && n<=12)
+					reg[n] = val;
+				else if(n>=13 && n<=14)
+					r13_svc[n - 13] = val;
+				break;
+			case PSR::Mode::Abort:
+				if(n>=0 && n<=12)
+					reg[n] = val;
+				else if(n>=13 && n<=14)
+					r13_abt[n - 13] = val;
+				break;
+			case PSR::Mode::IRQ:
+				if(n>=0 && n<=12)
+					reg[n] = val;
+				else if(n>=13 && n<=14)
+					r13_irq[n - 13] = val;
+				break;
+			case PSR::Mode::Undefined:
+				if(n>=0 && n<=12)
+					reg[n] = val;
+				else if(n>=13 && n<=14)
+					r13_und[n - 13] = val;
+				break;
+			default:
+				throw std::runtime_error("ERROR: Invalid CPSR Mode in ARM7TDMI::setReg");
+				break;
+			}
 		}
+	}else{
+		reg[n] = val;
 	}
+	
 
 }
 
@@ -495,7 +502,7 @@ void ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-		if(fetchPC == 0x08001750){
+		if(fetchPC == 0x0800193C){
 			std::cout << "HEMEN" << std::endl;
 		}
 

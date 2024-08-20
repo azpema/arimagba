@@ -40,8 +40,8 @@ class ARM7TDMI {
 		void setMustFlushPipeline(bool val);
 		void printStatus();
 
-		uint32_t getReg(uint16_t n);
-		void setReg(uint16_t n, uint32_t val);
+		uint32_t getReg(uint16_t n, bool userBank = false);
+		void setReg(uint16_t n, uint32_t val, bool userBank = false);
 
 		uint32_t getPC();
 		void setPC(uint32_t pc);

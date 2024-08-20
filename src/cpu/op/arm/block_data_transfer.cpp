@@ -1,4 +1,5 @@
 #include "block_data_transfer.hpp"
+#include <algorithm>
 
 BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     P = Utils::getRegBits(op, P_MASK, P_SHIFT);
@@ -50,145 +51,148 @@ void BlockDataTransfer::doDecode(){
 // Optimizible!!
 // TODO Flush pipeline if PC is written!!!
 void BlockDataTransfer::doExecute(){
-    if(L==0 && P==1 && U==0){
-        uint32_t baseAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
-        uint32_t endAddr = baseAddr;
-        for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t regVal = cpu.getReg(registerListVec.at(i));
-            cpu.getMemManager().store(baseAddr & 0xFFFFFFFC, regVal, 4);
-            baseAddr += 4;
-        }
-
-        if(W==1){
-            cpu.setReg(Rn, endAddr);
-        }
-    }else if(L==1 && P==0 && U==1){
-        uint32_t baseAddr = cpu.getReg(Rn);
-        uint32_t endAddr = baseAddr;
-        for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
-            cpu.setReg(registerListVec.at(i), val);
-
-            // If PC value is modified, flush pipeline
-            if(registerListVec.at(i) == 15)
-                cpu.setMustFlushPipeline(true);
-
-            endAddr += 4;
-        }
-
-        if(W==1){
-            cpu.setReg(Rn, endAddr);
-        }
-
-   /* }else if(L==0 && P==1 && U==1){
-        uint32_t baseAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
-        uint32_t endAddr = baseAddr;
-        for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t regVal = cpu.getReg(registerListVec.at(i));
-            cpu.getMemManager().store(endAddr, regVal, 4);
-            endAddr -= 4;
-        }
-
-        if(W==1){
-            cpu.setReg(Rn, baseAddr);
-        }
-    }*/
-   }else if(L==0 && P==1 && U==1){
-        uint32_t baseAddr = cpu.getReg(Rn) + 4;
-        uint32_t endAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
-        for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t regVal = cpu.getReg(registerListVec.at(i));
-            cpu.getMemManager().store(baseAddr & 0xFFFFFFFC, regVal, 4);
-            baseAddr += 4;
-        }
-
-        if(W==1){
-            cpu.setReg(Rn, endAddr);
-        }
+    // Empty Rlist: R15 loaded/stored (ARMv4 only), and Rb=Rb+/-40h (ARMv4-v5).
+    // TODO Rb=Rb+/-40h (ARMv4-v5).
+    bool emptyList = false;
+    if(registerListVec.empty()){
+        emptyList = true;
+        registerListVec.push_back(15);
     }
-   else if(L==1 && P==0 && U==0){
-        uint32_t endAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
-        uint32_t baseAddr = endAddr + 4;
+
+    std::vector<uint32_t> regVals;
+    bool regListHasPc = false;
+    if(std::find(registerListVec.begin(), registerListVec.end(), 15) != registerListVec.end()){
+        regListHasPc = true;
+    }
+
+    if(L == 0){
         for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t val = cpu.getMemManager().readWord(baseAddr & 0xFFFFFFFC);
-            cpu.setReg(registerListVec.at(i), val);
+            uint32_t regVal = cpu.getReg(registerListVec.at(i), S == 1);
+            /*
+            * Whenever R15 is stored to memory the stored value is the address of the STM
+            * instruction plus 12. PC is already 8 bytes ahead due to instruction pipelining
+            */
+            if(registerListVec.at(i) == 15){
+                regVal += 4;
+            }
+                
+            regVals.push_back(regVal);
+        }
+        uint32_t endAddr;
 
-            // If PC value is modified, flush pipeline
-            if(registerListVec.at(i) == 15)
-                cpu.setMustFlushPipeline(true);
+        if(P==1 && U==0){
+            uint32_t baseAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
+            endAddr = baseAddr;
+            for(const uint32_t regVal : regVals){
+                cpu.getMemManager().store(baseAddr & 0xFFFFFFFC, regVal, 4);
+                baseAddr += 4;
+            }
 
-            baseAddr += 4;
+        }else if(P==1 && U==1){
+            uint32_t baseAddr = cpu.getReg(Rn) + 4;
+            endAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
+            for(const uint32_t regVal : regVals){
+                cpu.getMemManager().store(baseAddr & 0xFFFFFFFC, regVal, 4);
+                baseAddr += 4;
+            }
+        }
+        else if(P==0 && U==0){
+            uint32_t baseAddr = cpu.getReg(Rn);
+            endAddr = baseAddr;
+            for(const uint32_t regVal : regVals){
+                cpu.getMemManager().store(endAddr & 0xFFFFFFFC, regVal, 4);
+                endAddr -= 4;
+            }
+        }else if(P==0 && U==1){
+            uint32_t baseAddr = cpu.getReg(Rn);
+            endAddr = baseAddr;
+            for(const uint32_t regVal : regVals){
+                cpu.getMemManager().store(endAddr & 0xFFFFFFFC, regVal, 4);
+                endAddr += 4;
+            }
         }
 
-        if(W==1){
+        if(W==1 && S != 1 && !emptyList){
             cpu.setReg(Rn, endAddr);
         }
 
-    }else if(L==0 && P==0 && U==0){
-        uint32_t baseAddr = cpu.getReg(Rn);
-        uint32_t endAddr = baseAddr;
+    }else if(L == 1){
         for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t regVal = cpu.getReg(registerListVec.at(i));
-            cpu.getMemManager().store(endAddr & 0xFFFFFFFC, regVal, 4);
-
             // If PC value is modified, flush pipeline
-            if(registerListVec.at(i) == 15)
+            if(registerListVec.at(i) == 15){
                 cpu.setMustFlushPipeline(true);
-
-            endAddr -= 4;
+            }   
         }
 
-        if(W==1){
-            cpu.setReg(Rn, endAddr);
+        if(P==0 && U==1){
+            uint32_t baseAddr = cpu.getReg(Rn);
+            uint32_t endAddr = baseAddr;
+            for(size_t i=0; i < registerListVec.size(); i++){
+                uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
+                cpu.setReg(registerListVec.at(i), val, !regListHasPc && (S == 1));
+                endAddr += 4;
+            }
+
+            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList){
+                cpu.setReg(Rn, endAddr);
+            }
+
+        }else if(P==0 && U==0){
+            uint32_t endAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
+            uint32_t baseAddr = endAddr + 4;
+            for(size_t i=0; i < registerListVec.size(); i++){
+                uint32_t val = cpu.getMemManager().readWord(baseAddr & 0xFFFFFFFC);
+                cpu.setReg(registerListVec.at(i), val, !regListHasPc && (S == 1));
+                baseAddr += 4;
+            }
+
+            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList){
+                cpu.setReg(Rn, endAddr);
+            }
+
+        }else if(P==1 && U==0){
+            uint32_t baseAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
+            uint32_t endAddr = baseAddr;
+            for(size_t i=0; i < registerListVec.size(); i++){
+                uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
+                cpu.setReg(registerListVec.at(i), val, !regListHasPc && (S == 1));
+                endAddr += 4;
+            }
+
+            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList){
+                cpu.setReg(Rn, baseAddr);
+            }
+            
+        }else if(P==1 && U==1){
+            uint32_t baseAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
+            uint32_t endAddr = baseAddr;
+            for(size_t i=0; i < registerListVec.size(); i++){
+                uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
+                cpu.setReg(registerListVec.at(i), val, !regListHasPc && (S == 1));
+                endAddr -= 4;
+            }
+
+            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList){
+                cpu.setReg(Rn, baseAddr);
+            }
         }
 
-    }else if(L==0 && P==0 && U==1){
-        uint32_t baseAddr = cpu.getReg(Rn);
-        uint32_t endAddr = baseAddr;
-        for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t regVal = cpu.getReg(registerListVec.at(i));
-            cpu.getMemManager().store(endAddr & 0xFFFFFFFC, regVal, 4);
-
-            // If PC value is modified, flush pipeline
-            if(registerListVec.at(i) == 15)
-                cpu.setMustFlushPipeline(true);
-
-            endAddr += 4;
+        if(emptyList){
+            cpu.setReg(Rn, cpu.getReg(Rn) + 0x40);
         }
 
-        if(W==1){
-            cpu.setReg(Rn, endAddr);
+        /*
+        * LDM with R15 in transfer list and S bit set (Mode changes)
+        * If the instruction is a LDM then SPSR_<mode> is transferred to CPSR at the same
+        * time as R15 is loaded.
+        */
+        if(regListHasPc && (S == 1)){
+            cpu.setCPSR(cpu.getSPSR().getValue());
         }
-
-    }else if(L==1 && P==1 && U==0){
-        uint32_t baseAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
-        uint32_t endAddr = baseAddr;
-        for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
-            cpu.setReg(registerListVec.at(i), val);
-            endAddr += 4;
-        }
-
-        if(W==1){
-            cpu.setReg(Rn, baseAddr);
-        }
-           
-    }else if(L==1 && P==1 && U==1){
-        uint32_t baseAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
-        uint32_t endAddr = baseAddr;
-        for(size_t i=0; i < registerListVec.size(); i++){
-            uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
-            cpu.setReg(registerListVec.at(i), val);
-            endAddr -= 4;
-        }
-
-        if(W==1){
-            cpu.setReg(Rn, baseAddr);
-        }
-           
     }else{
-        throw std::runtime_error("TODO: BlockDataTransfer::doExecute; L=" + std::to_string(L) + " P=" + std::to_string(P) + " U=" + std::to_string(U));
+        throw std::runtime_error("ERROR: BlockDataTransfer::doExecute: Invalid L=" + std::to_string(L) + " value");
     }
+    
 }
 
 uint32_t BlockDataTransfer::cyclesUsed() const {
