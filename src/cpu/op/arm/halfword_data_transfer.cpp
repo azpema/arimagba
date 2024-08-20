@@ -75,6 +75,10 @@ void HalfwordDataTransfer::_doExecute(uint32_t offsetVal){
 
     }else if(l == 1){
         // Load from memory
+        if(rd == 15){
+            cpu.setMustFlushPipeline(true);
+        }
+
         if(s == 0){
             if(h == 0){
                 // SWP instruction

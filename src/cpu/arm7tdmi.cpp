@@ -502,10 +502,6 @@ void ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-		if(fetchPC == 0x0800193C){
-			std::cout << "HEMEN" << std::endl;
-		}
-
 		insFetchSet = true;
 		insDecode = insFetch;
 }

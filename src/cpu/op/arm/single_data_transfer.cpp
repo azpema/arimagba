@@ -169,6 +169,10 @@ void SingleDataTransfer::doExecute(){
         }
     }else if(L == 1){
         // Load from memory
+        if(Rd == 15){
+            cpu.setMustFlushPipeline(true);
+        }
+
         if(B == 0){
             // Word
             // LDR Force alignment

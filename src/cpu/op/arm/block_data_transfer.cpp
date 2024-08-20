@@ -85,9 +85,8 @@ void BlockDataTransfer::doExecute(){
             endAddr = baseAddr;
         // STMIB / STMFA
         }else if(P==1 && U==1){
-            emptyListOffset = emptyList ? 0x04 : 0;
-            baseAddr = cpu.getReg(Rn) + 4 + emptyListOffset;
-            endAddr = cpu.getReg(Rn) + emptyListOffset + registerListVec.size() * 4;
+            baseAddr = cpu.getReg(Rn) + 4;
+            endAddr = baseAddr + (registerListVec.size() - 1) * 4;
         // STMED / STMDA
         }else if(P==0 && U==0){
             emptyListOffset = emptyList ? -0x3c : 0;
