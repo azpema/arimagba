@@ -177,10 +177,6 @@ void BlockDataTransfer::doExecute(){
             }
         }
 
-        if(emptyList){
-            cpu.setReg(Rn, cpu.getReg(Rn) + 0x40);
-        }
-
         /*
         * LDM with R15 in transfer list and S bit set (Mode changes)
         * If the instruction is a LDM then SPSR_<mode> is transferred to CPSR at the same
@@ -191,6 +187,10 @@ void BlockDataTransfer::doExecute(){
         }
     }else{
         throw std::runtime_error("ERROR: BlockDataTransfer::doExecute: Invalid L=" + std::to_string(L) + " value");
+    }
+
+    if(emptyList){
+        cpu.setReg(Rn, cpu.getReg(Rn) + 0x40);
     }
     
 }
