@@ -20,6 +20,7 @@ class ConditionalBranch : public ThumbOpCode {
     private:
         uint8_t cond, sOffset8;
         int16_t offsetVal;
+        uint32_t oldPC;
 
         const static uint16_t COND_MASK = 0b0000111100000000; 
         const static uint16_t COND_SHIFT = 8;

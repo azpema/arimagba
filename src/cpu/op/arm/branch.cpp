@@ -10,6 +10,16 @@ Branch::Branch(uint32_t op, uint32_t pc, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op
     oldPC = pc;
 }   
 
+Branch::Branch(uint32_t pc, uint32_t offsetField, uint32_t realOffset, uint32_t cond, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu){
+    L = 0;
+    this->offsetField = offsetField;
+    this->realOffset = realOffset;
+    this->oldPC = pc;
+
+    condRaw = cond;
+    this->cond = static_cast<Condition>(cond);
+}
+
 std::string Branch::getLinkFlagMnemonic(){
     return linkFlag2Mnemonic[L];
 }

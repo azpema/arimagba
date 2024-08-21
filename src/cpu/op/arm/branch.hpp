@@ -17,6 +17,7 @@ namespace ARM {
 class Branch : public ArmOpcode {
     public:
     	Branch(uint32_t op, uint32_t pc, ARM7TDMI &cpu);
+        Branch(uint32_t pc, uint32_t offsetField, uint32_t realOffset, uint32_t cond, ARM7TDMI &cpu);
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

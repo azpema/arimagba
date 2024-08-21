@@ -1,4 +1,6 @@
 #include "load_store_register_offset.hpp"
+#include "../arm/single_data_transfer.hpp"
+#include "../fields/shift_rm.hpp"
 
 LoadStoreRegisterOffset::LoadStoreRegisterOffset(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
@@ -26,7 +28,14 @@ void LoadStoreRegisterOffset::doDecode(){
 }
 
 void LoadStoreRegisterOffset::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: LoadStoreRegisterOffset");
+    uint8_t i = 1;
+    uint8_t p = 1;
+    uint8_t u = 1;
+    uint8_t w = 0;
+
+    SingleDataTransfer opArm = SingleDataTransfer(i, p, u, b, w, l, rb, rd, r0, cpu);
+    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    opArm.doExecute();  
 }
 
 uint32_t LoadStoreRegisterOffset::cyclesUsed() const {

@@ -1,4 +1,5 @@
 #include "move_comp_add_sub_imm.hpp"
+#include "../arm/data_processing.hpp"
 
 MoveCompAddSubImm::MoveCompAddSubImm(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
@@ -20,7 +21,17 @@ void MoveCompAddSubImm::doDecode(){
 }
 
 void MoveCompAddSubImm::doExecute(){
-    uint8_t op = static_cast<MoveCompAddSubImm::Op>(opField);
+    //RotateImm imm = RotateImm(0, rnOffset3);
+    uint32_t opDataProcessing[4] = {DataProcessing::OPCODE_MOV_VAL, DataProcessing::OPCODE_CMP_VAL,
+                                    DataProcessing::OPCODE_ADD_VAL, DataProcessing::OPCODE_SUB_VAL};
+
+    DataProcessing opArm = DataProcessing(1, opDataProcessing[opField], 1, 0, rd, offset8, cpu);
+    opArm.doExecute();
+    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+
+
+
+    /*uint8_t op = static_cast<MoveCompAddSubImm::Op>(opField);
     uint32_t val = 0;
     switch (op)
     {
@@ -49,7 +60,7 @@ void MoveCompAddSubImm::doExecute(){
     if(op != MOV){
         cpu.getCPSR().setCFlag(cpu.getALU().getC());
         cpu.getCPSR().setVFlag(cpu.getALU().getV());
-    }
+    }*/
 }
 
 uint32_t MoveCompAddSubImm::cyclesUsed() const {

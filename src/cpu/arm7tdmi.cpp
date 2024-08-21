@@ -502,6 +502,10 @@ void ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
+		if(insFetch == 0x2700){
+			std::cout << "aa" << std::endl;
+		}
+
 		insFetchSet = true;
 		insDecode = insFetch;
 }

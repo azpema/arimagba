@@ -50,16 +50,15 @@ class ArmOpcode : public OpCode {
 		ArmOpcode(uint32_t op, ARM7TDMI &cpu);
 		ArmOpcode(ARM7TDMI &cpu);
 
+		uint16_t condRaw = 0;
+		Condition cond;
+
 		const static uint32_t COND_FIELD_MASK = 0b11110000000000000000000000000000;
 		const static uint32_t COND_FIELD_SHIFT = 28;
 
 	private:
 		virtual void doExecute() = 0;
 		virtual void doDecode() = 0;
-
-		uint16_t condRaw = 0;
-
-		Condition cond;
 
 		std::unordered_map<Condition, std::string> condCode2Suffix = {
             {EQ, "eq"},	// Z set, equal

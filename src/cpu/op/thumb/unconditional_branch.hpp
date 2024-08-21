@@ -19,7 +19,8 @@ class UnconditionalBranch : public ThumbOpCode {
 
     private:
         uint16_t offset11;
-        int16_t offsetVal;
+        int32_t offsetVal;
+        uint32_t oldPC;
 
         const static uint16_t OFFSET11_MASK = 0b0000011111111111; 
         const static uint16_t OFFSET11_SHIFT = 0;

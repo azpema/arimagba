@@ -22,6 +22,28 @@ ShiftRm::ShiftRm(uint16_t val) : Operand::Operand(val, OperandType::SHIFT_RM){
     }
 }
 
+ShiftRm::ShiftRm(uint8_t rm, bool shiftAmount, uint8_t amount, uint8_t type)
+ : Operand::Operand(0xDEAD, OperandType::SHIFT_RM){
+    c = false;
+    _rm = rm;
+    _shiftType = type;
+
+    shiftAmount = amount;
+
+    // Shift amount
+    if(shiftAmount){
+        _shiftAmount = amount;
+        type = AMOUNT;
+        uint32_t a = amount << 3;
+        uint32_t b = _shiftType << 1;
+        _shift = (((a) | (b)) << 4) | (rm);
+        setRawVal(_shift);
+    // Shift register
+    }else{
+        std::runtime_error("TODO: Unimplemented ShiftRM constructor shiftAmount=" + std::to_string(shiftAmount));
+    }
+}
+
 std::string ShiftRm::getShiftTypeMnemonic(){
     return shiftType2Mnemonic[_shiftType];
 }

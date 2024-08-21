@@ -1,4 +1,5 @@
 #include "move_shifted_register.hpp"
+#include "../arm/data_processing.hpp"
 
 MoveShiftedRegister::MoveShiftedRegister(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
@@ -21,9 +22,20 @@ void MoveShiftedRegister::doDecode(){
 }
 
 void MoveShiftedRegister::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: MoveShiftedRegister");
-    //OpCode armOp = DataProcessing(op, cpu);
+    /*
+    "lsl" 0
+    "lsr" 1
+    "asr" 2
     
+    */
+    // ShiftRm(uint8_t rm, bool shiftAmount, uint8_t amount, uint8_t type);
+
+    ShiftRm shiftRm = ShiftRm(rs, true, offset5, opField);
+    //uint32_t operand2 = (((offset5 << 3) | (opField << 1)) << 3) | rs
+    uint32_t rawVal = shiftRm.getRawVal();
+    DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 1, 0, rd, rawVal, cpu);
+    opArm.doExecute();
+    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 }
 
 uint32_t MoveShiftedRegister::cyclesUsed() const {
