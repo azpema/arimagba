@@ -12,7 +12,7 @@ LongBranchWithLink::LongBranchWithLink(uint16_t op, uint32_t pc, ARM7TDMI &cpu):
     }else if(h == 1){
         offsetVal = offset << 1;
     }else{
-        std::runtime_error("ERROR: Invalid h value in LongBranchWithLink::LongBranchWithLink");
+        throw std::runtime_error("ERROR: Invalid h value in LongBranchWithLink::LongBranchWithLink");
     }
 }   
 

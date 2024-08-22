@@ -116,7 +116,7 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 		return new DataProcessing(op, *this);
 	}
 
-	std::runtime_error("ERROR: Unrecognized instruction in decodeInstructionARM");
+	throw std::runtime_error("ERROR: Unrecognized instruction in decodeInstructionARM");
 	return nullptr;
 }
 
@@ -502,7 +502,7 @@ void ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-		if(insFetch == 0x2700){
+		if(insFetch == 0x4108){
 			std::cout << "aa" << std::endl;
 		}
 

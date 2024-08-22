@@ -1,4 +1,5 @@
 #include "hi_register_branch_exchange.hpp"
+#include "../arm/data_processing.hpp"
 
 HiRegisterBranchExchange::HiRegisterBranchExchange(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
@@ -39,7 +40,12 @@ void HiRegisterBranchExchange::doExecute(){
             throw std::runtime_error("Unimplemented HiRegisterBranchExchange::doExecute");
         break;
         case MOV:
-            cpu.setReg(rd, rsVal);
+        {
+            //cpu.setReg(rd, rsVal);
+            DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 0, rs, rd, 0, cpu);
+            opArm.doExecute();
+            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        }
         break;
         case BX:
             if(h1 == 1){

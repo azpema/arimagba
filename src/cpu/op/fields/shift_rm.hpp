@@ -9,7 +9,7 @@
 class ShiftRm : public Operand {
     public:
 		ShiftRm(uint16_t val);
-        ShiftRm(uint8_t rm, bool shiftAmount, uint8_t amount, uint8_t type);
+        ShiftRm(uint8_t rm, bool typeShiftAmount, uint8_t amount, uint8_t type, uint8_t rs=0);
         uint16_t getShiftType();
         std::string getShiftTypeMnemonic();
         bool getC() override;
@@ -19,6 +19,7 @@ class ShiftRm : public Operand {
         enum Type {AMOUNT, REGISTER};
         Type getType();
         uint16_t getShiftReg();
+        enum ShiftType {LSL = 0b00, LSR = 0b01, ASR = 0b10, ROR = 0b11};
     private:
         bool c;
         uint16_t _shift, _rm, _shiftType, _shiftAmount, _shiftReg;
@@ -27,7 +28,7 @@ class ShiftRm : public Operand {
         
         enum Type type;
 
-        enum ShiftType {LSL = 0b00, LSR = 0b01, ASR = 0b10, ROR = 0b11};
+        
 
         const static uint32_t SHIFT_MASK = 0b111111110000;
         const static uint32_t SHIFT_SHIFT = 4;

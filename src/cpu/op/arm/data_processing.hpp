@@ -8,6 +8,7 @@
 
 class DataProcessing : public ArmOpcode {
     public:
+        DataProcessing();
 		DataProcessing(uint32_t op, ARM7TDMI &cpu);
         DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2, ARM7TDMI &cpu);
         ~DataProcessing();
