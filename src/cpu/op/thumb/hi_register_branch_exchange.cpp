@@ -34,7 +34,12 @@ void HiRegisterBranchExchange::doExecute(){
     uint32_t rsVal = cpu.getReg(rs);
     switch(op){
         case ADD:
-            throw std::runtime_error("Unimplemented HiRegisterBranchExchange::doExecute");
+        {
+            ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
+            DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_ADD_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
+            opArm.doExecute();
+            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        }
         break;
         case CMP:
             throw std::runtime_error("Unimplemented HiRegisterBranchExchange::doExecute");
@@ -42,7 +47,8 @@ void HiRegisterBranchExchange::doExecute(){
         case MOV:
         {
             //cpu.setReg(rd, rsVal);
-            DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 0, rs, rd, 0, cpu);
+            ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
+            DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 0, rs, rd, shiftRm.getRawVal(), cpu);
             opArm.doExecute();
             std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }

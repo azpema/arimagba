@@ -141,7 +141,9 @@ void DataProcessing::doExecuteCmp(ARM7TDMI &cpu){
 }
 
 void DataProcessing::doExecuteMov(ARM7TDMI &cpu){
-    cpu.setReg(rd, cpu.getALU().mov(op2));
+    //cpu.setReg(rd, cpu.getALU().mov(op2));
+    uint32_t res = cpu.getALU().mov(op2);
+    cpu.setReg(rd, res);
 }
 
 void DataProcessing::doExecuteAdd(ARM7TDMI &cpu){

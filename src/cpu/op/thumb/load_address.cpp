@@ -1,4 +1,5 @@
 #include "load_address.hpp"
+#include "../arm/data_processing.hpp"
 
 LoadAddress::LoadAddress(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     sp = Utils::getRegBits(op, SP_MASK, SP_SHIFT);
@@ -21,12 +22,19 @@ void LoadAddress::doDecode(){
 }
 
 void LoadAddress::doExecute(){
-    uint32_t rsVal = cpu.getReg(getSPRegVal());
+    /*uint32_t rsVal = cpu.getReg(getSPRegVal());
     // sp refers to PC
     if(sp == 0)
         rsVal &= 0xFFFFFFFE;
     
-    cpu.setReg(rd, cpu.getALU().add(rsVal, offsetVal));
+    cpu.setReg(rd, cpu.getALU().add(rsVal, offsetVal));*/
+
+    //uint32_t rsVal = cpu.getReg(getSPRegVal());
+
+    RotateImm imm = RotateImm(0, offsetVal);
+    DataProcessing opArm = DataProcessing(1, DataProcessing::OPCODE_ADD_VAL, 0, getSPRegVal(), rd, imm.getRawVal(), cpu);
+    opArm.doExecute();
+    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 }
 
 uint32_t LoadAddress::cyclesUsed() const {

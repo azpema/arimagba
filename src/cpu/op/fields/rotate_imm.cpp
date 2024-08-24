@@ -16,7 +16,7 @@ RotateImm::RotateImm(uint8_t rot, uint8_t imm) : Operand::Operand(0xDEAD, Operan
 
     uint32_t raw = 0;
     Utils::setRegBits(raw, ROTATE_MASK, rot);
-    Utils::setRegBits(raw, IMM_MASK, rot);
+    Utils::setRegBits(raw, IMM_MASK, imm);
     setRawVal(raw);
 }
 

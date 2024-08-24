@@ -65,6 +65,16 @@ void ALUOperations::doExecute(){
         DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
         opArm.doExecute();
         std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    }else if(opField == Opcode::ASR){
+        ShiftRm shiftRm = ShiftRm(rd, false, 0, ShiftRm::ShiftType::ASR, rs);
+        DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
+        opArm.doExecute();
+        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    }else if(opField == Opcode::ROR){
+        ShiftRm shiftRm = ShiftRm(rd, false, 0, ShiftRm::ShiftType::ROR, rs);
+        DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
+        opArm.doExecute();
+        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     }else{
         throw std::runtime_error("ERROR todo alu operations thumb");
     }

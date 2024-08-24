@@ -25,7 +25,7 @@ void MoveCompAddSubImm::doExecute(){
     uint32_t opDataProcessing[4] = {DataProcessing::OPCODE_MOV_VAL, DataProcessing::OPCODE_CMP_VAL,
                                     DataProcessing::OPCODE_ADD_VAL, DataProcessing::OPCODE_SUB_VAL};
 
-    DataProcessing opArm = DataProcessing(1, opDataProcessing[opField], 1, 0, rd, offset8, cpu);
+    DataProcessing opArm = DataProcessing(1, opDataProcessing[opField], 1, rd, rd, offset8, cpu);
     opArm.doExecute();
     std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 

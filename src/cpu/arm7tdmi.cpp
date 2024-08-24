@@ -314,7 +314,7 @@ void ARM7TDMI::setReg(uint16_t n, uint32_t val, bool userBank){
 
 	if(!userBank){
 		if(n == 15){
-			reg[n] = val;
+			reg[n] = val & 0xFFFFFFFE;
 		}else{
 			switch (cpsr.getMode())
 			{
@@ -406,9 +406,9 @@ void ARM7TDMI::printStatus(){
 	std::string t = "-";
 	if(cpsr.getTFlag()) t="T";
 
-
+	// TODO: take thumb mode into account
 	// PC is reduced by 8 to account for pipeline parallelism
-	std::cout << "pc:   " << Utils::toHexString(getPC(), 8) << std::endl;
+	//std::cout << "pc:   " << Utils::toHexString(getPC(), 8) << std::endl;
 	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << "\t" << "[" << n << z << c << v << i << f << t << "]" << "\t";
 	if(cpsr.getTFlag() == 0)
 		std::cout << "ARM" << "\t";
@@ -473,7 +473,7 @@ void ARM7TDMI::executeNextInstruction(){
 			std::cout << "<<<" << std::endl;
 
 			// flush pipeline if needed
-			// dont flush is op is not executed
+			// dont flush if op is not executed
 			if(insExecuteSet && getMustFlushPipeline()){
 				insFetchSet = false;
 				insDecodeSet = false;
@@ -494,7 +494,7 @@ void ARM7TDMI::executeNextInstruction(){
 			if(opExecute != nullptr)
 				delete opExecute;
 			opExecute = decodeInstruction(insDecode, fetchPC);
-			opExecute->decode();
+			//opExecute->decode();
 			insDecodeSet = true;
 		}
 		
@@ -502,7 +502,11 @@ void ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-		if(insFetch == 0x4108){
+		if(fetchPC == 0x08000436){
+			std::cout << "aa" << std::endl;
+		}
+
+		if(insFetch == 0xA008){
 			std::cout << "aa" << std::endl;
 		}
 
