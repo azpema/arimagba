@@ -253,8 +253,13 @@ uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
 		return 0;
 	}
 	
-	if(n == 15)
-		return reg[15];
+	if(n == 15){
+		if(cpsr.isThumbMode())
+			return reg[15] & 0xFFFFFFFD;
+		else
+			return reg[15];
+	}
+		
 
 	if(!userBank){
 		switch (cpsr.getMode())
