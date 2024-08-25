@@ -42,7 +42,12 @@ void HiRegisterBranchExchange::doExecute(){
         }
         break;
         case CMP:
-            throw std::runtime_error("Unimplemented HiRegisterBranchExchange::doExecute");
+        {
+            ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
+            DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_CMP_VAL, 1, rs, rd, shiftRm.getRawVal(), cpu);
+            opArm.doExecute();
+            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        }
         break;
         case MOV:
         {

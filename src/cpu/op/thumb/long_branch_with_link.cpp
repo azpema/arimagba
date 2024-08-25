@@ -11,6 +11,9 @@ LongBranchWithLink::LongBranchWithLink(uint16_t op, uint32_t pc, ARM7TDMI &cpu):
         offsetVal = offset << 12;
     }else if(h == 1){
         offsetVal = offset << 1;
+        uint32_t a = cpu.getReg(14) - cpu.getReg(15);
+        uint32_t b = a + offsetVal;
+        realOffsetVal = Utils::twosComplementExtendSignTo(b, 23, 32);
     }else{
         throw std::runtime_error("ERROR: Invalid h value in LongBranchWithLink::LongBranchWithLink");
     }
@@ -19,7 +22,10 @@ LongBranchWithLink::LongBranchWithLink(uint16_t op, uint32_t pc, ARM7TDMI &cpu):
 
 std::string LongBranchWithLink::toString(){
     // TODO set proper decoded value
-    return "bl h=" + std::to_string(h) + " " + std::to_string(offsetVal);
+    if(h==0)
+        return "bl h=" + std::to_string(h) + " " + std::to_string(offsetVal);
+    else
+        return "bl h=" + std::to_string(h) + " " + Utils::toHexString(cpu.getPC() - 2 + realOffsetVal);
 }
 
 void LongBranchWithLink::doDecode(){
@@ -27,14 +33,14 @@ void LongBranchWithLink::doDecode(){
 }
 
 void LongBranchWithLink::doExecute(){
-    std::cerr << "CHECK LONGBRANCHWITHLINK" << std::endl;
     if(h == 0){
         cpu.setLR(cpu.getPC() + offsetVal);
     }else if(h == 1){
         // PC is 4 steps ahead (THUMB)
         uint32_t temp = cpu.getPC() - 2;
-        cpu.setPC(cpu.getReg(14) + offsetVal);
+        cpu.setPC(temp + realOffsetVal);
         cpu.setLR(temp | 1);
+        cpu.setMustFlushPipeline(true);
     }else{
         std::runtime_error("ERROR: Invalid h value in LongBranchWithLink::doExecute");
     }

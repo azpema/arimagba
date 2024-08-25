@@ -21,6 +21,7 @@ class LongBranchWithLink : public ThumbOpCode {
         uint8_t h;
         uint16_t offset;
         uint32_t offsetVal;
+        int32_t realOffsetVal;
 
         const static uint16_t H_MASK = 0b0000100000000000; 
         const static uint16_t H_SHIFT = 11;

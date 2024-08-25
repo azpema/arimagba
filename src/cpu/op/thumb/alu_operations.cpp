@@ -1,5 +1,6 @@
 #include "alu_operations.hpp"
 #include "../arm/data_processing.hpp"
+#include "../arm/multiply_accumulate.hpp"
 
 ALUOperations::ALUOperations(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
@@ -73,6 +74,30 @@ void ALUOperations::doExecute(){
     }else if(opField == Opcode::ROR){
         ShiftRm shiftRm = ShiftRm(rd, false, 0, ShiftRm::ShiftType::ROR, rs);
         DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
+        opArm.doExecute();
+        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    }else if(opField == Opcode::CMN){
+        ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
+        DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_CMN_VAL, 1, rd, rs, shiftRm.getRawVal(), cpu);
+        opArm.doExecute();
+        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    }else if(opField == Opcode::ADC){
+        ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
+        DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_ADC_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
+        opArm.doExecute();
+        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    }else if(opField == Opcode::SBC){
+        ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
+        DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_SBC_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
+        opArm.doExecute();
+        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    }else if(opField == Opcode::NEG){
+        RotateImm imm = RotateImm(0, 0);
+        DataProcessing opArm = DataProcessing(1, DataProcessing::OPCODE_RSB_VAL, 1, rd, rd, imm.getRawVal(), cpu);
+        opArm.doExecute();
+        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    }else if(opField == Opcode::MUL){
+        MultiplyAccumulate opArm = MultiplyAccumulate(0, 1, rd, 0, rd, rs, cpu);
         opArm.doExecute();
         std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     }else{

@@ -7,7 +7,16 @@ MultiplyAccumulate::MultiplyAccumulate(uint32_t op, ARM7TDMI &cpu): ArmOpcode::A
     rn = Utils::getRegBits(op, RN_FLAG_MASK, RN_FLAG_SHIFT);
     rs = Utils::getRegBits(op, RS_FLAG_MASK, RS_FLAG_SHIFT);
     rm = Utils::getRegBits(op, RM_FLAG_MASK, RM_FLAG_SHIFT);
-}   
+}
+
+MultiplyAccumulate::MultiplyAccumulate(uint32_t a, uint32_t s, uint32_t rd, uint32_t rn, uint32_t rs, uint32_t rm, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+    this->a = a;
+    this->s = s;
+    this->rd = rd;
+    this->rn = rn;
+    this->rs = rs;
+    this->rm = rm;
+}
 
 std::string MultiplyAccumulate::getSFlagMnemonic(){
     return sFlag2Mnemonic[s];

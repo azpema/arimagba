@@ -8,7 +8,8 @@ ConditionalBranch::ConditionalBranch(uint16_t op, uint32_t pc, ARM7TDMI &cpu): T
     cond = Utils::getRegBits(op, COND_MASK, COND_SHIFT);
     sOffset8 = Utils::getRegBits(op, SOFFSET8_MASK, SOFFSET8_SHIFT);
     oldPC = pc;
-    offsetVal = oldPC + Utils::twosComplementExtendSignTo(sOffset8 << 1, 9, 16) + 4;
+    int16_t signExtended = Utils::twosComplementExtendSignTo(sOffset8 << 1, 9, 16);
+    offsetVal = oldPC + signExtended + 4;
 }
 
 std::string ConditionalBranch::getCondMnemonic(){

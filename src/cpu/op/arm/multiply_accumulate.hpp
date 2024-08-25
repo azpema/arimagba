@@ -9,6 +9,7 @@
 class MultiplyAccumulate : public ArmOpcode {
 	public:
 		MultiplyAccumulate(uint32_t op, ARM7TDMI &cpu);
+        MultiplyAccumulate(uint32_t a, uint32_t s, uint32_t rd, uint32_t rn, uint32_t rs, uint32_t rm, ARM7TDMI &cpu);
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

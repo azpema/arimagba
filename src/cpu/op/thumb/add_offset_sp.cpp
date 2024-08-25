@@ -1,4 +1,5 @@
 #include "add_offset_sp.hpp"
+#include "../arm/data_processing.hpp"
 
 AddOffsetSP::AddOffsetSP(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     s = Utils::getRegBits(op, S_MASK, S_SHIFT);
@@ -23,7 +24,11 @@ void AddOffsetSP::doDecode(){
 }
 
 void AddOffsetSP::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: AddOffsetSP");
+    RotateImm imm = RotateImm(0, offsetStr);
+    uint16_t operation = s == 0 ? DataProcessing::OPCODE_ADD_VAL : DataProcessing::OPCODE_SUB_VAL;
+    DataProcessing opArm = DataProcessing(1, operation, 0, 13, 13, imm.getRawVal(), cpu);
+    opArm.doExecute();
+    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 }
 
 uint32_t AddOffsetSP::cyclesUsed() const {

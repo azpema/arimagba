@@ -42,17 +42,22 @@ void AddSubtract::doExecute(){
 
     if(opField == 0){
         if(i == 1){
-            uint8_t s = 1;
             RotateImm imm = RotateImm(0, rnOffset3);
-            DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_ADD_VAL, s, rs, rd, imm.getRawVal(), cpu);
+            DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_ADD_VAL, 1, rs, rd, imm.getRawVal(), cpu);
             opArm.doExecute();
             std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }else{
-            throw std::runtime_error("ERROR: AddSubtract::doExecute todo");
+            throw std::runtime_error("ERROR: AddSubtract::doExecute todo add");
         }
-        
     }else if(opField == 1){
-        throw std::runtime_error("ERROR: AddSubtract::doExecute todo");
+        if(i == 1){
+            throw std::runtime_error("ERROR: AddSubtract::doExecute todo sub");
+        }else{
+            ShiftRm shiftRm = ShiftRm(rnOffset3, true, 0, 0);
+            DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, shiftRm.getRawVal(), cpu);
+            opArm.doExecute();
+            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        }
     }else{
         throw std::runtime_error("ERROR: Invalid AddSubtract::doExecute opField value");
     }

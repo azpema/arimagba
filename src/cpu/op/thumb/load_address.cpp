@@ -31,8 +31,13 @@ void LoadAddress::doExecute(){
 
     //uint32_t rsVal = cpu.getReg(getSPRegVal());
 
+    uint32_t pcSpVal = cpu.getReg(getSPRegVal());
+    // Where the PC is used as the source register (SP = 0), bit 1 of the PC is always read as 0.
+    if(sp == 0)
+        pcSpVal &= 0xFFFFFFFD;
+
     RotateImm imm = RotateImm(0, offsetVal);
-    DataProcessing opArm = DataProcessing(1, DataProcessing::OPCODE_ADD_VAL, 0, getSPRegVal(), rd, imm.getRawVal(), cpu);
+    DataProcessing opArm = DataProcessing(1, DataProcessing::OPCODE_ADD_VAL, 0, getSPRegVal(), rd, imm.getRawVal(), cpu, true, pcSpVal);
     opArm.doExecute();
     std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 }

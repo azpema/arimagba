@@ -254,10 +254,7 @@ uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
 	}
 	
 	if(n == 15){
-		if(cpsr.isThumbMode())
-			return reg[15] & 0xFFFFFFFD;
-		else
-			return reg[15];
+		return reg[15];
 	}
 		
 
@@ -507,11 +504,11 @@ void ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-		if(fetchPC == 0x08000436){
+		if(fetchPC == 0x080005de){
 			std::cout << "aa" << std::endl;
 		}
 
-		if(insFetch == 0xA008){
+		if(insFetch == 0x4700){
 			std::cout << "aa" << std::endl;
 		}
 

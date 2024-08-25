@@ -18,12 +18,16 @@ DataProcessing::DataProcessing(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode
     }
 }
 
-DataProcessing::DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu){
+DataProcessing::DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2,
+ ARM7TDMI &cpu, bool overrideOperands, uint32_t op1Val) : ArmOpcode::ArmOpcode(cpu){
     this->dataOpCode = opCode;
     this->i = i;
     this->s = s;
     this->rn = rn;
     this->rd = rd;
+
+    this->overrideOperands = overrideOperands;
+    this->op1Val = op1Val;
 
     if(i == 0){
         this->operand2 = new ShiftRm(operand2);
@@ -226,9 +230,13 @@ void DataProcessing::doExecute(){
         cpu.setMustFlushPipeline(true);
     }
         
-    op1 = cpu.getReg(rn);
-    op2 = operand2->getOperandVal(cpu);
+    if(!overrideOperands){
+        op1 = cpu.getReg(rn);
+    }else {
+        op1 = op1Val;
+    }
 
+    op2 = operand2->getOperandVal(cpu);
 
     if(i == 0){
         ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);

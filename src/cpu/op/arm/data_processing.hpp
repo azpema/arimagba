@@ -10,7 +10,8 @@ class DataProcessing : public ArmOpcode {
     public:
         DataProcessing();
 		DataProcessing(uint32_t op, ARM7TDMI &cpu);
-        DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2, ARM7TDMI &cpu);
+        DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2, 
+          ARM7TDMI &cpu, bool overrideOperands=false, uint32_t op1Val=0);
         ~DataProcessing();
         std::string toString() override;
         void doExecute() override;
@@ -44,6 +45,10 @@ class DataProcessing : public ArmOpcode {
         uint16_t i, s, rn, rd, dataOpCode;
         uint32_t op1, op2;
         Operand *operand2;
+
+        // These values are only used from THUMB mode to force PC value bit 1 to 0.
+        bool overrideOperands;
+        uint32_t op1Val,op2Val;
 
         const static uint32_t IMMEDIATE_OPERAND_MASK = 0b00000010000000000000000000000000; 
         const static uint32_t IMMEDIATE_OPERAND_SHIFT = 25; 
