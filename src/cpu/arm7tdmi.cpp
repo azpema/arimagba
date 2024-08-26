@@ -379,11 +379,11 @@ uint32_t ARM7TDMI::getPC(){
 }
 
 void ARM7TDMI::setPC(uint32_t pc){
-	reg[15] = pc;
+	setReg(15, pc);
 }
 
 void ARM7TDMI::setLR(uint32_t lr){
-	reg[14] = lr;
+	setReg(14, lr);
 }
 
 void ARM7TDMI::printStatus(){
@@ -504,7 +504,7 @@ void ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-		if(fetchPC == 0x080005de){
+		if(fetchPC == 0x08000816){
 			std::cout << "aa" << std::endl;
 		}
 

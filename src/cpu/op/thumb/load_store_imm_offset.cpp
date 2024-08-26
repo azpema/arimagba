@@ -33,24 +33,14 @@ void LoadStoreImmOffset::doDecode(){
 
 }
 
-// SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 
- //   uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu) : ArmOpcode::ArmOpcode(cpu){
-
 void LoadStoreImmOffset::doExecute(){
-    if(l == 0 && b == 1){
-        uint8_t i = 0;
-        uint8_t p = 1;
-        uint8_t u = 1;
-        uint8_t b = 1;
-        uint8_t w = 0;
-        uint8_t l = 0;
-        SingleDataTransfer opArm = SingleDataTransfer(i, p, u, b, w, l, rb, rd, offsetVal, cpu);
-        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
-        opArm.doExecute();  
-    }else{
-        throw std::runtime_error("TODO: LoadStoreImmOffset::doExecute");
-    }
-
+    uint8_t i = 0;
+    uint8_t p = 1;
+    uint8_t u = 1;
+    uint8_t w = 0;
+    SingleDataTransfer opArm = SingleDataTransfer(i, p, u, b, w, l, rb, rd, offsetVal, cpu);
+    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    opArm.doExecute();  
 }
 
 uint32_t LoadStoreImmOffset::cyclesUsed() const {

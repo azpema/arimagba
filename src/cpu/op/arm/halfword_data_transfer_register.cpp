@@ -3,7 +3,12 @@
 
 HalfwordDataTransferRegister::HalfwordDataTransferRegister(uint32_t op, ARM7TDMI &cpu): HalfwordDataTransfer::HalfwordDataTransfer(op, cpu) {
     rm = Utils::getRegBits(op, RM_FLAG_MASK, RM_FLAG_SHIFT);
-}   
+}
+
+HalfwordDataTransferRegister::HalfwordDataTransferRegister(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn,
+ uint16_t rd, uint16_t s, uint16_t h, uint16_t rm, ARM7TDMI &cpu): HalfwordDataTransfer::HalfwordDataTransfer(p, u, w, l, rn, rd, s, h, cpu){
+    this->rm = rm;
+ }
 
 std::string HalfwordDataTransferRegister::toString(){
     std::string base = getOpMnemonic() + getCondFieldMnemonic() + getSFlagMnemonic() + getHFlagMnemonic() +  + " " + \

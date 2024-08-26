@@ -8,6 +8,8 @@
 class HalfwordDataTransferOffset : public HalfwordDataTransfer {
     public:
         HalfwordDataTransferOffset(uint32_t op, ARM7TDMI &cpu);
+        HalfwordDataTransferOffset(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn, 
+            uint16_t rd, uint16_t s, uint16_t h, uint16_t offsetHi, uint16_t offsetLo, ARM7TDMI &cpu);
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

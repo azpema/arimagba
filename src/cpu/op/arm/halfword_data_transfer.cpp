@@ -10,7 +10,19 @@ HalfwordDataTransfer::HalfwordDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcod
     rd = Utils::getRegBits(op, RD_FLAG_MASK, RD_FLAG_SHIFT);
     s = Utils::getRegBits(op, S_FLAG_MASK, S_FLAG_SHIFT);
     h = Utils::getRegBits(op, H_FLAG_MASK, H_FLAG_SHIFT);
-}   
+}
+
+HalfwordDataTransfer::HalfwordDataTransfer(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn,
+ uint16_t rd, uint16_t s, uint16_t h, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+    this->p = p;
+    this->u = u;
+    this->w = w;
+    this->l = l;
+    this->rn = rn;
+    this->rd = rd;
+    this->s = s;
+    this->h = h;
+} 
 
 std::string HalfwordDataTransfer::getUFlagMnemonic(){
     return uFlag2Mnemonic[u];

@@ -1,4 +1,5 @@
 #include "load_store_sign_extended.hpp"
+#include "../arm/halfword_data_transfer_register.hpp"
 
 LoadStoreSignExtended::LoadStoreSignExtended(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     h = Utils::getRegBits(op, H_MASK, H_SHIFT);
@@ -22,7 +23,25 @@ void LoadStoreSignExtended::doDecode(){
 }
 
 void LoadStoreSignExtended::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: LoadStoreSignExtended");
+    if(h == 0 && s == 0){
+        HalfwordDataTransferRegister opArm = HalfwordDataTransferRegister(1, 1, 0, 0, rb, rd, 0, 1, ro, cpu);
+        opArm.doExecute();
+        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    }else if(h == 1 && s == 0){
+        HalfwordDataTransferRegister opArm = HalfwordDataTransferRegister(1, 1, 0, 1, rb, rd, 0, 1, ro, cpu);
+        opArm.doExecute();
+        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    }else if(h == 0 && s == 1){
+        HalfwordDataTransferRegister opArm = HalfwordDataTransferRegister(1, 1, 0, 1, rb, rd, s, h, ro, cpu);
+        opArm.doExecute();
+        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    }else if(s == 1 && h == 1){
+        HalfwordDataTransferRegister opArm = HalfwordDataTransferRegister(1, 1, 0, 1, rb, rd, s, h, ro, cpu);
+        opArm.doExecute();
+        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    }else{
+        throw std::runtime_error("TODO");
+    }
 }
 
 uint32_t LoadStoreSignExtended::cyclesUsed() const {

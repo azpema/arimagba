@@ -8,6 +8,14 @@ HalfwordDataTransferOffset::HalfwordDataTransferOffset(uint32_t op, ARM7TDMI &cp
     offsetVal = (offsetHi << 4) | offsetLo;
 }
 
+HalfwordDataTransferOffset::HalfwordDataTransferOffset(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn,
+ uint16_t rd, uint16_t s, uint16_t h, uint16_t offsetHi, uint16_t offsetLo, ARM7TDMI &cpu): HalfwordDataTransfer::HalfwordDataTransfer(p, u, w, l, rn, rd, s, h, cpu){
+    this->offsetHi = offsetHi;
+    this->offsetLo = offsetLo;
+
+    offsetVal = (offsetHi << 4) | offsetLo;
+ }
+
 uint16_t HalfwordDataTransferOffset::getOffsetVal() {
     return offsetVal;
 }

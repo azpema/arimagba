@@ -1,4 +1,5 @@
 #include "load_store_halfword.hpp"
+#include "../arm/halfword_data_transfer_offset.hpp"
 
 LoadStoreHalfword::LoadStoreHalfword(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
@@ -22,7 +23,9 @@ void LoadStoreHalfword::doDecode(){
 }
 
 void LoadStoreHalfword::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: LoadStoreHalfword");
+    HalfwordDataTransferOffset opArm = HalfwordDataTransferOffset(1, 1, 0, l, rb, rd, 0, 1, (offsetVal & 0xF0) >> 4 , offsetVal & 0xF, cpu);
+    opArm.doExecute();
+    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 }
 
 uint32_t LoadStoreHalfword::cyclesUsed() const {
