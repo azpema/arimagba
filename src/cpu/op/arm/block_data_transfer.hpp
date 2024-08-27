@@ -9,6 +9,8 @@
 class BlockDataTransfer : public ArmOpcode {
     public:
 		BlockDataTransfer(uint32_t op, ARM7TDMI &cpu);
+        BlockDataTransfer(uint16_t P, uint16_t U, uint16_t S, uint16_t W, uint16_t L, 
+          uint16_t Rn, uint16_t registerList, ARM7TDMI &cpu);
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

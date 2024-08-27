@@ -1,4 +1,5 @@
 #include "multiple_load_store.hpp"
+#include "../arm/block_data_transfer.hpp"
 
 MultipleLoadStore::MultipleLoadStore(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
@@ -33,7 +34,11 @@ void MultipleLoadStore::doDecode(){
 }
 
 void MultipleLoadStore::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: MultipleLoadStore");
+    uint8_t p = 0;
+    uint8_t u = 1;
+    BlockDataTransfer opArm = BlockDataTransfer(p, u, 0, 1, l, rb, rList, cpu);
+    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    opArm.doExecute();
 }
 
 uint32_t MultipleLoadStore::cyclesUsed() const {

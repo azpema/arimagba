@@ -14,7 +14,23 @@ BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::Arm
         if((registerList >> i) & 0x1 == 0x1)
             registerListVec.push_back(i);    
     }
-}   
+}
+
+BlockDataTransfer::BlockDataTransfer(uint16_t P, uint16_t U, uint16_t S, uint16_t W, uint16_t L,
+  uint16_t Rn, uint16_t registerList, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+    this->P = P;
+    this->U = U;
+    this->S = S;
+    this->W = W;
+    this->L = L;
+    this->Rn = Rn;
+    this->registerList = registerList;
+
+    for(size_t i = 0; i < 16; i++){
+        if((registerList >> i) & 0x1 == 0x1)
+            registerListVec.push_back(i);    
+    }
+}  
 
 std::string BlockDataTransfer::getSFlagMnemonic(){
     return SFlag2Mnemonic[S];
@@ -103,6 +119,7 @@ void BlockDataTransfer::doExecute(){
             /*
             * Whenever R15 is stored to memory the stored value is the address of the STM
             * instruction plus 12. PC is already 8 bytes ahead due to instruction pipelining
+            * in ARM mode.
             */
             
             if(regListHasBase && !baseRegFirst){
@@ -112,7 +129,7 @@ void BlockDataTransfer::doExecute(){
             }
             
             if(regNum == 15){
-                regVal += 4;
+                regVal += cpu.getCPSR().isThumbMode() ? 2 : 4;
             }
                 
             regVals.push_back(regVal);

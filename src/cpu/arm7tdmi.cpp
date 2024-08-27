@@ -508,7 +508,7 @@ void ARM7TDMI::executeNextInstruction(){
 			std::cout << "aa" << std::endl;
 		}
 
-		if(insFetch == 0x4700){
+		if(insFetch == 0xC000){
 			std::cout << "aa" << std::endl;
 		}
 
