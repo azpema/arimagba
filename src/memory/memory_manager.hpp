@@ -10,6 +10,7 @@
 #include "ewram.hpp"
 #include "iwram.hpp"
 #include "sram.hpp"
+#include "oam.hpp"
 #include "palette_ram.hpp"
 #include "io_registers.hpp"
 
@@ -61,7 +62,7 @@ The 64K SRAM area is mirrored across the whole 32MB area at E000000h-FFFFFFFh, a
 
 class MemoryManager {
     public:
-        MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, SRAM &sram, PaletteRAM &paletteRam, IOregisters &io);
+        MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, SRAM &sram, OAM &oam, PaletteRAM &paletteRam, IOregisters &io);
         uint32_t readWord(uint32_t addr);
         uint16_t readHalfWord(uint32_t addr);
         uint16_t readByte(uint32_t addr);
@@ -125,6 +126,7 @@ class MemoryManager {
         EWRAM &ewram;
         IWRAM &iwram;
         SRAM &sram;
+        OAM &oam;
         PaletteRAM &paletteRam;
         IOregisters &io;
 

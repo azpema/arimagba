@@ -1,7 +1,7 @@
 #include "memory_manager.hpp"
 
-MemoryManager::MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, SRAM &sram, PaletteRAM &paletteRam, IOregisters &io)
- : bios(bios), gamepak(gamepak), vram(vram), ewram(ewram), iwram(iwram), sram(sram), paletteRam(paletteRam), io(io) {}
+MemoryManager::MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, SRAM &sram, OAM &oam, PaletteRAM &paletteRam, IOregisters &io)
+ : bios(bios), gamepak(gamepak), vram(vram), ewram(ewram), iwram(iwram), sram(sram), oam(oam), paletteRam(paletteRam), io(io) {}
 
 uint32_t MemoryManager::readWord(uint32_t addr) {
     return read(addr, 4);
@@ -39,6 +39,8 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
     }else if(Utils::inRange(addr, UNUSED_MEMORY_1_OFFSET_START, UNUSED_MEMORY_1_OFFSET_END) ||
              Utils::inRange(addr, UNUSED_MEMORY_2_OFFSET_START, UNUSED_MEMORY_2_OFFSET_END)){
         std::cout << "TODO: Openbus read" << std::endl;
+    }else if(Utils::inRange(addr, OAM_OBJ_OFFSET_START, OAM_OBJ_MIRROR_OFFSET_END)){
+        val = oam.read((addr & OAM_OBJ_OFFSET_END) - OAM_OBJ_OFFSET_START, bytes);
     }else{
         throw std::runtime_error("Error: Unimplemented memory region in MemoryManager::read");
     }
@@ -62,6 +64,8 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
         io.store(addr - IO_REGISTERS_OFFSET_START, val, bytes);
     }else if(Utils::inRange(addr, GAMEPAK_SRAM_OFFSET_START, GAMEPAK_SRAM_MIRROR_OFFSET_END)){
         sram.store((addr & GAMEPAK_SRAM_OFFSET_END) - GAMEPAK_SRAM_OFFSET_START, val, bytes);
+    }else if(Utils::inRange(addr, OAM_OBJ_OFFSET_START, OAM_OBJ_MIRROR_OFFSET_END)){
+        sram.store((addr & OAM_OBJ_OFFSET_END) - OAM_OBJ_OFFSET_START, val, bytes);
     }else if(Utils::inRange(addr, UNUSED_MEMORY_1_OFFSET_START, UNUSED_MEMORY_1_OFFSET_END) ||
              Utils::inRange(addr, UNUSED_MEMORY_2_OFFSET_START, UNUSED_MEMORY_2_OFFSET_END)){
         std::cout << "TODO: Openbus write" << std::endl;

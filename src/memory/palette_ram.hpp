@@ -4,14 +4,9 @@
 #include <iostream>
 #include "generic_memory.hpp"
 
-class PaletteRAM : public GenericMemory<0x400 / 2>{
+class PaletteRAM : public GenericMemory<PALETTERAM_SIZE_2WORDS>{
     public:
-        PaletteRAM();
-        
-    private:
-        // 16 bit access
-        const static uint32_t PALETTERAM_SIZE_2WORDS = 0x400 / 2;
-        
+        PaletteRAM();     
 };
 
 #endif

@@ -2,6 +2,16 @@
 #define _GENERIC_MEMORY_ 
 
 #include <iostream>
+
+const static uint32_t BIOS_SIZE_2WORDS = 0x4000 / 2;
+const static uint32_t EWRAM_SIZE_2WORDS = 0x40000 / 2;
+const static uint32_t IOREGISTERS_SIZE_2WORDS = 0x3FF / 2;
+const static uint32_t IWRAM_SIZE_2WORDS = 0x8000 / 2;
+const static uint32_t OAM_SIZE_2WORDS = 0x400 / 2;
+const static uint32_t PALETTERAM_SIZE_2WORDS = 0x400 / 2;
+const static uint32_t SRAM_SIZE_2WORDS = 0x10000 / 2;
+const static uint32_t VRAM_SIZE_2WORDS = 0x18000 / 2;
+
 template <std::uint32_t n>
 class GenericMemory {
     public:
@@ -11,6 +21,7 @@ class GenericMemory {
         //void store(uint32_t addr, uint32_t val, uint8_t bytes);
 
         //uint16_t* getRawMemory();
+        
         
     protected:
         // 16 bit access

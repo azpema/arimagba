@@ -4,14 +4,9 @@
 #include <iostream>
 #include "generic_memory.hpp"
 
-class SRAM : public GenericMemory<0x10000 / 2>{
+class SRAM : public GenericMemory<SRAM_SIZE_2WORDS>{
     public:
-        SRAM();
-        
-    private:
-        // 16 bit access
-        const static uint32_t SRAM_SIZE_2WORDS = 0x10000 / 2;
-                
+        SRAM();             
 };
 
 #endif
