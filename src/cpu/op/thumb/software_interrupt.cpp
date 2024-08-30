@@ -1,4 +1,5 @@
 #include "software_interrupt.hpp"
+#include "../arm/software_interrupt.hpp"
 
 using namespace Thumb;
 
@@ -16,7 +17,10 @@ void SoftwareInterrupt::doDecode(){
 }
 
 void SoftwareInterrupt::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: SoftwareInterrupt");
+    uint32_t opcode = 0b11101111000000000000000000000000 | value8;
+    ARM::SoftwareInterrupt opArm = ARM::SoftwareInterrupt(opcode, cpu);
+    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    opArm.doExecute();
 }
 
 uint32_t SoftwareInterrupt::cyclesUsed() const {
