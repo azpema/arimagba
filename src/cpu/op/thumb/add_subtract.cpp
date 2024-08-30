@@ -47,11 +47,17 @@ void AddSubtract::doExecute(){
             opArm.doExecute();
             std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }else{
-            throw std::runtime_error("ERROR: AddSubtract::doExecute todo add");
+            ShiftRm shiftRm = ShiftRm(rnOffset3, true, 0, 0);
+            DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_ADD_VAL, 1, rs, rd, shiftRm.getRawVal(), cpu);
+            opArm.doExecute();
+            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }
     }else if(opField == 1){
         if(i == 1){
-            throw std::runtime_error("ERROR: AddSubtract::doExecute todo sub");
+            RotateImm imm = RotateImm(0, rnOffset3);
+            DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, imm.getRawVal(), cpu);
+            opArm.doExecute();
+            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }else{
             ShiftRm shiftRm = ShiftRm(rnOffset3, true, 0, 0);
             DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, shiftRm.getRawVal(), cpu);
