@@ -44,7 +44,7 @@ void HiRegisterBranchExchange::doExecute(){
         case CMP:
         {
             ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
-            DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_CMP_VAL, 1, rs, rd, shiftRm.getRawVal(), cpu);
+            DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_CMP_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
             opArm.doExecute();
             std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }
