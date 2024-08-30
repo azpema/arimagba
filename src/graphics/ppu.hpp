@@ -60,6 +60,7 @@ class PPU {
         const uint16_t DSTAT_IN_HBL_MASK = 0b0000000000000010;
         const uint16_t DSTAT_IN_HBL_SHIFT = 1;
 
+        void setDCNT_MODE(uint8_t mode);
         uint8_t getDCNT_MODE();
         void setVBlankFlag(bool val);
         void setHBlankFlag(bool val);

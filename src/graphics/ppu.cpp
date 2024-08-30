@@ -23,6 +23,8 @@ PPU::PPU(std::string title, MemoryManager *memManager){
     GREEN_SWAP = io + (0x04000002 - 0x04000000) / 2;
     DISPSTAT = io + (0x04000004 - 0x04000000) / 2;
     VCOUNT = io + (0x04000006 - 0x04000000) / 2;
+
+    setDCNT_MODE(3);
 }
 
 PPU::~PPU(){
@@ -37,15 +39,19 @@ void PPU::renderScanline(){
     // Check BG Mode in DISPCNT
     // Panda will stop working!!!
     if(*VCOUNT <= 160){
-        switch(getDCNT_MODE()){
+        uint8_t dcntMode = getDCNT_MODE();
+        switch(dcntMode){
             case 3:
                 renderScanlineMode3();
                 break;
             case 4:
                 renderScanlineMode4();
                 break;
+            case 7:
+                renderScanlineMode3();
+                break;
             default:
-                throw std::runtime_error("ERROR: Unsupported PPU Mode");
+                throw std::runtime_error("ERROR: Unsupported PPU Mode: " + std::to_string(dcntMode));
         }
     }
 
@@ -149,6 +155,12 @@ void PPU::renderScanlineMode4(){
 
     // Clean up
     SDL_DestroyTexture(texture);
+}
+
+void PPU::setDCNT_MODE(uint8_t mode){
+    uint32_t bitVal = mode << DCNT_MODE_SHIFT;
+    uint32_t regVal = *DISPCNT;
+    *DISPCNT = Utils::setRegBits(regVal, DCNT_MODE_MASK, bitVal);
 }
 
 uint8_t PPU::getDCNT_MODE(){
