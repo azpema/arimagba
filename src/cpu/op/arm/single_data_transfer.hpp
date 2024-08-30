@@ -10,7 +10,7 @@ class SingleDataTransfer : public ArmOpcode {
 	public:
 		SingleDataTransfer(uint32_t op, ARM7TDMI &cpu);
         SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 
-                           uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu);
+                           uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu, bool forcePcBit1To0=false);
         ~SingleDataTransfer();
         std::string toString() override;
         void doExecute() override;
@@ -20,6 +20,7 @@ class SingleDataTransfer : public ArmOpcode {
     private:
         uint8_t I, P, U, B, W, L, Rn, Rd;
         Operand *offsetField;
+        bool forcePcBit1To0;
 
         const static uint32_t I_MASK = 0b00000010000000000000000000000000; 
         const static uint32_t I_SHIFT = 25;

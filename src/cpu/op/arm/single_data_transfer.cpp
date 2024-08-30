@@ -20,7 +20,7 @@ SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::A
 }
 
 SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 
-    uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu) : ArmOpcode::ArmOpcode(cpu){
+    uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu, bool forcePcBit1To0) : ArmOpcode::ArmOpcode(cpu){
 
     this->I = i;
     this->P = p;
@@ -30,6 +30,7 @@ SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t 
     this->L = l;
     this->Rn = rn;
     this->Rd = rd;
+    this->forcePcBit1To0 = forcePcBit1To0;
 
 
     if(I == 0){
@@ -132,6 +133,8 @@ Mis-aligned LDR,SWP (rotated read)
 
 void SingleDataTransfer::doExecute(){
     uint32_t baseRegVal = cpu.getReg(Rn);
+    if(Rn == 15 && forcePcBit1To0)
+        baseRegVal &= 0xFFFFFFFD;
     uint32_t offsetVal = offsetField->getOperandVal(cpu);
     uint32_t loadVal = 0xDEADBEEF;
 
