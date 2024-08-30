@@ -12,7 +12,8 @@ int main(int argc, char** argv)
 {
     std::cout << "Current path is " << std::filesystem::current_path() << '\n';
 
-	std::string gamePath = "../files/thumb.gba";
+	//std::string gamePath = "../files/FuzzARM.gba";
+	std::string gamePath = "/home/markel/Descargas/libtonc-examples/ext/swi_demo/swi_demo.gba";
 	if(argc >= 2){
 		gamePath = std::string(argv[1]);
 	}
@@ -23,9 +24,10 @@ int main(int argc, char** argv)
 	EWRAM ewram;
 	IWRAM iwram;
 	SRAM sram;
+	OAM oam;
 	PaletteRAM paletteram;
 	IOregisters io;
-	MemoryManager mem(bios, gamepak, vram, ewram, iwram, sram, paletteram, io);
+	MemoryManager mem(bios, gamepak, vram, ewram, iwram, sram, oam, paletteram, io);
 
 	PPU ppu("GBA", &mem);
 	ARM7TDMI cpu(&mem); 
