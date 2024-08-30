@@ -9,7 +9,7 @@ void ExceptionHandler::raiseException(ARM7TDMI &cpu, Exception ex){
     uint32_t newPC = exceptionVector[ex];
     uint32_t returnPC = cpu.getPC();
     if(cpu.getCPSR().getTFlag()){
-        throw std::runtime_error("TODO ExceptionHandler::raiseException returnPC Value");
+        returnPC -= 2;
     }else{
         returnPC -= 4;
     }
