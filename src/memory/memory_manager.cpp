@@ -75,15 +75,15 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
     }
 }
 
-uint16_t* MemoryManager::getRawVRAM(){
+uint8_t* MemoryManager::getRawVRAM(){
     return vram.getRawMemory();
 }
 
-uint16_t* MemoryManager::getPaletteRAM(){
+uint8_t* MemoryManager::getPaletteRAM(){
     return paletteRam.getRawMemory();
 }
 
-uint16_t* MemoryManager::getIOregisters(){
+uint8_t* MemoryManager::getIOregisters(){
     return io.getRawMemory();
 }
 

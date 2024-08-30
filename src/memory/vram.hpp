@@ -4,7 +4,7 @@
 #include <iostream>
 #include "generic_memory.hpp"
 
-class VRAM : public GenericMemory<VRAM_SIZE_2WORDS>{
+class VRAM : public GenericMemory<VRAM_SIZE>{
     public:
         VRAM();
 };

@@ -4,7 +4,7 @@
 #include <iostream>
 #include "generic_memory.hpp"
 
-class BIOS : public GenericMemory<BIOS_SIZE_2WORDS>{
+class BIOS : public GenericMemory<BIOS_SIZE>{
     public:
         BIOS(std::string filePath);      
 };

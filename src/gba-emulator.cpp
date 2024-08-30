@@ -13,7 +13,8 @@ int main(int argc, char** argv)
     std::cout << "Current path is " << std::filesystem::current_path() << '\n';
 
 	//std::string gamePath = "../files/FuzzARM.gba";
-	std::string gamePath = "/home/markel/Descargas/libtonc-examples/ext/swi_demo/swi_demo.gba";
+	//std::string gamePath = "/home/markel/Descargas/libtonc-examples/ext/swi_demo/swi_demo.gba";
+	std::string gamePath = "../files/beeg.gba";
 	if(argc >= 2){
 		gamePath = std::string(argv[1]);
 	}

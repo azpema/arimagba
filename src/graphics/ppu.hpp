@@ -25,12 +25,12 @@ class PPU {
         const uint32_t SCREEN_WIDTH = 240;
         const uint32_t SCREEN_HEIGHT = 160;
         
-        volatile uint16_t* io;
+        uint8_t* io;
 
-        volatile uint16_t* DISPCNT;
-        volatile uint16_t* GREEN_SWAP;
-        volatile uint16_t* DISPSTAT;
-        volatile uint16_t* VCOUNT;
+        uint16_t* DISPCNT;
+        uint16_t* GREEN_SWAP;
+        uint16_t* DISPSTAT;
+        uint16_t* VCOUNT;
 
         // ***************** VCOUNT ***************** 
         const uint8_t VCOUNT_START_VBLANK = 160;

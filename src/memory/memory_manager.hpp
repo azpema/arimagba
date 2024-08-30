@@ -69,9 +69,9 @@ class MemoryManager {
         uint32_t read(uint32_t addr, uint8_t bytes);
         void store(uint32_t addr, uint32_t val, uint8_t bytes);
 
-        uint16_t* getRawVRAM();
-        uint16_t* getPaletteRAM();
-        uint16_t* getIOregisters();
+        uint8_t* getRawVRAM();
+        uint8_t* getPaletteRAM();
+        uint8_t* getIOregisters();
 
         // General Internal Memory
         const static uint32_t BIOS_OFFSET_START = 0x00000000;
@@ -129,8 +129,6 @@ class MemoryManager {
         OAM &oam;
         PaletteRAM &paletteRam;
         IOregisters &io;
-
-
 };
 
 #endif

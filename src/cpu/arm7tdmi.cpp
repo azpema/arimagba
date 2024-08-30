@@ -504,13 +504,20 @@ void ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-		if(fetchPC == 0x08000816){
+		/*if(fetchPC == 0x080026FA){
+			std::cout << "aa" << std::endl;
+		}*/
+
+		if(fetchPC == 0x08000326){
 			std::cout << "aa" << std::endl;
 		}
 
-		if(insFetch == 0xC000){
+		if(insFetch == 0xDF08){
 			std::cout << "aa" << std::endl;
 		}
+
+		if(getReg(13) == 0x0 || getReg(14) == 0x0)
+			std::cout << "nose" << std::endl;
 
 		insFetchSet = true;
 		insDecode = insFetch;

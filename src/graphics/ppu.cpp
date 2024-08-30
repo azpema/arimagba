@@ -1,4 +1,5 @@
 #include "ppu.hpp"
+#include "../memory/memory_manager.hpp"
 
 PPU::PPU(std::string title, MemoryManager *memManager){
     mem = memManager;
@@ -19,10 +20,10 @@ PPU::PPU(std::string title, MemoryManager *memManager){
     }
 
     io = mem->getIOregisters();
-    DISPCNT = io + (0x04000000 - 0x04000000) / 2;
-    GREEN_SWAP = io + (0x04000002 - 0x04000000) / 2;
-    DISPSTAT = io + (0x04000004 - 0x04000000) / 2;
-    VCOUNT = io + (0x04000006 - 0x04000000) / 2;
+    DISPCNT = reinterpret_cast<uint16_t*>(io + (0x04000000 - MemoryManager::IO_REGISTERS_OFFSET_START));
+    GREEN_SWAP = reinterpret_cast<uint16_t*>(io + (0x04000002 - MemoryManager::IO_REGISTERS_OFFSET_START));
+    DISPSTAT = reinterpret_cast<uint16_t*>(io + (0x04000004 - MemoryManager::IO_REGISTERS_OFFSET_START));
+    VCOUNT = reinterpret_cast<uint16_t*>(io + (0x04000006 - MemoryManager::IO_REGISTERS_OFFSET_START));
 
     setDCNT_MODE(3);
 }
@@ -93,7 +94,7 @@ void PPU::renderScanlineMode3(){
     SDL_LockTexture(texture, NULL, &pixels, &pitch);
 
     // Copy your pixel data into the texture's pixel data
-    memcpy(pixels, mem->getRawVRAM() + SCREEN_WIDTH*(*VCOUNT), SCREEN_WIDTH * sizeof(Uint16));
+    memcpy(pixels, mem->getRawVRAM() + 2*SCREEN_WIDTH*(*VCOUNT), SCREEN_WIDTH * sizeof(uint8_t)*2);
 
     // Unlock the texture to update the changes
     SDL_UnlockTexture(texture);
@@ -126,16 +127,16 @@ void PPU::renderScanlineMode4(){
     SDL_LockTexture(texture, NULL, &pixels, &pitch);
 
     // Get full palette
-    uint16_t* paletteRAM = mem->getPaletteRAM();
+    uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(mem->getPaletteRAM());
     // Get VRAM corresponding to scanline
-    uint16_t* VRAM = mem->getRawVRAM() + SCREEN_WIDTH/2*(*VCOUNT);
+    uint8_t* VRAM = mem->getRawVRAM() + SCREEN_WIDTH*(*VCOUNT);
     // Copy your pixel data into the texture's pixel data
 
     // TODO: Improve mode4 rendering; too slow!"
     uint16_t toPaint[240];
-    for(int i=0; i<240/ 2; i++){
-        toPaint[i*2] = paletteRAM[VRAM[i] & 0xFF];
-        toPaint[i*2+1] = paletteRAM[(VRAM[i] & 0xFF00) > 8 ];
+
+    for(int i=0; i<240; i++){
+        toPaint[i] = paletteRAM[VRAM[i]];
     }
     memcpy(pixels, &toPaint, SCREEN_WIDTH * 1 * sizeof(Uint16));
 

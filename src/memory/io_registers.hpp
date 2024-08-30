@@ -4,7 +4,7 @@
 #include <iostream>
 #include "generic_memory.hpp"
 
-class IOregisters : public GenericMemory<IOREGISTERS_SIZE_2WORDS>{
+class IOregisters : public GenericMemory<IOREGISTERS_SIZE>{
     public:
         IOregisters();
 };

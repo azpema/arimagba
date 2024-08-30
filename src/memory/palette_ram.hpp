@@ -4,7 +4,7 @@
 #include <iostream>
 #include "generic_memory.hpp"
 
-class PaletteRAM : public GenericMemory<PALETTERAM_SIZE_2WORDS>{
+class PaletteRAM : public GenericMemory<PALETTERAM_SIZE>{
     public:
         PaletteRAM();     
 };
