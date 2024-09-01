@@ -1,6 +1,8 @@
 #include "shift_rm.hpp"
 #include <iostream>
 
+const std::string ShiftRm::shiftType2Mnemonic[4] = {"lsl", "lsr", "asr", "ror"};
+
 ShiftRm::ShiftRm(uint16_t val) : Operand::Operand(val, OperandType::SHIFT_RM){
     c = false;
     _shift = Utils::getRegBits(val, SHIFT_MASK, SHIFT_SHIFT);

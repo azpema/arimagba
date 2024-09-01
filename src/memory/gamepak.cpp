@@ -4,7 +4,7 @@
 GamePak::GamePak(std::string filePath) {
     fileStream = std::ifstream(filePath, std::ios::binary | std::ifstream::ate);
     if (!fileStream) {
-        std::cerr << "ERROR: GamePak Failed to open the file." << std::endl;
+        throw std::runtime_error("ERROR: GamePak Failed to open the file.");
     }
 
     fileSize = fileStream.tellg();
@@ -12,13 +12,13 @@ GamePak::GamePak(std::string filePath) {
     gameMem = new uint16_t[fileSize / sizeof(uint16_t)];
 
     if (!fileStream.is_open()) {
-        std::cerr << "ERROR: GamePak Failed to open the file." << std::endl;
+        throw std::runtime_error("ERROR: GamePak Failed to open the file.");
     }else {
         this->fileStream.read(reinterpret_cast<char *>(gameMem), fileSize);
         if (this->fileStream) {
             std::cout << "DEBUG: GamePak READ OK" << std::endl;
         } else{
-            std::cerr << "ERROR: GamePak reading" << std::endl;
+            throw std::runtime_error("ERROR: GamePak reading");
         }
     }
 }

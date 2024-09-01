@@ -24,10 +24,7 @@ class ConditionalBranch : public ThumbOpCode {
 
         const static uint16_t COND_MASK = 0b0000111100000000; 
         const static uint16_t COND_SHIFT = 8;
-        std::string cond2Mnemonic[16] = {"eq", "ne", "cs", "cc",
-                                         "mi", "pl", "vs", "vc",
-                                         "hi", "ls", "ge", "lt",
-                                         "gt", "le", "ERR", "ERR"};
+        const static std::string cond2Mnemonic[16];
         std::string getCondMnemonic();
 
         const static uint16_t SOFFSET8_MASK = 0b0000000011111111; 

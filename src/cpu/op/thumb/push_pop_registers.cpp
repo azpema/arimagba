@@ -1,6 +1,8 @@
 #include "push_pop_registers.hpp"
 #include "../arm/block_data_transfer.hpp"
 
+const std::string PushPopRegisters::op2Mnemonic[2] = {"push", "pop"};
+
 PushPopRegisters::PushPopRegisters(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
     r = Utils::getRegBits(op, R_MASK, R_SHIFT);
@@ -45,21 +47,21 @@ void PushPopRegisters::doDecode(){
 void PushPopRegisters::doExecute(){
     if(l == 0 && r == 0){
         BlockDataTransfer opArm = BlockDataTransfer(1, 0, 0, 1, 0, 13, rList, cpu);
-        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         opArm.doExecute();  
     }else if (l == 1 && r == 0){
         BlockDataTransfer opArm = BlockDataTransfer(0, 1, 0, 1, 1, 13, rList, cpu);
-        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         opArm.doExecute();  
     }else if (l == 0 && r == 1){
         uint16_t rListWithLr = rList | (0x1 << 14);
         BlockDataTransfer opArm = BlockDataTransfer(1, 0, 0, 1, 0, 13, rListWithLr, cpu);
-        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         opArm.doExecute();  
     }else if (l == 1 && r == 1){
         uint16_t rListWithPc = rList | (0x1 << 15);
         BlockDataTransfer opArm = BlockDataTransfer(0, 1, 0, 1, 1, 13, rListWithPc, cpu);
-        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         opArm.doExecute(); 
     }else{
         throw std::runtime_error("Error: Unimplemented instruction: PushPopRegisters");

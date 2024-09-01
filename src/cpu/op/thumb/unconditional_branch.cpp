@@ -23,7 +23,7 @@ void UnconditionalBranch::doDecode(){
 void UnconditionalBranch::doExecute(){
     ARM::Branch opArm = ARM::Branch(oldPC, offset11, offsetVal, 0, cpu);
     opArm.doExecute();
-    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 }
 
 uint32_t UnconditionalBranch::cyclesUsed() const {

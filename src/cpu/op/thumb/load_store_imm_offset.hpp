@@ -20,7 +20,7 @@ class LoadStoreImmOffset : public ThumbOpCode {
         const static uint16_t B_MASK = 0b0001000000000000; 
         const static uint16_t B_SHIFT = 12;
 
-        std::string b2Mnemonic[2] = {"", "b"};
+        const static std::string b2Mnemonic[2];
         std::string getBMnemonic();
 
         const static uint16_t L_MASK = 0b0000100000000000; 
@@ -35,7 +35,7 @@ class LoadStoreImmOffset : public ThumbOpCode {
         const static uint16_t RD_MASK = 0b0000000000000111; 
         const static uint16_t RD_SHIFT = 0;
 
-        std::string op2Mnemonic[2] = {"str", "ldr"};
+        const static std::string op2Mnemonic[2];
         std::string getOpMnemonic();
 };
 

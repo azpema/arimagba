@@ -2,6 +2,9 @@
 #include "../arm/single_data_transfer.hpp"
 #include "../fields/shift_rm.hpp"
 
+const std::string LoadStoreRegisterOffset::bFlag2Mnemonic[2] = {"", "b"};
+const std::string LoadStoreRegisterOffset::op2Mnemonic[2] = {"str", "ldr"};
+
 LoadStoreRegisterOffset::LoadStoreRegisterOffset(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
     b = Utils::getRegBits(op, B_MASK, B_SHIFT);
@@ -34,7 +37,7 @@ void LoadStoreRegisterOffset::doExecute(){
     uint8_t w = 0;
 
     SingleDataTransfer opArm = SingleDataTransfer(i, p, u, b, w, l, rb, rd, r0, cpu);
-    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     opArm.doExecute();  
 }
 

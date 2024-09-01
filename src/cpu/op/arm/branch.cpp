@@ -3,6 +3,8 @@
 
 using namespace ARM;
 
+const std::string Branch::linkFlag2Mnemonic[2] = {"", "l"};
+
 Branch::Branch(uint32_t op, uint32_t pc, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     L = Utils::getRegBits(op, LINK_MASK, LINK_SHIFT);
     offsetField = Utils::getRegBits(op, OFFSET_MASK, OFFSET_SHIFT);

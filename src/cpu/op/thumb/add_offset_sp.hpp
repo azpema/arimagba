@@ -23,7 +23,7 @@ class AddOffsetSP : public ThumbOpCode {
         const static uint16_t SWORD7_MASK = 0b0000000001111111; 
         const static uint16_t SWORD7_SHIFT = 0;
 
-        std::string s2Mnemonic[2] = {"", "-"};
+        const static std::string s2Mnemonic[2];
         std::string getSMnemonic();
 
 };

@@ -2,6 +2,8 @@
 #include "../arm/data_processing.hpp"
 #include "../fields/rotate_imm.hpp"
 
+const std::string AddSubtract::op2Mnemonic[2] = {"add", "sub"};
+
 AddSubtract::AddSubtract(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     i = Utils::getRegBits(op, I_MASK, I_SHIFT);
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
@@ -45,24 +47,24 @@ void AddSubtract::doExecute(){
             RotateImm imm = RotateImm(0, rnOffset3);
             DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_ADD_VAL, 1, rs, rd, imm.getRawVal(), cpu);
             opArm.doExecute();
-            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+            //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }else{
             ShiftRm shiftRm = ShiftRm(rnOffset3, true, 0, 0);
             DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_ADD_VAL, 1, rs, rd, shiftRm.getRawVal(), cpu);
             opArm.doExecute();
-            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+            //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }
     }else if(opField == 1){
         if(i == 1){
             RotateImm imm = RotateImm(0, rnOffset3);
             DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, imm.getRawVal(), cpu);
             opArm.doExecute();
-            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+            //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }else{
             ShiftRm shiftRm = ShiftRm(rnOffset3, true, 0, 0);
             DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, shiftRm.getRawVal(), cpu);
             opArm.doExecute();
-            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+            //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }
     }else{
         throw std::runtime_error("ERROR: Invalid AddSubtract::doExecute opField value");

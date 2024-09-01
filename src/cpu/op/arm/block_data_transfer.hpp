@@ -28,12 +28,12 @@ class BlockDataTransfer : public ArmOpcode {
 
         const static uint32_t S_MASK = 0b00000000010000000000000000000000; 
         const static uint32_t S_SHIFT = 22;
-        std::string SFlag2Mnemonic[2] = {"", "^"};
+        const static std::string SFlag2Mnemonic[2];
         std::string getSFlagMnemonic();
 
         const static uint32_t W_MASK = 0b00000000001000000000000000000000; 
         const static uint32_t W_SHIFT = 21;
-        std::string WFlag2Mnemonic[2] = {"", "!"};
+        const static std::string WFlag2Mnemonic[2];
         std::string getWFlagMnemonic();
 
         const static uint32_t L_MASK = 0b00000000000100000000000000000000; 
@@ -47,8 +47,7 @@ class BlockDataTransfer : public ArmOpcode {
         std::string getRegisterListMnemonic();
         // L, P, U
         // TODO "Other" column: LDMIB, LDMIA, LDMDB...
-        std::string opAddressingMode2Mnemonic[2][2][2] = {{{"stmed", "stmea"}, {"stmfd", "stmfa"}},
-                                                          {{"ldmfa", "ldmfd"}, {"ldmea", "ldmed"}}};
+        const static std::string opAddressingMode2Mnemonic[2][2][2];
         std::string getOpAddressingModeMnemonic();
 };
 

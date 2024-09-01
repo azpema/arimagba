@@ -5,7 +5,6 @@ class ARM7TDMI;
 
 #include "../opcode.hpp"
 #include <iostream>
-#include <unordered_map>
 #include "../../../utils/utils.hpp"
 #include "../fields/operand.hpp"
 #include "../../arm7tdmi.hpp"
@@ -60,26 +59,9 @@ class ArmOpcode : public OpCode {
 		virtual void doExecute() = 0;
 		virtual void doDecode() = 0;
 
-		std::unordered_map<Condition, std::string> condCode2Suffix = {
-            {EQ, "eq"},	// Z set, equal
-            {NE, "ne"}, // Z clear, not equal
-            {CS, "cs"}, // C set, unsigned higher or same
-            {CC, "cc"}, // C clear, unsigned lower
-            {MI, "mi"}, // N set, negative
-            {PL, "pl"}, // N clear, positive or zero
-            {VS, "vs"}, // V set, overflow
-			{VC, "vc"}, // V clear, no overflow
-			{HI, "hi"}, // C set and Z clear, unsigned higher
-			{LS, "ls"}, // C clear or Z set, unsigned lower or same
-			{GE, "ge"}, // N equals V, greater or equal
-			{LT, "lt"}, // N not equal to V, less than
-			{GT, "gt"}, // Z clear AND (N equals V), greater than
-			{LE, "le"}, // Z set OR (N not equal to V), less than or equal
-			{AL, ""}  // (ignored), always
-        }; 
-		static const std::string reg2Mnemonic[16];
+		const static std::string condCode2Suffix[15];
+		const static std::string reg2Mnemonic[16];
 
-				
 		// Branch and Exchange
 		const static uint32_t BRANCH_EXCHANGE_MASK = 0b00001111111111111111111111110000;
 		const static uint32_t BRANCH_EXCHANGE_FORMAT = 0b00000001001011111111111100010000;

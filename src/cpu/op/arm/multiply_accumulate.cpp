@@ -1,5 +1,8 @@
 #include "multiply_accumulate.hpp"
 
+const std::string MultiplyAccumulate::sFlag2Mnemonic[2] = {"", "s"};
+const std::string MultiplyAccumulate::op2Mnemonic[2] = {"mul", "mla"};
+
 MultiplyAccumulate::MultiplyAccumulate(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     a = Utils::getRegBits(op, A_FLAG_MASK, A_FLAG_SHIFT);
     s = Utils::getRegBits(op, S_FLAG_MASK, S_FLAG_SHIFT);

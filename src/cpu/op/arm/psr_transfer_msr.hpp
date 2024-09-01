@@ -49,7 +49,7 @@ class PSRTransferMSR : public ArmOpcode {
         const static uint32_t SOURCE_OPERAND_MASK = 0b00000000000000000000111111111111;
         const static uint32_t SOURCE_OPERAND_SHIFT = 0;
 
-        std::string PSR2Mnemonic[2] = {"cpsr", "spsr"};
+        const static std::string PSR2Mnemonic[2];
         std::string getPSRMnemonic();
 };
 

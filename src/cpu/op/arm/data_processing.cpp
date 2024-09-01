@@ -2,6 +2,13 @@
 #include "../../../utils/utils.hpp"
 #include <string>
 
+const std::string DataProcessing::dataOpCode2Mnemonic[16] = { "and", "eor", "sub", "rsb",
+                                                              "add", "adc", "sbc", "rsc",
+                                                              "tst", "teq", "cmp", "cmn",
+                                                              "orr", "mov", "bic", "mvn"};
+
+const std::string DataProcessing::SFlag2Mnemonic[2] = {"", "s"};
+
 DataProcessing::DataProcessing(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     dataOpCode = Utils::getRegBits(op, OPCODE_MASK, OPCODE_SHIFT);
     i = Utils::getRegBits(op, IMMEDIATE_OPERAND_MASK, IMMEDIATE_OPERAND_SHIFT);
@@ -384,7 +391,6 @@ void DataProcessing::doExecute(){
             cpu.setCPSR(cpu.getSPSR().getValue());
         }else{
             // User and System modes have no SPSR, so do nothing...
-            std::cout << "eee" << std::endl;
         }
     }
 }

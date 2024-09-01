@@ -9,6 +9,8 @@ ThumbOpCode::ThumbOpCode(uint32_t op, ARM7TDMI& cpu) : OpCode::OpCode(op, cpu){
 // Thumb instructions have no conditions; they are always executed
 bool ThumbOpCode::execute() {
     doExecute();
+    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //opArm.doExecute();
     return true;
 }
 

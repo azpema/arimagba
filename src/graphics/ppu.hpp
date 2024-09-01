@@ -22,8 +22,8 @@ class PPU {
         SDL_Window *window = nullptr;
         SDL_Renderer *renderer = nullptr;
 
-        const uint32_t SCREEN_WIDTH = 240;
-        const uint32_t SCREEN_HEIGHT = 160;
+        const static uint32_t SCREEN_WIDTH = 240;
+        const static uint32_t SCREEN_HEIGHT = 160;
         
         uint8_t* io;
 
@@ -33,11 +33,11 @@ class PPU {
         uint16_t* VCOUNT;
 
         // ***************** VCOUNT ***************** 
-        const uint8_t VCOUNT_START_VBLANK = 160;
-        const uint8_t VCOUNT_END_VBLANK = 227;
+        const static uint8_t VCOUNT_START_VBLANK = 160;
+        const static uint8_t VCOUNT_END_VBLANK = 227;
 
-        const uint16_t DCNT_MODE_MASK = 0b0000000000000111;
-        const uint16_t DCNT_MODE_SHIFT = 0; 
+        const static uint16_t DCNT_MODE_MASK = 0b0000000000000111;
+        const static uint16_t DCNT_MODE_SHIFT = 0; 
 
         // ***************** DISPSTAT ***************** 
         /*
@@ -53,12 +53,12 @@ class PPU {
             8-15  DSTAT_VCT#        V-Count Setting (LYC)      (0..227)                            (R/W)
         */
         // VBlank status
-        const uint16_t DSTAT_IN_VBL_MASK = 0b0000000000000001;
-        const uint16_t DSTAT_IN_VBL_SHIFT = 0;
+        const static uint16_t DSTAT_IN_VBL_MASK = 0b0000000000000001;
+        const static uint16_t DSTAT_IN_VBL_SHIFT = 0;
 
         // HBlank status
-        const uint16_t DSTAT_IN_HBL_MASK = 0b0000000000000010;
-        const uint16_t DSTAT_IN_HBL_SHIFT = 1;
+        const static uint16_t DSTAT_IN_HBL_MASK = 0b0000000000000010;
+        const static uint16_t DSTAT_IN_HBL_SHIFT = 1;
 
         void setDCNT_MODE(uint8_t mode);
         uint8_t getDCNT_MODE();

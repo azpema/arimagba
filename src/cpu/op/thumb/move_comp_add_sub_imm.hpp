@@ -28,7 +28,7 @@ class MoveCompAddSubImm : public ThumbOpCode {
 
         enum Op { MOV = 0, CMP = 1, ADD = 2, SUB = 3 };
 
-        std::string op2Mnemonic[4] = {"mov", "cmp", "add", "sub"};
+        const static std::string op2Mnemonic[4];
         std::string getOpMnemonic();
 };
 

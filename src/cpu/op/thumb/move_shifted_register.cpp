@@ -1,6 +1,8 @@
 #include "move_shifted_register.hpp"
 #include "../arm/data_processing.hpp"
 
+const std::string MoveShiftedRegister::op2Mnemonic[3] = {"lsl", "lsr", "asr"};
+
 MoveShiftedRegister::MoveShiftedRegister(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
     offset5 = Utils::getRegBits(op, OFFSET5_MASK, OFFSET5_SHIFT);
@@ -35,7 +37,7 @@ void MoveShiftedRegister::doExecute(){
     uint32_t rawVal = shiftRm.getRawVal();
     DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 1, 0, rd, rawVal, cpu);
     opArm.doExecute();
-    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 }
 
 uint32_t MoveShiftedRegister::cyclesUsed() const {

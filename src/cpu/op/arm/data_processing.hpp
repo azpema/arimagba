@@ -4,7 +4,6 @@
 #include "../fields/shift_rm.hpp"
 #include "../fields/imm.hpp"
 #include "../fields/rotate_imm.hpp"
-#include <unordered_map>
 
 class DataProcessing : public ArmOpcode {
     public:
@@ -68,30 +67,8 @@ class DataProcessing : public ArmOpcode {
         const static uint32_t OPERAND2_MASK = 0b00000000000000000000111111111111;
         const static uint32_t OPERAND2_SHIFT = 0;
 
-
-        std::unordered_map<uint16_t, std::string> dataOpCode2Mnemonic = {
-            {0x0, "and"},
-            {0x1, "eor"},
-            {0x2, "sub"},
-            {0x3, "rsb"},
-            {0x4, "add"},
-            {0x5, "adc"},
-            {0x6, "sbc"},
-            {0x7, "rsc"},
-            {0x8, "tst"},
-            {0x9, "teq"},
-            {0xA, "cmp"},
-            {0xB, "cmn"},
-            {0xC, "orr"},
-            {0xD, "mov"},
-            {0xE, "bic"},
-            {0xF, "mvn"}
-        }; 
-
-        std::unordered_map<uint16_t, std::string> SFlag2Mnemonic = {
-            {0, ""},
-            {1, "s"},
-        }; 
+        const static std::string dataOpCode2Mnemonic[16];
+        const static std::string SFlag2Mnemonic[2];
 
         // https://alisdair.mcdiarmid.org/arm-immediate-value-encoding/
         uint32_t getOperand2Rm();

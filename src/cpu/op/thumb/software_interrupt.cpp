@@ -19,7 +19,7 @@ void SoftwareInterrupt::doDecode(){
 void SoftwareInterrupt::doExecute(){
     uint32_t opcode = 0b11101111000000000000000000000000 | value8;
     ARM::SoftwareInterrupt opArm = ARM::SoftwareInterrupt(opcode, cpu);
-    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     opArm.doExecute();
 }
 

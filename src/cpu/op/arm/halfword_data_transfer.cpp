@@ -1,6 +1,12 @@
 #include "halfword_data_transfer.hpp"
 #include "../opcode.hpp"
 
+const std::string HalfwordDataTransfer::uFlag2Mnemonic[2] = {"-", ""};
+const std::string HalfwordDataTransfer::wFlag2Mnemonic[2] = {"", "!"};
+const std::string HalfwordDataTransfer::sFlag2Mnemonic[2] = {"", "s"};
+const std::string HalfwordDataTransfer::hFlag2Mnemonic[2] = {"b", "h"};
+const std::string HalfwordDataTransfer::op2Mnemonic[2] = {"str", "ldr"};
+
 HalfwordDataTransfer::HalfwordDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     p = Utils::getRegBits(op, P_FLAG_MASK, P_FLAG_SHIFT);
     u = Utils::getRegBits(op, U_FLAG_MASK, U_FLAG_SHIFT);

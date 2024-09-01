@@ -1,6 +1,24 @@
 #include "arm_opcode.hpp"
 #include "../../../utils/utils.hpp"
 
+const std::string ArmOpcode::condCode2Suffix[15] = {
+            "eq",	// Z set, equal
+            "ne", // Z clear, not equal
+            "cs", // C set, unsigned higher or same
+            "cc", // C clear, unsigned lower
+            "mi", // N set, negative
+            "pl", // N clear, positive or zero
+            "vs", // V set, overflow
+			"vc", // V clear, no overflow
+			"hi", // C set and Z clear, unsigned higher
+			"ls", // C clear or Z set, unsigned lower or same
+			"ge", // N equals V, greater or equal
+			"lt", // N not equal to V, less than
+			"gt", // Z clear AND (N equals V), greater than
+			"le", // Z set OR (N not equal to V), less than or equal
+			""  // (ignored), always
+        };
+
 ArmOpcode::ArmOpcode(uint32_t op, ARM7TDMI& cpu) : OpCode::OpCode(op, cpu) {
     opcode = op;
     condRaw = Utils::getRegBits(opcode, COND_FIELD_MASK, COND_FIELD_SHIFT);

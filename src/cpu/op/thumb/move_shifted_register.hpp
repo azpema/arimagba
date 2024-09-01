@@ -29,7 +29,7 @@ class MoveShiftedRegister : public ThumbOpCode {
         const static uint16_t RD_MASK = 0b0000000000000111; 
         const static uint16_t RD_SHIFT = 0; 
 
-        std::string op2Mnemonic[3] = {"lsl", "lsr", "asr"};
+        const static std::string op2Mnemonic[3];
         std::string getOpMnemonic();
 };
 

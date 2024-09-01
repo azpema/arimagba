@@ -34,7 +34,7 @@ class Branch : public ArmOpcode {
         const static uint32_t OFFSET_MASK = 0b00000000111111111111111111111111; 
         const static uint32_t OFFSET_SHIFT = 0; 
 
-        std::string linkFlag2Mnemonic[2] = {"", "l"};
+        const static std::string linkFlag2Mnemonic[2];
         std::string getLinkFlagMnemonic();
 
 	public:

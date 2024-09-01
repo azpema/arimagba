@@ -22,12 +22,12 @@ class HalfwordDataTransfer : public ArmOpcode {
 
         const static uint32_t U_FLAG_MASK = 0b00000000100000000000000000000000; 
         const static uint32_t U_FLAG_SHIFT = 23;
-        std::string uFlag2Mnemonic[2] = {"-", ""};
+        const static std::string uFlag2Mnemonic[2];
         std::string getUFlagMnemonic();
 
         const static uint32_t W_FLAG_MASK = 0b00000000001000000000000000000000; 
         const static uint32_t W_FLAG_SHIFT = 21;
-        std::string wFlag2Mnemonic[2] = {"", "!"};
+        const static std::string wFlag2Mnemonic[2];
         std::string getWFlagMnemonic();
 
         const static uint32_t L_FLAG_MASK = 0b00000000000100000000000000000000; 
@@ -41,15 +41,15 @@ class HalfwordDataTransfer : public ArmOpcode {
 
         const static uint32_t S_FLAG_MASK = 0b00000000000000000000000001000000; 
         const static uint32_t S_FLAG_SHIFT = 6;
-        std::string sFlag2Mnemonic[2] = {"", "s"};
+        const static std::string sFlag2Mnemonic[2];
         std::string getSFlagMnemonic();
 
         const static uint32_t H_FLAG_MASK = 0b00000000000000000000000000100000; 
         const static uint32_t H_FLAG_SHIFT = 5;
-        std::string hFlag2Mnemonic[2] = {"b", "h"};
+        const static std::string hFlag2Mnemonic[2];
         std::string getHFlagMnemonic();
 
-        std::string op2Mnemonic[2] = {"str", "ldr"};
+        const static std::string op2Mnemonic[2];
         std::string getOpMnemonic();
 };
 

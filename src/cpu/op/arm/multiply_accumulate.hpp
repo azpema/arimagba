@@ -35,10 +35,10 @@ class MultiplyAccumulate : public ArmOpcode {
         const static uint32_t RM_FLAG_MASK = 0b00000000000000000000000000001111; 
         const static uint32_t RM_FLAG_SHIFT = 0;
 
-        std::string sFlag2Mnemonic[2] = {"", "s"};
+        const static std::string sFlag2Mnemonic[2];
         std::string getSFlagMnemonic();
 
-        std::string op2Mnemonic[2] = {"mul", "mla"};
+        const static std::string op2Mnemonic[2];
         std::string getOpMnemonic();
 };
 

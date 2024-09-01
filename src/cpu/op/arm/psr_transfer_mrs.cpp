@@ -1,6 +1,8 @@
 #include "psr_transfer_mrs.hpp"
 #include <bitset>
 
+const std::string PSRTransferMRS::PSR2Mnemonic[2] = {"cpsr", "spsr"};
+
 PSRTransferMRS::PSRTransferMRS(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     psr = Utils::getRegBits(op, PSR_MASK, PSR_SHIFT);
     Rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);

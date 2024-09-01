@@ -1,5 +1,10 @@
 #include "single_data_transfer.hpp"
 
+const std::string SingleDataTransfer::UFlag2Mnemonic[2] = {"-", ""};
+const std::string SingleDataTransfer::BFlag2Mnemonic[2] = {"", "b"};
+const std::string SingleDataTransfer::WFlag2Mnemonic[2] = {"", "!"};
+const std::string SingleDataTransfer::LFlag2Mnemonic[2] = {"str", "ldr"};
+
 SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     I = Utils::getRegBits(op, I_MASK, I_SHIFT);
     P = Utils::getRegBits(op, P_MASK, P_SHIFT);

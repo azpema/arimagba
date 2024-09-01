@@ -30,23 +30,23 @@ class SingleDataTransfer : public ArmOpcode {
 
         const static uint32_t U_MASK = 0b00000000100000000000000000000000; 
         const static uint32_t U_SHIFT = 23;
-        std::string UFlag2Mnemonic[2] = {"-", ""};
+        const static std::string UFlag2Mnemonic[2];
         std::string getUFlagMnemonic();
 
         const static uint32_t B_MASK = 0b00000000010000000000000000000000; 
         const static uint32_t B_SHIFT = 22;
-        std::string BFlag2Mnemonic[2] = {"", "b"};
+        const static std::string BFlag2Mnemonic[2];
         std::string getBFlagMnemonic();
 
         const static uint32_t W_MASK = 0b00000000001000000000000000000000; 
         const static uint32_t W_SHIFT = 21;
-        std::string WFlag2Mnemonic[2] = {"", "!"};
+        const static std::string WFlag2Mnemonic[2];
         std::string getWFlagMnemonic();
 
         const static uint32_t L_MASK = 0b00000000000100000000000000000000; 
         const static uint32_t L_SHIFT = 20;
 
-        std::string LFlag2Mnemonic[2] = {"str", "ldr"};
+        const static std::string LFlag2Mnemonic[2];
         std::string getLFlagMnemonic();
 
         const static uint32_t RN_MASK = 0b00000000000011110000000000000000; 

@@ -9,20 +9,20 @@ BIOS::BIOS(std::string filePath) {
 
     std::ifstream fileStream = std::ifstream(filePath, std::ios::binary | std::ifstream::ate);
     if (!fileStream) {
-        std::cerr << "ERROR: BIOS Failed to open the file." << std::endl;
+        throw std::runtime_error("ERROR: BIOS Failed to open the file.");
     }
 
     uint32_t fileSize = fileStream.tellg();
     fileStream.seekg(0, std::ios::beg);
 
     if (!fileStream.is_open()) {
-        std::cerr << "ERROR: BIOS Failed to open the file." << std::endl;
+        throw std::runtime_error("ERROR: BIOS Failed to open the file.");
     }else {
         fileStream.read(reinterpret_cast<char *>(mem), fileSize);
         if (fileStream) {
             std::cout << "DEBUG: BIOS READ OK" << std::endl;
         } else{
-            std::cerr << "ERROR: GamePak reading" << std::endl;
+            throw std::runtime_error("ERROR: GamePak reading");
         }
     }
 }

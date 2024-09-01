@@ -1,6 +1,8 @@
 #include "hi_register_branch_exchange.hpp"
 #include "../arm/data_processing.hpp"
 
+const std::string HiRegisterBranchExchange::op2Mnemonic[4] = {"add", "cmp", "mov", "bx"};
+
 HiRegisterBranchExchange::HiRegisterBranchExchange(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
     h1 = Utils::getRegBits(op, H1_MASK, H1_SHIFT);
@@ -38,7 +40,7 @@ void HiRegisterBranchExchange::doExecute(){
             ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
             DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_ADD_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
             opArm.doExecute();
-            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+            //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }
         break;
         case CMP:
@@ -46,7 +48,7 @@ void HiRegisterBranchExchange::doExecute(){
             ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
             DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_CMP_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
             opArm.doExecute();
-            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+            //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }
         break;
         case MOV:
@@ -55,7 +57,7 @@ void HiRegisterBranchExchange::doExecute(){
             ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
             DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 0, rs, rd, shiftRm.getRawVal(), cpu);
             opArm.doExecute();
-            std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+            //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }
         break;
         case BX:
@@ -67,11 +69,6 @@ void HiRegisterBranchExchange::doExecute(){
             cpu.getCPSR().setTFlag(rsVal & 0x1 == 1);
             cpu.setMustFlushPipeline(true);
         break;
-    }
-
-    // Set CPSR
-    if(op == CMP){
-
     }
 }
 

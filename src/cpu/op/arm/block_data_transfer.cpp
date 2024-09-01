@@ -1,6 +1,11 @@
 #include "block_data_transfer.hpp"
 #include <algorithm>
 
+const std::string BlockDataTransfer::SFlag2Mnemonic[2] = {"", "^"};
+const std::string BlockDataTransfer::WFlag2Mnemonic[2] = {"", "!"};
+const std::string BlockDataTransfer::opAddressingMode2Mnemonic[2][2][2] = {{{"stmed", "stmea"}, {"stmfd", "stmfa"}},
+                                                                           {{"ldmfa", "ldmfd"}, {"ldmea", "ldmed"}}};
+
 BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
     P = Utils::getRegBits(op, P_MASK, P_SHIFT);
     U = Utils::getRegBits(op, U_MASK, U_SHIFT);

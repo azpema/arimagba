@@ -47,7 +47,7 @@ class ShiftRm : public Operand {
         const static uint16_t SHIFT_RS_MASK = 0b11110000;
         const static uint16_t SHIFT_RS_SHIFT = 4;
 
-        const std::string shiftType2Mnemonic[4] = {"lsl", "lsr", "asr", "ror"};
+        const static std::string shiftType2Mnemonic[4];
 
 };
 

@@ -19,7 +19,7 @@ class MultiplyAccumulateLong : public ArmOpcode {
 
         const static uint32_t U_FLAG_MASK = 0b00000000010000000000000000000000;
         const static uint32_t U_FLAG_SHIFT = 22;
-        std::string uFlag2Mnemonic[2] = {"u", "s"};
+        const static std::string uFlag2Mnemonic[2];
         std::string getUFlagMnemonic();
 
         const static uint32_t A_FLAG_MASK = 0b00000000001000000000000000000000; 
@@ -27,7 +27,7 @@ class MultiplyAccumulateLong : public ArmOpcode {
 
         const static uint32_t S_FLAG_MASK = 0b00000000000100000000000000000000; 
         const static uint32_t S_FLAG_SHIFT = 20;
-        std::string sFlag2Mnemonic[2] = {"", "s"};
+        const static std::string sFlag2Mnemonic[2];
         std::string getSFlagMnemonic();
 
         const static uint32_t RDHI_FLAG_MASK = 0b00000000000011110000000000000000; 
@@ -42,7 +42,7 @@ class MultiplyAccumulateLong : public ArmOpcode {
         const static uint32_t RM_FLAG_MASK = 0b00000000000000000000000000001111; 
         const static uint32_t RM_FLAG_SHIFT = 0;
 
-        std::string op2Mnemonic[2] = {"mull", "mlal"};
+        const static std::string op2Mnemonic[2];
         std::string getOpMnemonic();
 };
 

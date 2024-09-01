@@ -26,7 +26,7 @@ class SPLoadStore : public ThumbOpCode {
         const static uint16_t WORD8_MASK = 0b0000000011111111; 
         const static uint16_t WORD8_SHIFT = 0;
 
-        std::string l2Mnemonic[2] = {"str", "ldr"};
+        const static std::string l2Mnemonic[2];
         std::string getLMnemonic();
 };
 

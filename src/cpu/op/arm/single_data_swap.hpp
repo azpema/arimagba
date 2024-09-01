@@ -17,7 +17,7 @@ class SingleDataSwap : public ArmOpcode {
 
         const static uint32_t B_MASK = 0b00000000010000000000000000000000;
         const static uint32_t B_SHIFT = 22;
-        std::string bFlag2Mnemonic[2] = {"", "b"};
+        const static std::string bFlag2Mnemonic[2];
         std::string getBFlagMnemonic(); 
 
         const static uint32_t RN_MASK = 0b00000000000011110000000000000000; 

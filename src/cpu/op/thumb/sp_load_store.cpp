@@ -2,6 +2,8 @@
 #include "../arm/single_data_transfer.hpp"
 #include "../fields/imm.hpp"
 
+const std::string SPLoadStore::l2Mnemonic[2] = {"str", "ldr"};
+
 SPLoadStore::SPLoadStore(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
     rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
@@ -29,7 +31,7 @@ void SPLoadStore::doExecute(){
     uint8_t b = 0;
     uint8_t w = 0;
     SingleDataTransfer opArm = SingleDataTransfer(i, p, u, b, w, l, 13, rd, offsetVal, cpu);
-    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     opArm.doExecute();  
 
 }

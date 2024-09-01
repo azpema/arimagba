@@ -26,7 +26,7 @@ void PCRelativeLoad::doExecute(){
     uint8_t l = 1;
     bool forcePcBit1To0 = true;
     SingleDataTransfer opArm = SingleDataTransfer(i, p, u, b, w, l, 15, rd, offset, cpu, forcePcBit1To0);
-    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     opArm.doExecute();  
 }
 

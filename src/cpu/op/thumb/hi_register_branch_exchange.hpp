@@ -34,7 +34,7 @@ class HiRegisterBranchExchange : public ThumbOpCode {
 
         enum OP { ADD = 0, CMP = 1, MOV = 2, BX = 3 };
 
-        std::string op2Mnemonic[4] = {"add", "cmp", "mov", "bx"};
+        const static std::string op2Mnemonic[4];
         std::string getOpMnemonic();
 };
 

@@ -27,7 +27,7 @@ class LoadAddress : public ThumbOpCode {
         const static uint16_t WORD8_MASK = 0b0000000011111111; 
         const static uint16_t WORD8_SHIFT = 0;
 
-        uint8_t sp2RegVal[2] = {15, 13};
+        const static uint8_t sp2RegVal[2];
         uint8_t getSPRegVal();
 };
 

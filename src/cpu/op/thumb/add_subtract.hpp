@@ -32,7 +32,7 @@ class AddSubtract : public ThumbOpCode {
         const static uint16_t RD_MASK = 0b0000000000000111;
         const static uint16_t RD_SHIFT = 0;
 
-        std::string op2Mnemonic[2] = {"add", "sub"};
+        const static std::string op2Mnemonic[2];
         std::string getOpMnemonic();
 };
 

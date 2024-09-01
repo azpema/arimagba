@@ -4,6 +4,11 @@
 
 using namespace Thumb;
 
+const std::string ConditionalBranch::cond2Mnemonic[16] = {"eq", "ne", "cs", "cc",
+                                                          "mi", "pl", "vs", "vc",
+                                                          "hi", "ls", "ge", "lt",
+                                                          "gt", "le", "ERR", "ERR"};
+
 ConditionalBranch::ConditionalBranch(uint16_t op, uint32_t pc, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     cond = Utils::getRegBits(op, COND_MASK, COND_SHIFT);
     sOffset8 = Utils::getRegBits(op, SOFFSET8_MASK, SOFFSET8_SHIFT);
@@ -144,9 +149,9 @@ void ConditionalBranch::doExecute(){
     if(execute){
         ARM::Branch opArm = ARM::Branch(oldPC, sOffset8, offsetVal, cond, cpu);
         opArm.doExecute();
-        std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     }else{
-        std::cout << "Condition not met; skipping instruction" << std::endl;
+        //std::cout << "Condition not met; skipping instruction" << std::endl;
     }
 }
 

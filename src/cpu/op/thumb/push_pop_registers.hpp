@@ -28,7 +28,7 @@ class PushPopRegisters : public ThumbOpCode {
         const static uint16_t RLIST_MASK = 0b0000000011111111;
         const static uint16_t RLIST_SHIFT = 0;
 
-        std::string op2Mnemonic[2] = {"push", "pop"};
+        const static std::string op2Mnemonic[2];
         std::string getOpMnemonic();
 };
 

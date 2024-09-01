@@ -22,7 +22,7 @@ class PSRTransferMRS : public ArmOpcode {
         const static uint32_t RD_MASK = 0b00000000000000001111000000000000; 
         const static uint32_t RD_SHIFT = 12; 
 
-        std::string PSR2Mnemonic[2] = {"cpsr", "spsr"};
+        const static std::string PSR2Mnemonic[2];
         std::string getPSRMnemonic();
 };
 

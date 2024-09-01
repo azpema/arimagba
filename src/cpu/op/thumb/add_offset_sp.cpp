@@ -1,6 +1,8 @@
 #include "add_offset_sp.hpp"
 #include "../arm/data_processing.hpp"
 
+const std::string AddOffsetSP::s2Mnemonic[2] = {"", "-"};
+
 AddOffsetSP::AddOffsetSP(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     s = Utils::getRegBits(op, S_MASK, S_SHIFT);
     sWord7 = Utils::getRegBits(op, SWORD7_MASK, SWORD7_SHIFT);
@@ -28,7 +30,7 @@ void AddOffsetSP::doExecute(){
     uint16_t operation = s == 0 ? DataProcessing::OPCODE_ADD_VAL : DataProcessing::OPCODE_SUB_VAL;
     DataProcessing opArm = DataProcessing(1, operation, 0, 13, 13, imm.getRawVal(), cpu);
     opArm.doExecute();
-    std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 }
 
 uint32_t AddOffsetSP::cyclesUsed() const {

@@ -32,10 +32,7 @@ class ALUOperations : public ThumbOpCode {
 					  ORR = 0b1100, MUL = 0b1101, BIC = 0b1110, MVN = 0b1111 
 		};
 
-        std::string op2Mnemonic[16] = {"and", "eor", "lsl", "lsr",
-                                       "asr", "adc", "sbc", "ror",
-                                       "tst", "neg", "cmp", "cmn",
-                                       "orr", "mul", "bic", "mvn"};
+        const static std::string op2Mnemonic[16];
         std::string getOpMnemonic();
 
 };

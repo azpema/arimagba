@@ -32,8 +32,7 @@ class LoadStoreSignExtended : public ThumbOpCode {
         const static uint16_t RD_MASK = 0b0000000000000111; 
         const static uint16_t RD_SHIFT = 0;
 
-        std::string op2Mnemonic[2][2] = {{"strh", "ldrh"},
-                                         {"ldsb", "ldsh"}};
+        const static std::string op2Mnemonic[2][2];
         std::string getOpMnemonic();
 };
 
