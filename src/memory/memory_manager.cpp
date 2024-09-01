@@ -51,7 +51,9 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
 void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
     if(Utils::inRange(addr, BIOS_OFFSET_START, BIOS_OFFSET_END)){
         std::cout << "TODO: BIOS write" << std::endl;
-    } else if(Utils::inRange(addr, VRAM_OFFSET_START, VRAM_OFFSET_END)){
+    }else if(Utils::inRange(addr, GAMEPAK_WAIT_0_OFFSET_START, GAMEPAK_WAIT_0_OFFSET_END)) {
+        // Do nothing
+    }else if(Utils::inRange(addr, VRAM_OFFSET_START, VRAM_OFFSET_END)){
         vram.store(addr - VRAM_OFFSET_START, val, bytes);
         //std::cerr << "TODO: VRAM Mirroring" << std::endl;
     }else if(Utils::inRange(addr, EWRAM_OFFSET_START, EWRAM_MIRROR_OFFSET_END)){
