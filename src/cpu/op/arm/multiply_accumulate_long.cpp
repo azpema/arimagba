@@ -59,14 +59,14 @@ void MultiplyAccumulateLong::doExecute(){
     if(u == 0){
         uRes = static_cast<uint64_t>(rsVal) * static_cast<uint64_t>(rmVal);
         if(a == 1){
-            uRes += (static_cast<uint64_t>(rdHiVal) << 32) + static_cast<uint64_t>(rdLoVal);
+            uRes += (static_cast<uint64_t>(rdHiVal) << 32) | static_cast<uint64_t>(rdLoVal);
         }
         cpu.setReg(rdLo, uRes & 0xFFFFFFFF);
         cpu.setReg(rdHi, (uRes & 0xFFFFFFFF00000000) >> 32);
     }else if(u == 1){
         sRes = static_cast<int64_t>(static_cast<int32_t>(rsVal)) * static_cast<int64_t>(static_cast<int32_t>(rmVal));
         if(a == 1){
-            sRes += (static_cast<int64_t>(static_cast<int32_t>(rdHiVal)) << 32) + static_cast<int64_t>(static_cast<int32_t>(rdLoVal));
+            sRes += static_cast<int64_t>((static_cast<uint64_t>(rdHiVal) << 32) | static_cast<uint64_t>(rdLoVal));
         }
         cpu.setReg(rdLo, sRes & 0xFFFFFFFF);
         cpu.setReg(rdHi, (sRes & 0xFFFFFFFF00000000) >> 32);
