@@ -35,7 +35,6 @@ uint32_t ALU::adc(uint32_t op1, uint32_t op2, uint8_t carry){
     n = (Utils::getRegBits(res, MSB_MASK, MSB_SHIFT) == 1);
     z = (res == 0);
     c = ((static_cast<uint64_t>(op1) + static_cast<uint64_t>(op2) + static_cast<uint64_t>(carry)) != res);
-    //v = ( iOp1 + iOp2 != static_cast<int32_t>(res));
     v = (!op1Sign && !op2Sign && resSign) || (op1Sign && op2Sign && !resSign);
 
     return res;
@@ -61,20 +60,19 @@ uint32_t ALU::sub(uint32_t op1, uint32_t op2){
 }
 
 uint32_t ALU::sbc(uint32_t op1, uint32_t op2, uint8_t carry){
-    op1 = op1 + carry - 1;
-    uint32_t res = op1 - op2;
-
-    bool op1Sign = Utils::getRegBits(op1, MSB_MASK, MSB_SHIFT) == 1;
-    bool op2Sign = Utils::getRegBits(op2, MSB_MASK, MSB_SHIFT) == 1;
-    bool resSign = Utils::getRegBits(res, MSB_MASK, MSB_SHIFT) == 1;
+    uint32_t res = op1 + carry - 1 - op2;
 
     n = (Utils::getRegBits(res, MSB_MASK, MSB_SHIFT) == 1);
     z = (res == 0);
-    c = op2 <= op1;
+    //c = op2 <= interm;
     // Before
     //c = op2 < op1;
     //c = op2 >= op1;
-    v = (!op1Sign && op2Sign && resSign) || (op1Sign && !op2Sign && !resSign);
+    //v = (!op1Sign && op2Sign && resSign) || (op1Sign && !op2Sign && !resSign);
+
+            // for Op1 - Op2
+    c = (static_cast<uint64_t>(op2) + 1 - carry <= op1 ? 1 : 0);
+    v = (((op1 ^ op2) & (~op2 ^ res)) >> 31);
 
     return res;
 }
