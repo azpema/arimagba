@@ -38,10 +38,12 @@ Keys::Keys(MemoryManager *memManager){
 }
 
 void Keys::handleKey(SDL_Keycode key, bool press){
-    static uint32_t* reg = reinterpret_cast<uint32_t*>(KEYINPUT);
-    if(press){
-        Utils::clearRegBits(*reg, SdlKeyToGbaMask.at(key));
-    }else{
-        Utils::setRegBits(*reg, SdlKeyToGbaMask.at(key), 1 << SdlKeyToGbaShift.at(key));
+    if(SdlKeyToGbaMask.contains(key)){
+        static uint32_t* reg = reinterpret_cast<uint32_t*>(KEYINPUT);
+        if(press){
+            Utils::clearRegBits(*reg, SdlKeyToGbaMask.at(key));
+        }else{
+            Utils::setRegBits(*reg, SdlKeyToGbaMask.at(key), 1 << SdlKeyToGbaShift.at(key));
+        }
     }
 }
