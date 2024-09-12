@@ -22,6 +22,8 @@ SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::A
     }else if(I == 1){
         offsetField = new ShiftRm(off);
     }
+
+    forcePcBit1To0 = false;
 }
 
 SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 

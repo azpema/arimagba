@@ -23,6 +23,8 @@ DataProcessing::DataProcessing(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode
     }else{
         throw std::runtime_error("ERROR: Invalid i value in DataProcessing::DataProcessing");
     }
+
+    overrideOperands = false;
 }
 
 DataProcessing::DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2,
