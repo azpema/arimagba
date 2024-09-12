@@ -9,7 +9,7 @@ PushPopRegisters::PushPopRegisters(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::Thu
     rList = Utils::getRegBits(op, RLIST_MASK, RLIST_SHIFT);
     
     for(size_t i = 0; i < 8; i++){
-        if((rList >> i) & 0x1 == 0x1)
+        if(((rList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);    
     }
 }   

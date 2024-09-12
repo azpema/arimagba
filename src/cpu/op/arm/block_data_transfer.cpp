@@ -16,7 +16,7 @@ BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::Arm
     registerList = Utils::getRegBits(op, REGISTER_LIST_MASK, REGISTER_LIST_SHIFT);
 
     for(size_t i = 0; i < 16; i++){
-        if((registerList >> i) & 0x1 == 0x1)
+        if(((registerList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);    
     }
 }
@@ -32,7 +32,7 @@ BlockDataTransfer::BlockDataTransfer(uint16_t P, uint16_t U, uint16_t S, uint16_
     this->registerList = registerList;
 
     for(size_t i = 0; i < 16; i++){
-        if((registerList >> i) & 0x1 == 0x1)
+        if(((registerList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);    
     }
 }  
@@ -47,7 +47,6 @@ std::string BlockDataTransfer::getWFlagMnemonic(){
 
 std::string BlockDataTransfer::getRegisterListMnemonic(){
     std::string regs = "{";
-    bool addComma = false;
     for(size_t i = 0; i < registerListVec.size(); i++){
         regs += OpCode::getRegMnemonic(registerListVec[i]);
         if(i < registerListVec.size() - 1)
@@ -96,7 +95,8 @@ void BlockDataTransfer::doExecute(){
     }
 
     if(L == 0){
-        uint32_t endAddr, baseAddr;
+        uint32_t endAddr = 0;
+        uint32_t baseAddr = 0;
         int32_t emptyListOffset;
         // Pre calculate end address for possible writeback
         // STMDB / STMFD

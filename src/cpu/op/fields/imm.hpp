@@ -9,6 +9,7 @@
 class Imm : public Operand {
 	public:
 		Imm(uint16_t val);
+        ~Imm() override;
         std::string toString();
         uint32_t getMnemonicVal();
 

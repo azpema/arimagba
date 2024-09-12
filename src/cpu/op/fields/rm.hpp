@@ -9,6 +9,7 @@
 class Rm : public Operand {
     public:
 		Rm(uint16_t val);
+        ~Rm() override;
         std::string toString();
         uint16_t getRmVal();
         bool getC();

@@ -64,9 +64,9 @@ void HiRegisterBranchExchange::doExecute(){
             if(h1 == 1){
                 throw std::runtime_error("Undefined instruction HiRegisterBranchExchange::doExecute BX, H1=1");
             }
-            cpu.getCPSR().setTFlag(rsVal & 0x1 == 1);
+            cpu.getCPSR().setTFlag((rsVal & 0x1) == 1);
             cpu.setPC(rsVal);
-            cpu.getCPSR().setTFlag(rsVal & 0x1 == 1);
+            cpu.getCPSR().setTFlag((rsVal & 0x1) == 1);
             cpu.setMustFlushPipeline(true);
         break;
     }

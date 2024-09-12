@@ -6,6 +6,10 @@ Imm::Imm(uint16_t val) : Operand::Operand(val, OperandType::IMM){
     immVal = val;
 }
 
+Imm::~Imm()
+{
+}
+
 uint32_t Imm::getMnemonicVal(){
     return immVal;
 }

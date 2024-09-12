@@ -66,7 +66,7 @@ void PSRTransferMSR::doDecode(){
 void PSRTransferMSR::doExecute(){
     uint32_t newVal = cpu.getCPSR().getValue();
 
-    uint32_t newFlags;
+    uint32_t newFlags = 0;
     if(sourceOperand->_type == Operand::RM){
         Rm* rm = static_cast<Rm*>(sourceOperand);
         newFlags = cpu.getReg(rm->getRmVal());
@@ -74,7 +74,7 @@ void PSRTransferMSR::doExecute(){
         RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand);
         newFlags = rotImm->getMnemonicVal();
     }else{
-        std::cerr << "ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " << sourceOperand->_type << std::endl;
+        throw new std::runtime_error("ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " + std::to_string(sourceOperand->_type));
     }
 
     // Corresponds to flag bits (NZCV)

@@ -20,6 +20,9 @@ RotateImm::RotateImm(uint8_t rot, uint8_t imm) : Operand::Operand(0xDEAD, Operan
     setRawVal(raw);
 }
 
+RotateImm::~RotateImm()
+{
+}
 
 uint32_t RotateImm::getMnemonicVal(){
     return operandVal;

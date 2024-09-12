@@ -51,6 +51,10 @@ ShiftRm::ShiftRm(uint8_t rm, bool typeShiftAmount, uint8_t amount, uint8_t type,
     setRawVal(_shift);
 }
 
+ShiftRm::~ShiftRm()
+{
+}
+
 std::string ShiftRm::getShiftTypeMnemonic(){
     return shiftType2Mnemonic[_shiftType];
 }
