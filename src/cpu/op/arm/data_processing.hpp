@@ -43,7 +43,7 @@ class DataProcessing : public ArmOpcode {
     private:
         uint16_t i, s, rn, rd, dataOpCode;
         uint32_t op1, op2;
-        Operand *operand2;
+        std::unique_ptr<Operand> operand2;
 
         // These values are only used from THUMB mode to force PC value bit 1 to 0.
         bool overrideOperands;

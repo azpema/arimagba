@@ -9,16 +9,15 @@ PSRTransferMSR::PSRTransferMSR(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode
     c = Utils::getRegBits(op, C_MASK, C_SHIFT);
 
     if(I == 0){
-        sourceOperand = new Rm(Utils::getRegBits(op, SOURCE_OPERAND_MASK, SOURCE_OPERAND_SHIFT));
+        sourceOperand = std::make_unique<Rm>(Utils::getRegBits(op, SOURCE_OPERAND_MASK, SOURCE_OPERAND_SHIFT));
     }else if (I == 1){
-        sourceOperand = new RotateImm(Utils::getRegBits(op, SOURCE_OPERAND_MASK, SOURCE_OPERAND_SHIFT));
+        sourceOperand = std::make_unique<RotateImm>(Utils::getRegBits(op, SOURCE_OPERAND_MASK, SOURCE_OPERAND_SHIFT));
     }else{
         std::cerr << "ERROR: Invalid I field value" << std::endl;
     }
 }
 
 PSRTransferMSR::~PSRTransferMSR(){
-    delete sourceOperand;
 }
 
 std::string PSRTransferMSR::getPSRMnemonic(){
@@ -42,10 +41,10 @@ uint32_t PSRTransferMSR::cyclesUsed() const {
 std::string PSRTransferMSR::toString() {
     std::string srcOper = "";
     if(sourceOperand->_type == Operand::RM){
-        Rm* rm = static_cast<Rm*>(sourceOperand);
+        Rm* rm = static_cast<Rm*>(sourceOperand.get());
         srcOper = OpCode::getRegMnemonic(rm->getRmVal());
     }else if(sourceOperand->_type == Operand::ROTATE_IMM){
-        RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand);
+        RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand.get());
         srcOper = "#" + Utils::toHexString(rotImm->getMnemonicVal());
     }else{
         std::cerr << "ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " << sourceOperand->_type << std::endl;
@@ -68,10 +67,10 @@ void PSRTransferMSR::doExecute(){
 
     uint32_t newFlags = 0;
     if(sourceOperand->_type == Operand::RM){
-        Rm* rm = static_cast<Rm*>(sourceOperand);
+        Rm* rm = static_cast<Rm*>(sourceOperand.get());
         newFlags = cpu.getReg(rm->getRmVal());
     }else if(sourceOperand->_type == Operand::ROTATE_IMM){
-        RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand);
+        RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand.get());
         newFlags = rotImm->getMnemonicVal();
     }else{
         throw new std::runtime_error("ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " + std::to_string(sourceOperand->_type));

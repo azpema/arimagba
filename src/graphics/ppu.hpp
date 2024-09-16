@@ -10,7 +10,7 @@
 
 class PPU {
     public:
-        PPU(std::string title, MemoryManager *memManager, ExceptionHandler &ex);
+        PPU(const std::string &title, MemoryManager *memManager, ExceptionHandler &ex);
         ~PPU();
         void renderScanline();
         

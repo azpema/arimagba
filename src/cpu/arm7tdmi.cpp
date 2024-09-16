@@ -66,18 +66,16 @@ ARM7TDMI::ARM7TDMI(MemoryManager *memManager) {
 	r13_irq[0] = 0x03007FA0;
 	r13_svc[0] = 0x03007FE0;
 
-	barrelShifter = new BarrelShifter();
-	exceptionHandler = new ExceptionHandler();
+	barrelShifter = std::make_unique<BarrelShifter>();
+	exceptionHandler = std::make_unique<ExceptionHandler>();
 
 	spsr_fiq.setValue(0xF00000FF);
 }
 
 ARM7TDMI::~ARM7TDMI() {
-	delete barrelShifter;
-	delete exceptionHandler;
 }
 
-OpCode* ARM7TDMI::decodeInstruction(uint32_t op, uint32_t pc){
+std::unique_ptr<OpCode> ARM7TDMI::decodeInstruction(uint32_t op, uint32_t pc){
 	if(cpsr.isThumbMode()){
 		return decodeInstructionThumb(op, pc);
 	}else{
@@ -85,80 +83,80 @@ OpCode* ARM7TDMI::decodeInstruction(uint32_t op, uint32_t pc){
 	}
 }
 
-OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
+std::unique_ptr<OpCode> ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 	if(ArmOpcode::isBranchAndExchange(op)){
-		return new BranchAndExchange(op, *this);
+		return std::make_unique<BranchAndExchange>(op, *this);
 	}else if (ArmOpcode::isBlockDataTransfer(op)) {
-		return new BlockDataTransfer(op, *this);
+		return std::make_unique<BlockDataTransfer>(op, *this);
 	}else if(ArmOpcode::isBranch(op)){
-		return new ARM::Branch(op, pc, *this);
+		return std::make_unique<ARM::Branch>(op, pc, *this);
 	}else if(ArmOpcode::isSoftwareInterrupt(op)){
-		return new ARM::SoftwareInterrupt(op, *this);
+		return std::make_unique<ARM::SoftwareInterrupt>(op, *this);
 	}else if(ArmOpcode::isUndefined(op)){
-		return new Undefined(op, *this);
+		return std::make_unique<Undefined>(op, *this);
 	}else if(ArmOpcode::isSingleDataTransfer(op)){
-		return new SingleDataTransfer(op, *this);
+		return std::make_unique<SingleDataTransfer>(op, *this);
 	}else if(ArmOpcode::isSingleDataSwap(op)){
-		return new SingleDataSwap(op, *this);
+		return std::make_unique<SingleDataSwap>(op, *this);
 	}else if(ArmOpcode::isMultiply(op)){
-		return new MultiplyAccumulate(op, *this);
+		return std::make_unique<MultiplyAccumulate>(op, *this);
 	}else if(ArmOpcode::isMultiplyLong(op)){
-		return new MultiplyAccumulateLong(op, *this);
+		return std::make_unique<MultiplyAccumulateLong>(op, *this);
 	}else if(ArmOpcode::isHalfwordDataTransferRegister(op)){
-		return new HalfwordDataTransferRegister(op, *this);
+		return std::make_unique<HalfwordDataTransferRegister>(op, *this);
 	}else if(ArmOpcode::isHalfwordDataTransferOffset(op)){
-		return new HalfwordDataTransferOffset(op, *this);
+		return std::make_unique<HalfwordDataTransferOffset>(op, *this);
 	}else if(ArmOpcode::isPSRTransferMRS(op)){
-		return new PSRTransferMRS(op, *this);
+		return std::make_unique<PSRTransferMRS>(op, *this);
 	}else if(ArmOpcode::isPSRTransferMSR(op)){
-		return new PSRTransferMSR(op, *this);
+		return std::make_unique<PSRTransferMSR>(op, *this);
 	}else if(ArmOpcode::isDataProcessing(op)){
-		return new DataProcessing(op, *this);
+		return std::make_unique<DataProcessing>(op, *this);
 	}
 
 	throw std::runtime_error("ERROR: Unrecognized instruction in decodeInstructionARM");
 	return nullptr;
 }
 
-OpCode* ARM7TDMI::decodeInstructionThumb(uint16_t op, uint32_t pc) {
+std::unique_ptr<OpCode> ARM7TDMI::decodeInstructionThumb(uint16_t op, uint32_t pc) {
 	if(ThumbOpCode::isSoftwareInterrupt(op)){
-		return new Thumb::SoftwareInterrupt(op, *this);
+		return std::make_unique<Thumb::SoftwareInterrupt>(op, *this);
 	}else if (ThumbOpCode::isAddOffsetToSP(op)) {
-		return new AddOffsetSP(op, *this);
+		return std::make_unique<AddOffsetSP>(op, *this);
 	}else if(ThumbOpCode::isPushPopRegisters(op)) {
-		return new PushPopRegisters(op, *this);
+		return std::make_unique<PushPopRegisters>(op, *this);
 	}else if(ThumbOpCode::isALUOperations(op)) {
-		return new ALUOperations(op, *this);
+		return std::make_unique<ALUOperations>(op, *this);
 	}else if(ThumbOpCode::isHiRegisterBranchExchange(op)) {
-		return new HiRegisterBranchExchange(op, *this);
+		return std::make_unique<HiRegisterBranchExchange>(op, *this);
 	}else if(ThumbOpCode::isPCRelativeLoad(op)) {
-		return new PCRelativeLoad(op, *this);
+		return std::make_unique<PCRelativeLoad>(op, *this);
 	}else if(ThumbOpCode::isLoadStoreRegisterOffset(op)) {
-		return new LoadStoreRegisterOffset(op, *this);
+		return std::make_unique<LoadStoreRegisterOffset>(op, *this);
 	}else if(ThumbOpCode::isLoadStoreSignExtended(op)) {
-		return new LoadStoreSignExtended(op, *this);
+		return std::make_unique<LoadStoreSignExtended>(op, *this);
 	}else if(ThumbOpCode::isUnconditionalBranch(op)) {
-		return new Thumb::UnconditionalBranch(op, pc, *this);
+		return std::make_unique<Thumb::UnconditionalBranch>(op, pc, *this);
 	}else if(ThumbOpCode::isAddSubtract(op)) {
-		return new AddSubtract(op, *this);
+		return std::make_unique<AddSubtract>(op, *this);
 	}else if(ThumbOpCode::isLoadStoreHalfword(op)) {
-		return new LoadStoreHalfword(op, *this);
+		return std::make_unique<LoadStoreHalfword>(op, *this);
 	}else if(ThumbOpCode::isSPLoadStore(op)) {
-		return new SPLoadStore(op, *this);
+		return std::make_unique<SPLoadStore>(op, *this);
 	}else if(ThumbOpCode::isLoadAddress(op)) {
-		return new LoadAddress(op, *this);
+		return std::make_unique<LoadAddress>(op, *this);
 	}else if(ThumbOpCode::isMultipleLoadStore(op)) {
-		return new MultipleLoadStore(op, *this);
+		return std::make_unique<MultipleLoadStore>(op, *this);
 	}else if(ThumbOpCode::isConditionalBranch(op)) {
-		return new Thumb::ConditionalBranch(op, pc, *this);
+		return std::make_unique<Thumb::ConditionalBranch>(op, pc, *this);
 	}else if(ThumbOpCode::isLongBranchWithLink(op)) {
-		return new Thumb::LongBranchWithLink(op, pc, *this);
+		return std::make_unique<Thumb::LongBranchWithLink>(op, pc, *this);
 	}else if(ThumbOpCode::isMoveShiftedRegister(op)) {
-		return new MoveShiftedRegister(op, *this);
+		return std::make_unique<MoveShiftedRegister>(op, *this);
 	}else if(ThumbOpCode::isMoveCompAddSubImm(op)) {
-		return new MoveCompAddSubImm(op, *this);
+		return std::make_unique<MoveCompAddSubImm>(op, *this);
 	}else if(ThumbOpCode::isLoadStoreImmOffset(op)) {
-		return new LoadStoreImmOffset(op, *this);
+		return std::make_unique<LoadStoreImmOffset>(op, *this);
 	}
 
 	std::runtime_error("ERROR: Unrecognized instruction in decodeInstructionARM");
@@ -486,15 +484,14 @@ void ARM7TDMI::executeNextInstruction(){
 				insExecuteSet = false;
 			}
 
-			delete opExecute;
-			opExecute = nullptr;
+			opExecute.reset();
 		}
 
 
 		// decode
 		if(insFetchSet){
-			if(opExecute != nullptr)
-				delete opExecute;
+			if(opExecute.get() != nullptr)
+				opExecute.reset();
 			opExecute = decodeInstruction(insDecode, fetchPC);
 			//opExecute->decode();
 			insDecodeSet = true;

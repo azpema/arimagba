@@ -6,7 +6,7 @@
 
 class BIOS : public GenericMemory<BIOS_SIZE>{
     public:
-        BIOS(std::string filePath);      
+        BIOS(const std::string &filePath);      
 };
 
 #endif

@@ -19,7 +19,7 @@ class ARM7TDMI {
 		ARM7TDMI(MemoryManager *memoryManager);
 		~ARM7TDMI();
 		
-		OpCode* decodeInstruction(uint32_t op, uint32_t pc);
+		std::unique_ptr<OpCode> decodeInstruction(uint32_t op, uint32_t pc);
 
 		PSR& getCPSR();
 		PSR& getSPSR();
@@ -103,13 +103,13 @@ class ARM7TDMI {
 
 		ALU alu;
 		MemoryManager *mem;
-		BarrelShifter *barrelShifter;
-		ExceptionHandler *exceptionHandler;
+		std::unique_ptr<BarrelShifter> barrelShifter;
+		std::unique_ptr<ExceptionHandler> exceptionHandler;
 		const uint16_t REG_PC = 15;
 
 		// Pipeline
 		uint32_t insFetch, insDecode;
-		OpCode *opExecute = nullptr;
+		std::unique_ptr<OpCode> opExecute;
 		bool insFetchSet = false;
 		bool insDecodeSet = false;
 		bool insExecuteSet = false;
@@ -119,8 +119,8 @@ class ARM7TDMI {
 		PSR& getCorrespondingSPSR();
 		uint32_t getSPSRval();
 
-		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
-		OpCode* decodeInstructionThumb(uint16_t op, uint32_t pc);
+		std::unique_ptr<OpCode> decodeInstructionARM(uint32_t op, uint32_t pc);
+		std::unique_ptr<OpCode> decodeInstructionThumb(uint16_t op, uint32_t pc);
 };	
 
 #endif

@@ -1,7 +1,7 @@
 #include "bios.hpp"
 #include <fstream>
 
-BIOS::BIOS(std::string filePath) {
+BIOS::BIOS(const std::string &filePath) {
     std::cerr << "TODO Set proper initial values at EWRAM" << std::endl;
     for(size_t i=0; i<BIOS_SIZE; i++){
         mem[i] = 0x00;

@@ -19,7 +19,7 @@ class SingleDataTransfer : public ArmOpcode {
 
     private:
         uint8_t I, P, U, B, W, L, Rn, Rd;
-        Operand *offsetField;
+        std::unique_ptr<Operand> offsetField;
         bool forcePcBit1To0;
 
         const static uint32_t I_MASK = 0b00000010000000000000000000000000; 

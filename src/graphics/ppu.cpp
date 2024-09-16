@@ -1,7 +1,7 @@
 #include "ppu.hpp"
 #include "../memory/memory_manager.hpp"
 
-PPU::PPU(std::string title, MemoryManager *memManager, ExceptionHandler &ex){
+PPU::PPU(const std::string &title, MemoryManager *memManager, ExceptionHandler &ex){
     exceptionHandler = ex;
     mem = memManager;
     SDL_Init(SDL_INIT_VIDEO);

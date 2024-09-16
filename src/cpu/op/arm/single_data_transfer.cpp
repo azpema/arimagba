@@ -18,9 +18,9 @@ SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::A
     uint16_t off = Utils::getRegBits(op, OFFSET_MASK, OFFSET_SHIFT);
 
     if(I == 0){
-        offsetField = new Imm(off);
+        offsetField = std::make_unique<Imm>(off);
     }else if(I == 1){
-        offsetField = new ShiftRm(off);
+        offsetField = std::make_unique<ShiftRm>(off);
     }
 
     forcePcBit1To0 = false;
@@ -41,9 +41,9 @@ SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t 
 
 
     if(I == 0){
-        this->offsetField = new Imm(offset);
+        this->offsetField = std::make_unique<Imm>(offset);
     }else if(I == 1){
-        this->offsetField = new ShiftRm(offset);
+        this->offsetField = std::make_unique<ShiftRm>(offset);
     }
 
     uint32_t raw = Condition::AL << COND_FIELD_SHIFT;
@@ -63,7 +63,6 @@ SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t 
 
 
 SingleDataTransfer::~SingleDataTransfer(){
-    delete offsetField;
 }
 
 std::string SingleDataTransfer::getUFlagMnemonic(){
@@ -88,15 +87,25 @@ std::string SingleDataTransfer::toString(){
     std::string writeBack = getWFlagMnemonic();
     std::string address = "";
 
+    Imm* imm;
+    ShiftRm* shiftRm;
+
+    if(I == 0){
+        imm= static_cast<Imm*>(offsetField.get());
+    }else if(I == 1){
+        shiftRm= static_cast<ShiftRm*>(offsetField.get());
+    }else{
+        throw new std::runtime_error("Error: invalid I value for SingleDataTransfer::toString");
+    }
+
+
     // Preindexing; add offset before transfer
     if(P == 1){
         // Offset is an immediate value
         if(I == 0){
-            Imm* imm = static_cast<Imm*>(offsetField);
             address = "[" + OpCode::getRegMnemonic(Rn) + "," + getUFlagMnemonic() + Utils::toHexString(imm->getMnemonicVal()) + "]" + writeBack;
         // Offset is a register
         }else if(I == 1){
-            ShiftRm* shiftRm = static_cast<ShiftRm*>(offsetField);
             address += "[" + OpCode::getRegMnemonic(Rn) + "," + getUFlagMnemonic() + OpCode::getRegMnemonic(shiftRm->getRm()) + "," + \
                        shiftRm->getShiftTypeMnemonic() + " #" + Utils::toHexString(shiftRm->getShiftAmount()) + "]" + writeBack;
         }else{
@@ -108,10 +117,8 @@ std::string SingleDataTransfer::toString(){
     }else if(P == 0){
         address = "[" + OpCode::getRegMnemonic(Rn) + "],";
         if(I == 0){
-            Imm* imm = static_cast<Imm*>(offsetField);
             address += getUFlagMnemonic() + Utils::toHexString(imm->getMnemonicVal());
         }else if(I == 1){
-            ShiftRm* shiftRm = static_cast<ShiftRm*>(offsetField);
             address += getUFlagMnemonic() + OpCode::getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + \
                        Utils::toHexString(shiftRm->getShiftAmount());
         }else{

@@ -17,9 +17,9 @@ DataProcessing::DataProcessing(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode
     rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
 
     if(i == 0){
-        operand2 = new ShiftRm(Utils::getRegBits(op, OPERAND2_MASK, OPERAND2_SHIFT));
+        operand2 = std::make_unique<ShiftRm>(Utils::getRegBits(op, OPERAND2_MASK, OPERAND2_SHIFT));
     }else if (i == 1){
-        operand2 = new RotateImm(Utils::getRegBits(op, OPERAND2_MASK, OPERAND2_SHIFT));
+        operand2 = std::make_unique<RotateImm>(Utils::getRegBits(op, OPERAND2_MASK, OPERAND2_SHIFT));
     }else{
         throw std::runtime_error("ERROR: Invalid i value in DataProcessing::DataProcessing");
     }
@@ -39,9 +39,9 @@ DataProcessing::DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn,
     this->op1Val = op1Val;
 
     if(i == 0){
-        this->operand2 = new ShiftRm(operand2);
+        this->operand2 = std::make_unique<ShiftRm>(operand2);
     }else if (i == 1){
-        this->operand2 = new RotateImm(operand2);
+        this->operand2 = std::make_unique<RotateImm>(operand2);
     }else{
         throw std::runtime_error("ERROR: Invalid i value in DataProcessing::DataProcessing");
     }
@@ -59,7 +59,6 @@ DataProcessing::DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn,
 
 
 DataProcessing::~DataProcessing() {
-    delete operand2;
 }   
 
 /*
@@ -125,7 +124,7 @@ uint32_t DataProcessing::getOperand2Rm(){
 
 std::string DataProcessing::getOperand2Mnemonic(){
     if(i == 0){
-        ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
+        ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2.get());
         std::string res = OpCode::getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic();
         if(shiftRm->getType() == ShiftRm::Type::AMOUNT)
             res += " #" + Utils::toHexString(shiftRm->getShiftAmount());
@@ -136,7 +135,7 @@ std::string DataProcessing::getOperand2Mnemonic(){
         }
         return res;
     }else if(i == 1){
-        RotateImm* rotateImm = static_cast<RotateImm*>(operand2);
+        RotateImm* rotateImm = static_cast<RotateImm*>(operand2.get());
         return "#" + Utils::toHexString(rotateImm->getMnemonicVal()); 
     }else{
         return "ERROR getOperand2Mnemonic Data_processing";
@@ -248,7 +247,7 @@ void DataProcessing::doExecute(){
     op2 = operand2->getOperandVal(cpu);
 
     if(i == 0){
-        ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
+        ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2.get());
         if(shiftRm->getRm() == 15){
             if(shiftRm->getType() == ShiftRm::Type::AMOUNT){
                 // op2 += 8;
@@ -351,13 +350,13 @@ void DataProcessing::doExecute(){
             /*the C flag will be set to the carry out from the barrel shifter
              (or preserved when the shift operation is LSL #0)*/
             if(i == 0){
-                ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2);
+                ShiftRm* shiftRm = static_cast<ShiftRm*>(operand2.get());
                 if(!((shiftRm->getShiftAmount() == 0 && shiftRm->getShiftType() == 0))){
                     //cpu.getCPSR().setCFlag(cpu.getBarrelShifter().getC());
                     cpu.getCPSR().setCFlag(shiftRm->getC());
                 }
             }else if(i == 1){
-                RotateImm* rotateImm = static_cast<RotateImm*>(operand2);
+                RotateImm* rotateImm = static_cast<RotateImm*>(operand2.get());
                 if(rotateImm->getRorShiftAmount() != 0)
                     cpu.getCPSR().setCFlag(rotateImm->getC());
             }

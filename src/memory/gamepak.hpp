@@ -4,10 +4,11 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <memory>
 
 class GamePak {
 	public:
-		GamePak(std::string filePath);
+		GamePak(const std::string &filePath);
 		~GamePak();
 		uint32_t read(uint32_t addr, uint8_t bytes);
 
@@ -32,7 +33,7 @@ class GamePak {
 		uint32_t fileSize;
 		std::ifstream fileStream;
 
-		uint16_t *gameMem;
+		std::unique_ptr<uint16_t[]> gameMem;
 
 		const static int ENTRY_POINT_OFF = 0x000;
 		const static int ENTRY_POINT_SIZE = 4;

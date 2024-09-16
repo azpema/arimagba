@@ -26,7 +26,7 @@ class PSRTransferMSR : public ArmOpcode {
         uint16_t psr;
         uint16_t I;
         uint8_t c;
-        Operand* sourceOperand;
+        std::unique_ptr<Operand> sourceOperand;
 
         const static uint32_t PSR_MASK = 0b00000000010000000000000000000000;
         const static uint32_t PSR_SHIFT = 22; 
