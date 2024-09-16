@@ -23,11 +23,15 @@ uint32_t BarrelShifter::lsl(ARM7TDMI &cpu, uint32_t val, uint32_t n){
 // will convert LSR #0 (and ASR #0 and ROR #0) into LSL #0, and allow LSR #32 to be
 // specified.
 uint32_t BarrelShifter::lsr(uint32_t val, uint32_t n){
-    if(n == 0)
-        n = 32;
-
+    uint32_t ret = 0;
+    if(n == 0 || n == 32){
+        ret = 0;
+    }else{
+        ret = val >> n;
+    }
+        
     c = Utils::getRegSingleBit(val, n-1);
-    return val >> n;
+    return ret;
 }
 
 uint32_t BarrelShifter::asr(uint32_t val, uint32_t n){
