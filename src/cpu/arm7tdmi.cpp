@@ -248,7 +248,7 @@ int64_t ARM7TDMI::fetchInstructionArm(uint32_t offset){
 }
 
 uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
-	if(n < 0 || n > 15){
+	if(n > 15){
 		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
 		return 0;
 	}
@@ -266,31 +266,31 @@ uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
 			return reg[n];
 			break;
 		case PSR::Mode::FIQ:
-			if(n>=0 && n<=7)
+			if(n<=7)
 				return reg[n];
 			else if(n>=8 && n<=14)
 				return r8_fiq[n - 8];
 			break;
 		case PSR::Mode::Supervisor:
-			if(n>=0 && n<=12)
+			if(n<=12)
 				return reg[n];
 			else if(n>=13 && n<=14)
 				return r13_svc[n - 13];
 			break;
 		case PSR::Mode::Abort:
-			if(n>=0 && n<=12)
+			if(n<=12)
 				return reg[n];
 			else if(n>=13 && n<=14)
 				return r13_abt[n - 13];
 			break;
 		case PSR::Mode::IRQ:
-			if(n>=0 && n<=12)
+			if(n<=12)
 				return reg[n];
 			else if(n>=13 && n<=14)
 				return r13_irq[n - 13];
 			break;
 		case PSR::Mode::Undefined:
-			if(n>=0 && n<=12)
+			if(n<=12)
 				return reg[n];
 			else if(n>=13 && n<=14)
 				return r13_und[n - 13];
@@ -309,7 +309,7 @@ uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
 }
 
 void ARM7TDMI::setReg(uint16_t n, uint32_t val, bool userBank){
-	if(n < 0 || n > 15){
+	if(n > 15){
 		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
 		return;
 	}
@@ -325,31 +325,31 @@ void ARM7TDMI::setReg(uint16_t n, uint32_t val, bool userBank){
 				reg[n] = val;
 				break;
 			case PSR::Mode::FIQ:
-				if(n>=0 && n<=7)
+				if(n<=7)
 					reg[n] = val;
 				else if(n>=8 && n<=14)
 					r8_fiq[n - 8] = val;
 				break;
 			case PSR::Mode::Supervisor:
-				if(n>=0 && n<=12)
+				if(n<=12)
 					reg[n] = val;
 				else if(n>=13 && n<=14)
 					r13_svc[n - 13] = val;
 				break;
 			case PSR::Mode::Abort:
-				if(n>=0 && n<=12)
+				if(n<=12)
 					reg[n] = val;
 				else if(n>=13 && n<=14)
 					r13_abt[n - 13] = val;
 				break;
 			case PSR::Mode::IRQ:
-				if(n>=0 && n<=12)
+				if(n<=12)
 					reg[n] = val;
 				else if(n>=13 && n<=14)
 					r13_irq[n - 13] = val;
 				break;
 			case PSR::Mode::Undefined:
-				if(n>=0 && n<=12)
+				if(n<=12)
 					reg[n] = val;
 				else if(n>=13 && n<=14)
 					r13_und[n - 13] = val;
@@ -508,9 +508,6 @@ void ARM7TDMI::executeNextInstruction(){
 			std::cout << "aa" << std::endl;
 		}*/
 
-		if(fetchPC == 0x08001344){
-			std::cout << "aa" << std::endl;
-		}
 
 		if(insFetch == 0x45d8){
 			std::cout << "aa" << std::endl;
