@@ -1,7 +1,8 @@
 #include "ppu.hpp"
 #include "../memory/memory_manager.hpp"
 
-PPU::PPU(std::string title, MemoryManager *memManager){
+PPU::PPU(std::string title, MemoryManager *memManager, ExceptionHandler &ex){
+    exceptionHandler = ex;
     mem = memManager;
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -129,7 +130,7 @@ void PPU::renderScanlineMode4(){
     // Get full palette
     uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(mem->getPaletteRAM());
     // Get VRAM corresponding to scanline
-    uint8_t* VRAM = mem->getRawVRAM() + SCREEN_WIDTH*(*VCOUNT);
+    uint8_t* VRAM = mem->getRawVRAM() + getPageFlipOffset() + SCREEN_WIDTH*(*VCOUNT);
     // Copy your pixel data into the texture's pixel data
 
     // TODO: Improve mode4 rendering; too slow!"
@@ -168,3 +169,10 @@ uint8_t PPU::getDCNT_MODE(){
     return Utils::getRegBits(*DISPCNT, DCNT_MODE_MASK, DCNT_MODE_SHIFT);
 }
 
+uint8_t PPU::getDCNT_PAGE(){
+    return Utils::getRegBits(*DISPCNT, DCNT_PAGE_MASK, DCNT_PAGE_SHIFT);
+}
+
+uint32_t PPU::getPageFlipOffset(){
+    return getDCNT_PAGE() ? PAGE_FLIP_SECOND_OFFSET : 0;
+}

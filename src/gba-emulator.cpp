@@ -13,10 +13,7 @@ int main(int argc, char** argv)
 {
     std::cout << "Current path is " << std::filesystem::current_path() << '\n';
 
-	//std::string gamePath = "/home/markel/Descargas/libtonc-examples/basic/key_demo/key_demo.gba";
-    //std::string gamePath = "/home/markel/Descargas/libtonc-examples/basic/m3_demo/m3_demo.gba";
-	//std::string gamePath = "../files/beeg.gba";
-	std::string gamePath = "../files/armwrestler-gba-fixed.gba";
+	std::string gamePath = "../files/arm.gba";
 	if(argc >= 2){
 		gamePath = std::string(argv[1]);
 	}
@@ -32,9 +29,9 @@ int main(int argc, char** argv)
 	IOregisters io;
 	MemoryManager mem(bios, gamepak, vram, ewram, iwram, sram, oam, paletteram, io);
 
-	PPU ppu("GBA", &mem);
 	Keys keys(&mem);
-	ARM7TDMI cpu(&mem); 
+	ARM7TDMI cpu(&mem);
+	PPU ppu("GBA", &mem, cpu.getExceptionHandler());
 	cpu.setPC(0x08000000);
 	
 	bool run = true;

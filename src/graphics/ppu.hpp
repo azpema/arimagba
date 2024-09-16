@@ -5,11 +5,12 @@
 #include <string>
 #include <SDL2/SDL.h>
 
+#include "../cpu/arm7tdmi.hpp"
 #include "../memory/memory_manager.hpp"
 
 class PPU {
     public:
-        PPU(std::string title, MemoryManager *memManager);
+        PPU(std::string title, MemoryManager *memManager, ExceptionHandler &ex);
         ~PPU();
         void renderScanline();
         
@@ -21,9 +22,11 @@ class PPU {
         MemoryManager *mem;
         SDL_Window *window = nullptr;
         SDL_Renderer *renderer = nullptr;
+        ExceptionHandler exceptionHandler;
 
         const static uint32_t SCREEN_WIDTH = 240;
         const static uint32_t SCREEN_HEIGHT = 160;
+        const static uint32_t PAGE_FLIP_SECOND_OFFSET = 0xA000;
         
         uint8_t* io;
 
@@ -36,12 +39,9 @@ class PPU {
         const static uint8_t VCOUNT_START_VBLANK = 160;
         const static uint8_t VCOUNT_END_VBLANK = 227;
 
-        const static uint16_t DCNT_MODE_MASK = 0b0000000000000111;
-        const static uint16_t DCNT_MODE_SHIFT = 0; 
-
         // ***************** DISPSTAT ***************** 
         /*
-            Bit   Name  Expl.
+            Bit   Name              Expl.
             0     DSTAT_IN_VBL      V-Blank flag   (Read only) (1=VBlank) (set in line 160..226; not 227)
             1     DSTAT_IN_HBL      H-Blank flag   (Read only) (1=HBlank) (toggled in all lines, 0..227)
             2     DSTAT_IN_VCT      V-Counter flag (Read only) (1=Match)  (set in selected line)     (R)
@@ -52,6 +52,7 @@ class PPU {
             7                       Not used (0) / NDS: MSB of V-Vcount Setting (LYC.Bit8) (0..262)(R/W)
             8-15  DSTAT_VCT#        V-Count Setting (LYC)      (0..227)                            (R/W)
         */
+
         // VBlank status
         const static uint16_t DSTAT_IN_VBL_MASK = 0b0000000000000001;
         const static uint16_t DSTAT_IN_VBL_SHIFT = 0;
@@ -60,11 +61,40 @@ class PPU {
         const static uint16_t DSTAT_IN_HBL_MASK = 0b0000000000000010;
         const static uint16_t DSTAT_IN_HBL_SHIFT = 1;
 
+       // ***************** DISPCNT ***************** 
+       /*
+            Bit   Name             Expl.
+            0-2	  DCNT_MODEx.      Sets video mode. 0, 1, 2 are tiled modes; 3, 4, 5 are bitmap modes.
+                  DCNT_MODE#	   
+            3     DCNT_GB	       Is set if cartridge is a GBC game. Read-only.
+            4	  DCNT_PAGE	       Page select. Modes 4 and 5 can use page flipping for smoother animation.
+                                   This bit selects the displayed page (and allowing the other one to be drawn on without artifacts).
+            5	  DCNT_OAM_HBL	   Allows access to OAM in an HBlank. OAM is normally locked in VDraw.
+                                   Will reduce the amount of sprite pixels rendered per line.
+            6	  DCNT_OBJ_1D	   Object mapping mode. Tile memory can be seen as a 32x32 matrix of tiles.
+                                   When sprites are composed of multiple tiles high, this bit tells whether the next row of tiles lies beneath the previous,
+                                   in correspondence with the matrix structure (2D mapping, OM=0), or right next to it, so that memory is arranged as an array of sprites (1D mapping OM=1).
+            7	  DCNT_BLANK	   Force a screen blank.
+            8-B	  DCNT_BGx,        Enables rendering of the corresponding background and sprites.
+                  DCNT_OBJ.
+                  DCNT_LAYER#	
+            D-F	  DCNT_WINx,       Enables the use of windows 0, 1 and Object window, respectively.
+                                   Windows can be used to mask out certain areas (like the lamp did in Zelda:LTTP).
+                  DCNT_WINOBJ	
+       */
+
+        const static uint16_t DCNT_MODE_MASK = 0b0000000000000111;
+        const static uint16_t DCNT_MODE_SHIFT = 0;
+
+        const static uint16_t DCNT_PAGE_MASK = 0b0000000000010000;
+        const static uint16_t DCNT_PAGE_SHIFT = 4;
+
         void setDCNT_MODE(uint8_t mode);
         uint8_t getDCNT_MODE();
         void setVBlankFlag(bool val);
         void setHBlankFlag(bool val);
-
+        uint8_t getDCNT_PAGE();
+        uint32_t getPageFlipOffset();
         /*
         4000000h  2    R/W  DISPCNT   LCD Control
         4000002h  2    R/W  -         Undocumented - Green Swap
