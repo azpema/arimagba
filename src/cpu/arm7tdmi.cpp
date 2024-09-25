@@ -67,7 +67,7 @@ ARM7TDMI::ARM7TDMI(MemoryManager *memManager) {
 	r13_svc[0] = 0x03007FE0;
 
 	barrelShifter = std::make_unique<BarrelShifter>();
-	exceptionHandler = std::make_unique<ExceptionHandler>();
+	exceptionHandler = std::make_unique<ExceptionHandler>(*this);
 
 	spsr_fiq.setValue(0xF00000FF);
 }
@@ -463,12 +463,21 @@ uint32_t ARM7TDMI::fetchNextInstruction(){
 	return ins;
 }
 
-void ARM7TDMI::executeNextInstruction(){
+uint32_t ARM7TDMI::executeNextInstruction(){
+	uint32_t cpuCycles = 0;
+
+	// Flush for IRQ
+		if(getMustFlushPipeline()){
+			insFetchSet = false;
+			insDecodeSet = false;
+			setMustFlushPipeline(false);
+		}
 		// execute
 		if(insDecodeSet){
 			// print status
 			//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
 			insExecuteSet = opExecute->execute();
+			cpuCycles = opExecute->cyclesUsed();
 			//printStatus();
 			//std::cout << "<<<" << std::endl;
 
@@ -501,15 +510,17 @@ void ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-		/*if(fetchPC == 0x080026FA){
-			std::cout << "aa" << std::endl;
-		}*/
-
-
-		if(insFetch == 0x45d8){
-			std::cout << "aa" << std::endl;
+		if(fetchPC == 0x080003a0){
+			//std::cout << "HEMEN HEMEN HEMEN" << std::endl;
 		}
+
+		if(fetchPC == 0x080003b4){
+			//std::cout << "HEMEN HEMEN HEMEN" << std::endl;
+		}
+
 
 		insFetchSet = true;
 		insDecode = insFetch;
+
+		return cpuCycles;
 }

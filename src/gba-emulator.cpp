@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 {
     std::cout << "Current path is " << std::filesystem::current_path() << '\n';
 
-	std::string gamePath = "../files/arm.gba";
+	std::string gamePath = "../files/retAddr.gba";
 	if(argc >= 2){
 		gamePath = std::string(argv[1]);
 	}
@@ -31,16 +31,17 @@ int main(int argc, char** argv)
 
 	Keys keys(&mem);
 	ARM7TDMI cpu(&mem);
-	PPU ppu("GBA", &mem, cpu.getExceptionHandler());
+	PPU ppu("GBA", cpu, &mem);
 	cpu.setPC(0x08000000);
 	
 	bool run = true;
 
-	int i = 1;
+	uint32_t cpuCycles = 0;
+	uint64_t totalCpuCycles = 0;
 
 	while(run){
 		// Handle events
-		if(i % 100 == 0){
+		if(cpuCycles % 100 == 0){
 			SDL_Event e;
 			while (SDL_PollEvent(&e)) {
 				switch(e.type){
@@ -58,12 +59,14 @@ int main(int argc, char** argv)
 				}
 			}
 		}
-
-		cpu.executeNextInstruction();
-		i++;
+		uint32_t lastCpuCycles = cpu.executeNextInstruction();
+		cpuCycles += lastCpuCycles;
+		totalCpuCycles += lastCpuCycles;
 		// Render scanline if necessary cycles have been consumed
-		if(i % 1000 == 0)
+		if(cpuCycles >= 1006){ // 1006?
 			ppu.renderScanline();
+			cpuCycles = 0;
+		}
 
 	}
 

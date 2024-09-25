@@ -35,7 +35,7 @@ class ARM7TDMI {
 		int64_t fetchInstructionThumb(uint32_t offset);
 		int64_t fetchInstructionArm(uint32_t offset);
 		uint32_t fetchNextInstruction();
-		void executeNextInstruction();
+		uint32_t executeNextInstruction();
 		bool getMustFlushPipeline() const;
 		void setMustFlushPipeline(bool val);
 		void printStatus();

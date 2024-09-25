@@ -1,8 +1,7 @@
 #include "ppu.hpp"
 #include "../memory/memory_manager.hpp"
 
-PPU::PPU(const std::string &title, MemoryManager *memManager, ExceptionHandler &ex){
-    exceptionHandler = ex;
+PPU::PPU(const std::string &title, ARM7TDMI &cpu, MemoryManager *memManager): cpu(cpu) {
     mem = memManager;
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -53,7 +52,8 @@ void PPU::renderScanline(){
                 renderScanlineMode3();
                 break;
             default:
-                throw std::runtime_error("ERROR: Unsupported PPU Mode: " + std::to_string(dcntMode));
+                renderScanlineMode3();
+                //throw std::runtime_error("ERROR: Unsupported PPU Mode: " + std::to_string(dcntMode));
         }
     }
 
@@ -64,11 +64,19 @@ void PPU::renderScanline(){
     else if(*VCOUNT == VCOUNT_END_VBLANK){
         setVBlankFlag(false);
     }
-    else if(*VCOUNT == 228)
+    else if(*VCOUNT == 228){
         *VCOUNT = 0;
-
+        // TODO check if interrupt is enabled!!!!
+        if(vCountIrqEnabled()){
+            cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::IRQ);
+        }
+    }
+        
     //TODO REMOVE
     //setHBlankFlag(true);
+    //if(hCountIrqEnabled()){
+    //    cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::IRQ);
+    //}
 }
 
 void PPU::setVBlankFlag(bool val){
@@ -175,4 +183,12 @@ uint8_t PPU::getDCNT_PAGE(){
 
 uint32_t PPU::getPageFlipOffset(){
     return getDCNT_PAGE() ? PAGE_FLIP_SECOND_OFFSET : 0;
+}
+
+bool PPU::vCountIrqEnabled(){
+    return Utils::getRegBits(*DISPSTAT, DSTAT_VBL_IRQ_MASK, DSTAT_VBL_IRQ_SHIFT);
+}
+
+bool PPU::hCountIrqEnabled(){
+    return Utils::getRegBits(*DISPSTAT, DSTAT_HBL_IRQ_MASK, DSTAT_HBL_IRQ_SHIFT);
 }

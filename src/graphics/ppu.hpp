@@ -10,7 +10,7 @@
 
 class PPU {
     public:
-        PPU(const std::string &title, MemoryManager *memManager, ExceptionHandler &ex);
+        PPU(const std::string &title, ARM7TDMI &cpu, MemoryManager *memManager);
         ~PPU();
         void renderScanline();
         
@@ -19,10 +19,10 @@ class PPU {
         void renderScanlineMode3();
         void renderScanlineMode4();
 
+        ARM7TDMI &cpu;
         MemoryManager *mem;
         SDL_Window *window = nullptr;
         SDL_Renderer *renderer = nullptr;
-        ExceptionHandler exceptionHandler;
 
         const static uint32_t SCREEN_WIDTH = 240;
         const static uint32_t SCREEN_HEIGHT = 160;
@@ -61,6 +61,14 @@ class PPU {
         const static uint16_t DSTAT_IN_HBL_MASK = 0b0000000000000010;
         const static uint16_t DSTAT_IN_HBL_SHIFT = 1;
 
+        // VBlank IRQ
+        const static uint16_t DSTAT_VBL_IRQ_MASK = 0b0000000000001000;
+        const static uint16_t DSTAT_VBL_IRQ_SHIFT = 3;
+
+        // HBlank IRQ
+        const static uint16_t DSTAT_HBL_IRQ_MASK = 0b0000000000010000;
+        const static uint16_t DSTAT_HBL_IRQ_SHIFT = 4;
+
        // ***************** DISPCNT ***************** 
        /*
             Bit   Name             Expl.
@@ -95,6 +103,9 @@ class PPU {
         void setHBlankFlag(bool val);
         uint8_t getDCNT_PAGE();
         uint32_t getPageFlipOffset();
+        bool vCountIrqEnabled();
+        bool hCountIrqEnabled();
+
         /*
         4000000h  2    R/W  DISPCNT   LCD Control
         4000002h  2    R/W  -         Undocumented - Green Swap

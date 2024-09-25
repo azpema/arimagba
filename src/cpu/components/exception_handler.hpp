@@ -10,12 +10,22 @@ class ARM7TDMI;
 
 class ExceptionHandler {
     public:
-        ExceptionHandler();
+        ExceptionHandler(ARM7TDMI &cpu);
         enum class Exception {RESET, UNDEF, SWI, PREFETCH_ABORT, DATA_ABORT, ADDRESS_EXCEED, FIQ, IRQ};
 
-        void raiseException(ARM7TDMI &cpu, Exception ex);
+        void raiseException(Exception ex);
 
     private:
+        bool isMasterInterruptEnabled();
+        bool isSpecificInterruptEnabled(Exception ex);
+
+        ARM7TDMI &cpu;
+        const static uint32_t REG_IE_ADDR = 0x04000200;
+        const static uint32_t REG_IE_VBLANK_OFFSET = 0x0;
+
+        const static uint32_t REG_IF_ADDR = 0x04000202;
+        const static uint32_t REG_IME_ADDR = 0x04000208;
+
         std::unordered_map<Exception, PSR::Mode> except2Mode = {
             {Exception::RESET,              PSR::Supervisor},
             {Exception::UNDEF,              PSR::Undefined},
@@ -23,8 +33,8 @@ class ExceptionHandler {
             {Exception::PREFETCH_ABORT,     PSR::Abort},
             {Exception::DATA_ABORT,         PSR::Abort},
             {Exception::ADDRESS_EXCEED,     PSR::Supervisor},
-            {Exception::FIQ,                PSR::IRQ},
-            {Exception::IRQ,                PSR::FIQ},
+            {Exception::FIQ,                PSR::FIQ},
+            {Exception::IRQ,                PSR::IRQ}
         };
 
         std::unordered_map<Exception, uint32_t> exceptionVector = {
@@ -34,9 +44,9 @@ class ExceptionHandler {
             {Exception::PREFETCH_ABORT,    0x0000000C},
             {Exception::DATA_ABORT,        0x00000010},
             {Exception::ADDRESS_EXCEED,    0x00000014},
-            {Exception::FIQ,               0x00000018},    // GBA does not use this
-            {Exception::IRQ,               0x00000018},
-        };
+            {Exception::IRQ,               0x00000018},    
+            {Exception::FIQ,               0x0000001C}  // GBA does not use this
+        };   
 };
 
 #endif
