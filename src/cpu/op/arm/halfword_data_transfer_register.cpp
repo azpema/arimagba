@@ -28,7 +28,7 @@ std::string HalfwordDataTransferRegister::toString(){
 
 // Depends on load or store
 uint32_t HalfwordDataTransferRegister::cyclesUsed() const {
-    std::cerr << "TODO: HalfwordDataTransferRegister::cyclesUsed" << std::endl;
+    //std::cerr << "TODO: HalfwordDataTransferRegister::cyclesUsed" << std::endl;
     return 1;
 }
 

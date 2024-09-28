@@ -241,6 +241,6 @@ void BlockDataTransfer::doExecute(){
 }
 
 uint32_t BlockDataTransfer::cyclesUsed() const {
-    std::cerr << "TODO: BlockDataTransfer::cyclesUsed" << std::endl;
+    //std::cerr << "TODO: BlockDataTransfer::cyclesUsed" << std::endl;
     return 1;
 }

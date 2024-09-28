@@ -45,7 +45,7 @@ std::string HalfwordDataTransferOffset::toString(){
 
 // Depends on load or store
 uint32_t HalfwordDataTransferOffset::cyclesUsed() const {
-    std::cerr << "TODO: HalfwordDataTransferOffset::cyclesUsed" << std::endl;
+    //std::cerr << "TODO: HalfwordDataTransferOffset::cyclesUsed" << std::endl;
     return 1;
 }
 

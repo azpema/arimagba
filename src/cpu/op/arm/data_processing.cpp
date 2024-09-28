@@ -144,7 +144,7 @@ std::string DataProcessing::getOperand2Mnemonic(){
 
 //   ALU, 1S, +1S+1N if R15 loaded, +1I if SHIFT(Rs)
 uint32_t DataProcessing::cyclesUsed() const {
-    std::cerr << "TODO: DataProcessing::cyclesUsed" << std::endl;
+    //std::cerr << "TODO: DataProcessing::cyclesUsed" << std::endl;
     return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE;
 }
 
