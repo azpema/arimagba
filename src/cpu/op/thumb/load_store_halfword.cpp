@@ -1,7 +1,7 @@
 #include "load_store_halfword.hpp"
 #include "../arm/halfword_data_transfer_offset.hpp"
 
-const std::string LoadStoreHalfword::op2Mnemonic[2];
+const std::string LoadStoreHalfword::op2Mnemonic[2] = {"strh", "ldrh"};
 
 LoadStoreHalfword::LoadStoreHalfword(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
