@@ -15,6 +15,7 @@ PPU::PPU(const std::string &title, ARM7TDMI &cpu, MemoryManager *memManager): cp
     BG0VOFS = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG0VOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
 
     setDCNT_MODE(3);
+    *VCOUNT = VCOUNT_INITIAL_VALUE;
 }
 
 PPU::~PPU(){

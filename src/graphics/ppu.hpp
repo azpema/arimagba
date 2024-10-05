@@ -189,6 +189,7 @@ class PPU {
         // ***************** VCOUNT ***************** 
         const static uint8_t VCOUNT_START_VBLANK = 160;
         const static uint8_t VCOUNT_END_VBLANK = 227;
+        const static uint32_t VCOUNT_INITIAL_VALUE = 0x7e;
 
         void setDCNT_MODE(uint8_t mode);
         uint8_t getDCNT_MODE() const;
