@@ -60,7 +60,7 @@ ARM7TDMI::ARM7TDMI(MemoryManager *memManager) {
 	}
 
 	// ???
-	//reg[0] = 0x00000CA5;
+	reg[0] = 0x00000CA5;
 	reg[13] = 0x03007F00;
 	reg[14] = 0x08000000;
 	r13_irq[0] = 0x03007FA0;
@@ -510,17 +510,13 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-		if(fetchPC == 0x080003a0){
-			//std::cout << "HEMEN HEMEN HEMEN" << std::endl;
-		}
-
-		if(fetchPC == 0x080003b4){
-			//std::cout << "HEMEN HEMEN HEMEN" << std::endl;
-		}
-
 
 		insFetchSet = true;
 		insDecode = insFetch;
+
+		if(insDecodeSet){
+			exceptionHandler->handleException();
+		}
 
 		return cpuCycles;
 }

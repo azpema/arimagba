@@ -16,7 +16,7 @@ void SoftwareInterrupt::doDecode(){
 }
 
 void SoftwareInterrupt::doExecute(){
-    cpu.getExceptionHandler().raiseException(cpu, ExceptionHandler::Exception::SWI);
+    cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::SWI);
 }
 
 uint32_t SoftwareInterrupt::cyclesUsed() const {
