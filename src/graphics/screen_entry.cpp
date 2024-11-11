@@ -8,7 +8,7 @@ ScreenEntry::ScreenEntry(uint16_t rawVal){
     paletteBank = Utils::getRegBits(rawVal, PALETTE_BANK_MASK, PALETTE_BANK_SHIFT);
 }
 
-uint8_t ScreenEntry::getTileIndex() const{
+uint16_t ScreenEntry::getTileIndex() const{
     return tileIndex;
 }
         

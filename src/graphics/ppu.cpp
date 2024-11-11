@@ -31,6 +31,12 @@ uint8_t *PPU::getVRAM() const{
 }
 
 void PPU::renderScanline(){
+    if(vCountIrqEnabled() && getVcountTrigger() == *VCOUNT){
+        setVcountFlag(true);
+        cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::IRQ, ExceptionHandler::Interrupt::VCOUNT);
+    }else{
+        setVcountFlag(false);
+    }
     // Check BG Mode in DISPCNT
     // Panda will stop working!!!
     if(*VCOUNT <= 160){
@@ -111,10 +117,20 @@ void PPU::setHBlankFlag(bool val){
     *DISPSTAT = Utils::setRegBits(regVal, REG_DISPSTAT::DSTAT_IN_HBL_MASK, bitVal);
 }
 
+void PPU::setVcountFlag(bool val){
+    uint32_t bitVal = val << REG_DISPSTAT::DSTAT_IN_VCT_SHIFT;
+    uint32_t regVal = *DISPSTAT;
+    *DISPSTAT = Utils::setRegBits(regVal, REG_DISPSTAT::DSTAT_IN_VCT_MASK, bitVal);
+}
+
 void PPU::setDCNT_MODE(uint8_t mode){
     uint32_t bitVal = mode << REG_DISPCNT::DCNT_MODE_SHIFT;
     uint32_t regVal = *DISPCNT;
     *DISPCNT = Utils::setRegBits(regVal, REG_DISPCNT::DCNT_MODE_MASK, bitVal);
+}
+
+uint8_t PPU::getVcountTrigger() const{
+    return Utils::getRegBits(*DISPSTAT, REG_DISPSTAT::DSTAT_VCT_NUM_MASK, REG_DISPSTAT::DSTAT_VCT_NUM_SHIFT);
 }
 
 uint8_t PPU::getDCNT_MODE() const{
@@ -129,12 +145,16 @@ uint32_t PPU::getPageFlipOffset() const{
     return getDCNT_PAGE() ? PAGE_FLIP_SECOND_OFFSET : 0;
 }
 
-bool PPU::vBlankIrqEnabled(){
+bool PPU::vBlankIrqEnabled() const{
     return Utils::getRegBits(*DISPSTAT, REG_DISPSTAT::DSTAT_VBL_IRQ_MASK, REG_DISPSTAT::DSTAT_VBL_IRQ_SHIFT);
 }
 
-bool PPU::hBlankIrqEnabled(){
+bool PPU::hBlankIrqEnabled() const{
     return Utils::getRegBits(*DISPSTAT, REG_DISPSTAT::DSTAT_HBL_IRQ_MASK, REG_DISPSTAT::DSTAT_HBL_IRQ_SHIFT);
+}
+
+bool PPU::vCountIrqEnabled() const{
+    return Utils::getRegBits(*DISPSTAT, REG_DISPSTAT::DSTAT_VCT_IRQ_MASK, REG_DISPSTAT::DSTAT_VCT_IRQ_SHIFT);
 }
 
 uint8_t PPU::getBgCharacterBaseBlock(uint8_t bgNum) const{
@@ -147,6 +167,18 @@ uint8_t PPU::getBgCharacterBaseBlock(uint8_t bgNum) const{
             throw new std::runtime_error("TODO: getBgCharacterBaseBlock");
     }
     return Utils::getRegBits(bgCntVal, REG_BGxCNT::BG_CBB_NUM_MASK, REG_BGxCNT::BG_CBB_NUM_SHIFT);
+}
+
+uint8_t PPU::getBgColorMode(uint8_t bgNum) const{
+    uint16_t bgCntVal;
+    switch(bgNum){
+        case 0:
+            bgCntVal = *BG0CNT;
+            break;
+        default:
+            throw new std::runtime_error("TODO: getBgColorMode");
+    }
+    return Utils::getRegBits(bgCntVal, REG_BGxCNT::BG_8BPP_MASK, REG_BGxCNT::BG_8BPP_SHIFT);
 }
 
 uint8_t PPU::getBgScreenBaseBlock(uint8_t bgNum) const{

@@ -24,8 +24,9 @@ class Renderer {
 
         SDL_Window *window = nullptr;
         SDL_Renderer *renderer = nullptr;
+        SDL_Texture *texture = nullptr;
         const PPU &ppu;
-        const static uint32_t BG_TILE_SIZE = 8;
+        const static uint32_t BG_TILE_WIDTH_HEIGHT = 8;
         const static uint32_t SCREENBLOCK_SIZE = 0x0800;
         const static uint32_t PAGE_FLIP_SECOND_OFFSET = 0xA000;
 };

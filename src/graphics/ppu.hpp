@@ -113,7 +113,7 @@ namespace REG_DISPSTAT {
     const static uint16_t DSTAT_VCT_IRQ_SHIFT = 5;
 
     // VCount trigger value
-    const static uint16_t DSTAT_VCT_NUM_MASK = 0b0000000100000000;
+    const static uint16_t DSTAT_VCT_NUM_MASK = 0b1111111100000000;
     const static uint16_t DSTAT_VCT_NUM_SHIFT = 8;
 }
 
@@ -154,6 +154,7 @@ class PPU {
         uint32_t getPageFlipOffset() const;
         uint8_t getBgCharacterBaseBlock(uint8_t bgNum) const;
         uint8_t getBgScreenBaseBlock(uint8_t bgNum) const;
+        uint8_t getBgColorMode(uint8_t bgNum) const;
         uint32_t getTileSetVramOffset(uint8_t bgNum) const;
         uint32_t getTileMapVramOffset(uint8_t bgNum) const;
         uint8_t getBgSize(uint8_t bgNum) const;
@@ -195,9 +196,12 @@ class PPU {
         uint8_t getDCNT_MODE() const;
         void setVBlankFlag(bool val);
         void setHBlankFlag(bool val);
+        void setVcountFlag(bool val);
         uint8_t getDCNT_PAGE() const;
-        bool vBlankIrqEnabled();
-        bool hBlankIrqEnabled();
+        bool vBlankIrqEnabled() const;
+        bool hBlankIrqEnabled() const;
+        bool vCountIrqEnabled() const;
+        uint8_t getVcountTrigger() const;
 
 
 

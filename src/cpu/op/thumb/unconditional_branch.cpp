@@ -7,7 +7,7 @@ UnconditionalBranch::UnconditionalBranch(uint16_t op, uint32_t pc, ARM7TDMI &cpu
  ThumbOpCode::ThumbOpCode(op, cpu) {
     oldPC = pc;
     offset11 = Utils::getRegBits(op, OFFSET11_MASK, OFFSET11_SHIFT);
-    int16_t signExtended = Utils::twosComplementExtendSignTo(offset11 << 1, 11, 16);
+    int16_t signExtended = Utils::twosComplementExtendSignTo(offset11 << 1, 12, 16);
     offsetVal = oldPC + signExtended + 4;
 }
 

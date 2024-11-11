@@ -1,8 +1,9 @@
-#ifndef _IOregisters_ 
-#define _IOregisters_
+#ifndef _IOREGISTERS_ 
+#define _IOREGISTERS_
 
 #include <iostream>
 #include "generic_memory.hpp"
+#include "../cpu/components/exception_handler.hpp"
 
 namespace REG_ADDR{
     const static uint32_t DISPCNT       = 0x04000000;
@@ -27,12 +28,21 @@ namespace REG_ADDR{
 
     const static uint32_t BG3HOFS       = 0x0400001C;
     const static uint32_t BG3VOFS       = 0x0400001E;
+
+    const static uint32_t IE            = 0x04000200;
+    const static uint32_t IF            = 0x04000202;
+    const static uint32_t WAITCNT       = 0x04000204;
+    const static uint32_t IME           = 0x04000208;
 }
 
 
 class IOregisters : public GenericMemory<IOREGISTERS_SIZE>{
     public:
         IOregisters();
+        void storeWrapper(uint32_t addr, uint32_t val, uint8_t bytes);
+
+    private:
+        uint16_t writeToIf(uint16_t val);
 };
 
 #endif

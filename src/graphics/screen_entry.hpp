@@ -7,13 +7,13 @@ class ScreenEntry {
     public:
         ScreenEntry(uint16_t rawVal);
 
-        uint8_t getTileIndex() const;
+        uint16_t getTileIndex() const;
         bool getHorizontalFlip() const;
         bool getVerticalFlip() const;
         uint8_t getPaletteBank() const;
         
     private:
-        uint8_t tileIndex;
+        uint16_t tileIndex;
         uint8_t horizontalFlip;
         uint8_t verticalFlip;
         uint8_t paletteBank;

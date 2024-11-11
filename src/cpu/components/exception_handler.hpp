@@ -22,21 +22,22 @@ class ExceptionHandler {
         void raiseException(Exception ex, Interrupt inter=Interrupt::DUMMY);
         void handleException();
 
+        const static uint32_t REG_IF_ADDR = 0x04000202;
+        const static uint32_t REG_IME_ADDR = 0x04000208;
+
     private:
+        void doHandleException();
         bool isMasterInterruptEnabled();
         bool isSpecificInterruptEnabled(Interrupt inter);
         void setInterruptIF(Interrupt inter, bool raise);
 
-        Interrupt inter;
+        //Interrupt inter;
         Exception ex;
-        bool mustHandleException;
+        //bool mustHandleException;
         
         ARM7TDMI &cpu;
         const static uint32_t REG_IE_ADDR = 0x04000200;
         const static uint32_t REG_IE_VBLANK_OFFSET = 0x0;
-
-        const static uint32_t REG_IF_ADDR = 0x04000202;
-        const static uint32_t REG_IME_ADDR = 0x04000208;
 
         std::unordered_map<Exception, PSR::Mode> except2Mode = {
             {Exception::RESET,              PSR::Supervisor},
@@ -59,6 +60,11 @@ class ExceptionHandler {
             {Exception::IRQ,               0x00000018},    
             {Exception::FIQ,               0x0000001C}  // GBA does not use this
         };
+
+        uint8_t* io;
+        uint16_t* IE;
+        uint16_t* IF;
+        uint16_t* IME;
 };
 
 #endif

@@ -60,6 +60,8 @@ The 64K SRAM area is mirrored across the whole 32MB area at E000000h-FFFFFFFh, a
 
 */
 
+class IOregisters;
+
 class MemoryManager {
     public:
         MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, SRAM &sram, OAM &oam, PaletteRAM &paletteRam, IOregisters &io);
@@ -87,7 +89,10 @@ class MemoryManager {
 
         // I/O Registers
         const static uint32_t IO_REGISTERS_OFFSET_START = 0x04000000;
-        const static uint32_t IO_REGISTERS_OFFSET_END = 0x040003FE;
+        const static uint32_t IO_REGISTERS_OFFSET_END = 0x040007FF;
+
+        // Undocumented - Internal Memory Control (R/W)
+        const static uint32_t INTERNAL_MEMORY_CONTROL_OFFSET_START = 0x04000800;
 
         // Internal Display Memory
         const static uint32_t PALETTE_RAM_OFFSET_START = 0x05000000;
@@ -105,6 +110,12 @@ class MemoryManager {
         // External Memory (Game Pak)
         const static uint32_t GAMEPAK_WAIT_0_OFFSET_START = 0x08000000;
         const static uint32_t GAMEPAK_WAIT_0_OFFSET_END = 0x09FFFFFF;
+
+        const static uint32_t GAMEPAK_WAIT_1_OFFSET_START = 0x0A000000;
+        const static uint32_t GAMEPAK_WAIT_1_OFFSET_END = 0x0BFFFFFF;
+
+        const static uint32_t GAMEPAK_WAIT_2_OFFSET_START = 0x0C000000;
+        const static uint32_t GAMEPAK_WAIT_2_OFFSET_END = 0x0DFFFFF;
 
         const static uint32_t GAMEPAK_SRAM_OFFSET_START = 0x0E000000;
         const static uint32_t GAMEPAK_SRAM_OFFSET_END = 0x0E00FFFF;

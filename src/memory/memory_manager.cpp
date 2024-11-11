@@ -22,6 +22,12 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
     }else if(Utils::inRange(addr, GAMEPAK_WAIT_0_OFFSET_START, GAMEPAK_WAIT_0_OFFSET_END)) {
         // GamePak Wait State 0
         val = gamepak.read(addr - GAMEPAK_WAIT_0_OFFSET_START, bytes);
+    }else if(Utils::inRange(addr, GAMEPAK_WAIT_1_OFFSET_START, GAMEPAK_WAIT_1_OFFSET_END)) {
+        // GamePak Wait State 1
+        val = gamepak.read(addr - GAMEPAK_WAIT_1_OFFSET_START, bytes);
+    }else if(Utils::inRange(addr, GAMEPAK_WAIT_2_OFFSET_START, GAMEPAK_WAIT_2_OFFSET_END)) {
+        // GamePak Wait State 2
+        val = gamepak.read(addr - GAMEPAK_WAIT_2_OFFSET_START, bytes);
     }else if(Utils::inRange(addr, EWRAM_OFFSET_START, EWRAM_MIRROR_OFFSET_END)){
         val = ewram.read((addr & EWRAM_OFFSET_END) - EWRAM_OFFSET_START, bytes);
     }else if(Utils::inRange(addr, IWRAM_OFFSET_START, IWRAM_MIRROR_OFFSET_END)){
@@ -31,14 +37,20 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
     }else if(Utils::inRange(addr, VRAM_OFFSET_START, VRAM_OFFSET_END)){
         //std::cerr << "TODO: VRAM Unimplemented memory region in MemoryManager::read" << std::endl;
         //std::cerr << "TODO: VRAM Mirroring" << std::endl;
-        throw std::runtime_error("Error: Unimplemented memory region in MemoryManager::load");
+        val = vram.read(addr - VRAM_OFFSET_START, bytes);
     }else if(Utils::inRange(addr, IO_REGISTERS_OFFSET_START, IO_REGISTERS_OFFSET_END)){
+        if(addr == 0x04000202){
+            int b;
+        }
+        if(addr == 0x04000200){
+            int b;
+        }
         val = io.read(addr - IO_REGISTERS_OFFSET_START, bytes);
     }else if(Utils::inRange(addr, GAMEPAK_SRAM_OFFSET_START, GAMEPAK_SRAM_MIRROR_OFFSET_END)){
         val = sram.read((addr & GAMEPAK_SRAM_OFFSET_END) - GAMEPAK_SRAM_OFFSET_START, bytes);
     }else if(Utils::inRange(addr, UNUSED_MEMORY_1_OFFSET_START, UNUSED_MEMORY_1_OFFSET_END) ||
              Utils::inRange(addr, UNUSED_MEMORY_2_OFFSET_START, UNUSED_MEMORY_2_OFFSET_END)){
-        std::cout << "TODO: Openbus read" << std::endl;
+        //std::cout << "TODO: Openbus read" << std::endl;
     }else if(Utils::inRange(addr, OAM_OBJ_OFFSET_START, OAM_OBJ_MIRROR_OFFSET_END)){
         val = oam.read((addr & OAM_OBJ_OFFSET_END) - OAM_OBJ_OFFSET_START, bytes);
     }else{
@@ -63,7 +75,7 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
     }else if(Utils::inRange(addr, PALETTE_RAM_OFFSET_START, PALETTE_RAM_MIRROR_OFFSET_END)){
         paletteRam.store((addr & PALETTE_RAM_OFFSET_END) - PALETTE_RAM_OFFSET_START, val, bytes);
     }else if(Utils::inRange(addr, IO_REGISTERS_OFFSET_START, IO_REGISTERS_OFFSET_END)){
-        io.store(addr - IO_REGISTERS_OFFSET_START, val, bytes);
+        io.storeWrapper(addr - IO_REGISTERS_OFFSET_START, val, bytes);
     }else if(Utils::inRange(addr, GAMEPAK_SRAM_OFFSET_START, GAMEPAK_SRAM_MIRROR_OFFSET_END)){
         sram.store((addr & GAMEPAK_SRAM_OFFSET_END) - GAMEPAK_SRAM_OFFSET_START, val, bytes);
     }else if(Utils::inRange(addr, OAM_OBJ_OFFSET_START, OAM_OBJ_MIRROR_OFFSET_END)){
@@ -72,6 +84,8 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
              Utils::inRange(addr, UNUSED_MEMORY_2_OFFSET_START, UNUSED_MEMORY_2_OFFSET_END)){
         std::cout << "TODO: Openbus write" << std::endl;
 
+    }else if(addr == INTERNAL_MEMORY_CONTROL_OFFSET_START){
+        std::cout << "TODO: Implement internal memory control ' EWRAM wait state control'" << std::endl;
     }else{
         throw std::runtime_error("Error: Unimplemented memory region in MemoryManager::store");
     }

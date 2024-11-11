@@ -1,8 +1,8 @@
 #include "renderer.hpp"
 #include "../memory/memory_manager.hpp"
 #include "screen_entry.hpp"
-
-// TEST: PAINT WHOLE FRAME!! TODO: PAINT ONLY CURRENT SCANLINE
+// TODO delete later, for std::memcpy
+#include <cstring>
 
 Renderer::Renderer(const PPU &ppu, const std::string &title) : ppu(ppu) {
     SDL_Init(SDL_INIT_VIDEO);
@@ -20,6 +20,8 @@ Renderer::Renderer(const PPU &ppu, const std::string &title) : ppu(ppu) {
     if(renderer == nullptr){
         throw std::runtime_error("SDL: Renderer could not be created: " + std::string(SDL_GetError()));
     }
+
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
 }
 
 Renderer::~Renderer(){
@@ -27,94 +29,116 @@ Renderer::~Renderer(){
         SDL_DestroyRenderer(renderer);
 
     if(window != nullptr)
-        SDL_DestroyWindow(window);  
+        SDL_DestroyWindow(window);
+
+    if(texture != nullptr)
+        SDL_DestroyTexture(texture);
 }
 
 void Renderer::renderScanlineMode0(){
-    //std::cout << " " << std::endl;
-    //std::cout << "Tile Set VRAM offset " << Utils::toHexString(0x06000000 + getTileSetVramOffset(0)) << std::endl;
-    //std::cout << "Tile map VRAM offset " << Utils::toHexString(0x06000000 + getTileMapVramOffset(0)) << std::endl;
-    //std::cout << "Tile size " << Utils::toHexString(getTileSize(0)) << std::endl;
+    if(ppu.getBgColorMode(0) != 0){
+        throw new std::runtime_error("Unimplemented 256 color mode");
+    }
+    uint8_t screenPixelX = 0;
+    uint8_t screenPixelY = ppu.getVcount();
 
+    uint8_t toPaintIndex = 0;
     uint32_t tileSetStartOffset = ppu.getTileSetVramOffset(0);
     uint32_t tileMapStartOffset = ppu.getTileMapVramOffset(0);
-    uint32_t tileScrollX = ppu.getBgOffsetH(0);
-    uint32_t tileScrollY = ppu.getBgOffsetV(0);
+    uint32_t pixelScrollX = ppu.getBgOffsetH(0);
+    uint32_t pixelScrollY = ppu.getBgOffsetV(0);
 
-    // Create a texture
-    SDL_Texture *texture = SDL_CreateTexture(renderer,
-        SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, BG_TILE_SIZE, BG_TILE_SIZE);
+    uint16_t toPaint[PPU::SCREEN_WIDTH * 1];
+    
+    while(screenPixelX <= PPU::SCREEN_WIDTH){
+        
+        uint32_t bgPixelX = screenPixelX + pixelScrollX;
+        uint32_t bgPixelY = screenPixelY + pixelScrollY;
 
-    for(size_t tileX=0; tileX < PPU::SCREEN_WIDTH/BG_TILE_SIZE; tileX++){
-        uint32_t tileY = ppu.getVcount() / BG_TILE_SIZE;
-
-        uint32_t bgRelativeTileX = getBgRelativeTileX(tileX + tileScrollX);
-        uint32_t bgRelativeTileY = getBgRelativeTileY(tileY + tileScrollY);
+        uint32_t bgRelativeTileX = getBgRelativeTileX((bgPixelX) / BG_TILE_WIDTH_HEIGHT);
+        uint32_t bgRelativeTileY = getBgRelativeTileY((bgPixelY) / BG_TILE_WIDTH_HEIGHT);
+        //std::cout << "bgRelativeTileX" << Utils::toHexString(bgRelativeTileX) << std::endl;
+        //std::cout << "bgRelativeTileY" << Utils::toHexString(bgRelativeTileY) << std::endl;
 
         uint32_t seIndex = ((bgRelativeTileY % 32)*32 + (bgRelativeTileX % 32)) * 2;
-        uint32_t seOffset = tileMapStartOffset + getSbcOffset(bgRelativeTileX*8, 0) + seIndex;
+        uint32_t sbcOffset = getSbcOffset(bgRelativeTileX*8, 0);
+        uint32_t seOffset = tileMapStartOffset + sbcOffset + seIndex;
 
+        
         uint16_t tileMapRaw = *reinterpret_cast<uint16_t *>(ppu.getVRAM() + seOffset);
-        ScreenEntry screenEntry(tileMapRaw);
 
-        //std::cout << "Tile index: " << Utils::toHexString(screenEntry.getTileIndex()) << std::endl;
-        //std::cout << "Palette bank: " << Utils::toHexString(screenEntry.getPaletteBank()) << std::endl;
+        ScreenEntry screenEntry(tileMapRaw);
 
         //Search the given tile with the tile Index:
         // 0x20: each tile takes 8*8*4bpp = 32 = 0x20 bytes
-        uint8_t* tileSetRaw = reinterpret_cast<uint8_t *>(ppu.getVRAM() + tileSetStartOffset + screenEntry.getTileIndex() * 0x20);
+        //std::cout << "seOffset" << Utils::toHexString(seOffset) << std::endl;
+        //std::cout << "tileSetRaw" << Utils::toHexString(tileSetStartOffset + screenEntry.getTileIndex() * 0x20) << std::endl;
+        uint16_t tileIndex = screenEntry.getTileIndex();
+        uint32_t debug1 = tileSetStartOffset + tileIndex * 0x20;
+
+        uint8_t debugTileData[32];
+        uint8_t* tileSetRaw = reinterpret_cast<uint8_t *>(ppu.getVRAM() + debug1);
+        std::memcpy(debugTileData, reinterpret_cast<const uint8_t*>(ppu.getVRAM() + debug1), 32);
 
         // check BG_8BPP to determine palette
-        uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getPaletteRAM() + 0x20 * screenEntry.getPaletteBank());
-
-
-        uint16_t toPaint[BG_TILE_SIZE * BG_TILE_SIZE];
-
-        for(int i=0; i<0x20; i++){
+        uint32_t paletteOffset = 0x20 * screenEntry.getPaletteBank();
+        uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getPaletteRAM() + paletteOffset);
+        
+        uint8_t pixelsLeftInTile = BG_TILE_WIDTH_HEIGHT;
+        if(screenPixelX == 0)
+            pixelsLeftInTile = BG_TILE_WIDTH_HEIGHT - (pixelScrollX % 8);
+        else if(PPU::SCREEN_WIDTH - toPaintIndex < 8)
+            pixelsLeftInTile = PPU::SCREEN_WIDTH - toPaintIndex;
+        
+       for(int i=0; i < pixelsLeftInTile; i++){
+            uint16_t pixelIndex = screenPixelX + (ppu.getVcount()%8)*8 +i/2;
             // Take the pixel from the given palette!!!!
-            uint8_t tile = *(tileSetRaw + i);
-    
-            uint16_t pixel1 = paletteRAM[(tile & 0b11110000) >> 4];
-            uint16_t pixel2 = paletteRAM[tile & 0b1111];
+            uint32_t tileOffset = (ppu.getVcount()%8)*4 + i/2;
+            uint8_t tile = *(tileSetRaw + tileOffset);
+            if(tile != 0){
+                uint16_t pixel;
+                if(i % 2 == 0) 
+                    pixel = paletteRAM[tile & 0b1111];
+                else
+                    pixel = paletteRAM[(tile & 0b11110000) >> 4];
+                
+                toPaint[toPaintIndex++] = pixel;
+            }else{
+                uint16_t backdrop = *reinterpret_cast<uint16_t *>(ppu.getPaletteRAM());
+                toPaint[toPaintIndex++] = backdrop;
+            }
 
-
-            toPaint[i*2] = pixel2;
-            toPaint[i*2 + 1] = pixel1;
         }
-
-        
-
-
-        void* pixels;
-        int pitch;
-
-        // Lock the texture, which allows direct pixel access
-        SDL_LockTexture(texture, NULL, &pixels, &pitch);
-
-
-        memcpy(pixels, &toPaint, BG_TILE_SIZE * BG_TILE_SIZE * sizeof(uint16_t));
-
-        SDL_UnlockTexture(texture);
-
-        SDL_Rect rect;
-
-        rect.x = tileX * BG_TILE_SIZE;
-        rect.y = tileY * BG_TILE_SIZE;
-        rect.w = BG_TILE_SIZE;
-        rect.h = BG_TILE_SIZE;
-        
-        SDL_RenderCopy(renderer, texture, NULL, &rect);
-        SDL_RenderPresent(renderer);
-        
-
+        screenPixelX += 8;
     }
-    SDL_DestroyTexture(texture);
+
+    void* pixels;
+    int pitch;
+
+    // Lock the texture, which allows direct pixel access
+    SDL_LockTexture(texture, NULL, &pixels, &pitch);
+
+    memcpy(pixels, &toPaint, PPU::SCREEN_WIDTH * 1 * sizeof(Uint16));
+
+    SDL_UnlockTexture(texture);
+
+    SDL_Rect rect;
+
+    rect.x = 0;
+    rect.y = ppu.getVcount();
+    rect.w = PPU::SCREEN_WIDTH;
+    rect.h = 1;
+    
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_RenderPresent(renderer);
+    
+    //std::cout << "" << std::endl;
 }
 
 void Renderer::renderScanlineMode3(){
     // Create a texture
-    SDL_Texture *texture = SDL_CreateTexture(renderer,
-        SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
+    //SDL_Texture *texture = SDL_CreateTexture(renderer,
+    //    SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
 
     void* pixels;
     int pitch;
@@ -140,14 +164,14 @@ void Renderer::renderScanlineMode3(){
     SDL_RenderPresent(renderer);
 
     // Clean up
-    SDL_DestroyTexture(texture);
+    //SDL_DestroyTexture(texture);
 
 }
 
 void Renderer::renderScanlineMode4(){
     // Create a texture
-    SDL_Texture *texture = SDL_CreateTexture(renderer,
-        SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
+    //SDL_Texture *texture = SDL_CreateTexture(renderer,
+    //    SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
 
     void* pixels;
     int pitch;
@@ -184,7 +208,7 @@ void Renderer::renderScanlineMode4(){
     SDL_RenderPresent(renderer);
 
     // Clean up
-    SDL_DestroyTexture(texture);
+    //SDL_DestroyTexture(texture);
 }
 
 uint32_t Renderer::getBgRelativeTileX(uint32_t tileX) const{ 
@@ -211,7 +235,7 @@ uint32_t Renderer::getSbcOffset(uint32_t pixelX, uint32_t pixelY) const{
         return 0;
     }
     if(tileSize == 1){
-        if(pixelX >= 32 * BG_TILE_SIZE){
+        if(pixelX >= 32 * BG_TILE_WIDTH_HEIGHT){
             return 0x800;
         }else{
             return 0;

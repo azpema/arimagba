@@ -14,6 +14,8 @@ class ExceptionHandler;
 #include "components/exception_handler.hpp"
 #include "op/opcode.hpp"
 
+class MemoryManager;
+
 class ARM7TDMI {
 	public:
 		ARM7TDMI(MemoryManager *memoryManager);
@@ -39,6 +41,7 @@ class ARM7TDMI {
 		bool getMustFlushPipeline() const;
 		void setMustFlushPipeline(bool val);
 		void printStatus();
+		void printRegisterValues();
 
 		uint32_t getReg(uint16_t n, bool userBank = false);
 		void setReg(uint16_t n, uint32_t val, bool userBank = false);

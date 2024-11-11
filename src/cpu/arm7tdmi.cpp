@@ -428,6 +428,12 @@ void ARM7TDMI::printStatus(){
 	std::cout << std::endl;
 }
 
+void ARM7TDMI::printRegisterValues(){
+	for(int i=0; i<16; i++){
+		std::cout << std::uppercase << std::setfill('0') << std::setw(8) << std::hex << getReg(i) << " ";
+	}
+}
+
 MemoryManager& ARM7TDMI::getMemManager(){
 	return (*mem);
 }
@@ -465,7 +471,7 @@ uint32_t ARM7TDMI::fetchNextInstruction(){
 
 uint32_t ARM7TDMI::executeNextInstruction(){
 	uint32_t cpuCycles = 0;
-
+	static bool printDebug = false;
 	// Flush for IRQ
 		if(getMustFlushPipeline()){
 			insFetchSet = false;
@@ -475,11 +481,20 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 		// execute
 		if(insDecodeSet){
 			// print status
-			//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
+			std::string opString;
+			if(printDebug){
+				opString = opExecute->toString();
+				//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
+			}
 			insExecuteSet = opExecute->execute();
 			cpuCycles = opExecute->cyclesUsed();
-			//printStatus();
-			//std::cout << "<<<" << std::endl;
+			if(printDebug){
+				//printStatus();
+				//std::cout << "<<<" << std::endl;
+				printRegisterValues();
+				std::cout << "cpsr: " << std::uppercase << std::setfill('0') << std::setw(8) << std::hex << cpsr.getValue();
+				std::cout << " | " << opString << std::endl;
+			}
 
 			// flush pipeline if needed
 			// dont flush if op is not executed
@@ -510,11 +525,10 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-
 		insFetchSet = true;
 		insDecode = insFetch;
 
-		if(insDecodeSet){
+		if(insDecodeSet && !cpsr.getIFlag()){
 			exceptionHandler->handleException();
 		}
 
