@@ -113,6 +113,7 @@ void BlockDataTransfer::doExecute(){
             emptyListOffset = emptyList ? -0x3c : 0;
             baseAddr = cpu.getReg(Rn) + emptyListOffset;
             endAddr = baseAddr - registerListVec.size() * 4;
+            std::reverse(registerListVec.begin(), registerListVec.end());
         // STMEA / STMIA
         }else if(P==0 && U==1){
             baseAddr = cpu.getReg(Rn);
@@ -164,7 +165,7 @@ void BlockDataTransfer::doExecute(){
                 cpu.setMustFlushPipeline(true);
             }   
         }
-
+        // LDMFD / LDMIA
         if(P==0 && U==1){
             uint32_t baseAddr = cpu.getReg(Rn);
             uint32_t endAddr = baseAddr;
@@ -174,10 +175,10 @@ void BlockDataTransfer::doExecute(){
                 endAddr += 4;
             }
 
-            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
+            if(W == 1 && !(regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
                 cpu.setReg(Rn, endAddr);
             }
-
+        // LDMFA / LDMDA
         }else if(P==0 && U==0){
             uint32_t endAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
             uint32_t baseAddr = endAddr + 4;
@@ -187,10 +188,10 @@ void BlockDataTransfer::doExecute(){
                 baseAddr += 4;
             }
 
-            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
+            if(W == 1 && !(regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
                 cpu.setReg(Rn, endAddr);
             }
-
+        // LDMEA / LDMDB
         }else if(P==1 && U==0){
             uint32_t baseAddr = cpu.getReg(Rn) - registerListVec.size() * 4;
             uint32_t endAddr = baseAddr;
@@ -200,20 +201,22 @@ void BlockDataTransfer::doExecute(){
                 endAddr += 4;
             }
 
-            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
+            if(W == 1 && !(regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
                 cpu.setReg(Rn, baseAddr);
             }
             
+        // LDMED / LDMIB 
         }else if(P==1 && U==1){
             uint32_t baseAddr = cpu.getReg(Rn) + registerListVec.size() * 4;
             uint32_t endAddr = baseAddr;
-            for(size_t i=0; i < registerListVec.size(); i++){
+
+            for(int i=registerListVec.size()-1; i >= 0; i--){
                 uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
                 cpu.setReg(registerListVec.at(i), val, !regListHasPc && (S == 1));
                 endAddr -= 4;
             }
 
-            if(W == 1 && !(!regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
+            if(W == 1 && !(regListHasPc && (S == 1)) && !emptyList && !regListHasBase){
                 cpu.setReg(Rn, baseAddr);
             }
         }
