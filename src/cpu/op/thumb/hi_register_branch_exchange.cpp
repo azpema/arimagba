@@ -38,7 +38,7 @@ void HiRegisterBranchExchange::doExecute(){
         case ADD:
         {
             ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
-            DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_ADD_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
+            DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_ADD_VAL, 0, rd, rd, shiftRm.getRawVal(), cpu);
             opArm.doExecute();
             //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
         }

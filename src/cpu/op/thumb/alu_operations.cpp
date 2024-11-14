@@ -98,7 +98,7 @@ void ALUOperations::doExecute(){
         //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     }else if(opField == Opcode::NEG){
         RotateImm imm = RotateImm(0, 0);
-        DataProcessing opArm = DataProcessing(1, DataProcessing::OPCODE_RSB_VAL, 1, rd, rd, imm.getRawVal(), cpu);
+        DataProcessing opArm = DataProcessing(1, DataProcessing::OPCODE_RSB_VAL, 1, rs, rd, imm.getRawVal(), cpu);
         opArm.doExecute();
         //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     }else if(opField == Opcode::MUL){
