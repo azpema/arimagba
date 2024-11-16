@@ -101,7 +101,9 @@ class MemoryManager {
 
         const static uint32_t VRAM_OFFSET_START = 0x06000000;
         const static uint32_t VRAM_OFFSET_END = 0x06017FFF;
+        const static uint32_t VRAM_MIRROR_OFFSET_START = 0x06018000;
         const static uint32_t VRAM_MIRROR_OFFSET_END = 0x06FFFFFF;
+        const static uint32_t VRAM_MIRROR_BLOCK_SIZE = 0x00020000;
 
         const static uint32_t OAM_OBJ_OFFSET_START = 0x07000000;
         const static uint32_t OAM_OBJ_OFFSET_END = 0x070003FF;

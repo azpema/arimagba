@@ -41,6 +41,9 @@ class IOregisters : public GenericMemory<IOREGISTERS_SIZE>{
         IOregisters();
         void storeWrapper(uint32_t addr, uint32_t val, uint8_t bytes);
 
+        uint32_t getDISPCNT();
+        uint8_t getDCNT_MODE();
+
     private:
         uint16_t writeToIf(uint16_t val);
 };

@@ -41,3 +41,12 @@ void IOregisters::storeWrapper(uint32_t addr, uint32_t val, uint8_t bytes){
     }
     store(addr, newVal, bytes);
 }
+
+uint32_t IOregisters::getDISPCNT(){
+    uint32_t dispcnt = read(REG_ADDR::DISPCNT - MemoryManager::IO_REGISTERS_OFFSET_START, 4);
+    return dispcnt;
+}
+
+uint8_t IOregisters::getDCNT_MODE(){
+    return Utils::getRegBits(getDISPCNT(), 0b0000000000000111, 0);
+}
