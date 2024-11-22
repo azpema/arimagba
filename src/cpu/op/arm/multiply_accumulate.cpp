@@ -1,9 +1,22 @@
 #include "multiply_accumulate.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string MultiplyAccumulate::sFlag2Mnemonic[2] = {"", "s"};
 const std::string MultiplyAccumulate::op2Mnemonic[2] = {"mul", "mla"};
 
 MultiplyAccumulate::MultiplyAccumulate(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+    init(op);
+}
+
+MultiplyAccumulate::MultiplyAccumulate(uint32_t a, uint32_t s, uint32_t rd, uint32_t rn, uint32_t rs, uint32_t rm, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+    init(a, s, rd, rn, rs, rm);
+}
+
+MultiplyAccumulate::MultiplyAccumulate(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {}
+
+void MultiplyAccumulate::init(uint32_t op){
+    ArmOpcode::init(op);
     a = Utils::getRegBits(op, A_FLAG_MASK, A_FLAG_SHIFT);
     s = Utils::getRegBits(op, S_FLAG_MASK, S_FLAG_SHIFT);
     rd = Utils::getRegBits(op, RD_FLAG_MASK, RD_FLAG_SHIFT);
@@ -12,7 +25,7 @@ MultiplyAccumulate::MultiplyAccumulate(uint32_t op, ARM7TDMI &cpu): ArmOpcode::A
     rm = Utils::getRegBits(op, RM_FLAG_MASK, RM_FLAG_SHIFT);
 }
 
-MultiplyAccumulate::MultiplyAccumulate(uint32_t a, uint32_t s, uint32_t rd, uint32_t rn, uint32_t rs, uint32_t rm, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+void MultiplyAccumulate::init(uint32_t a, uint32_t s, uint32_t rd, uint32_t rn, uint32_t rs, uint32_t rm){
     this->a = a;
     this->s = s;
     this->rd = rd;

@@ -1,9 +1,9 @@
 #ifndef _OPCODE_BRANCH_ 
 #define _OPCODE_BRANCH_ 
 
-#include <iostream>
+#include <string>
 #include "arm_opcode.hpp"
-#include "../../../utils/utils.hpp"
+#include <cstdint>
 
 /*
 * Branch instructions contain a signed 2’s complement 24 bit offset. This is shifted left
@@ -16,8 +16,11 @@ namespace ARM {
  
 class Branch : public ArmOpcode {
     public:
-    	Branch(uint32_t op, uint32_t pc, ARM7TDMI &cpu);
-        Branch(uint32_t pc, uint32_t offsetField, uint32_t realOffset, uint32_t cond, ARM7TDMI &cpu);
+    	Branch(uint32_t op, ARM7TDMI &cpu);
+        Branch(ARM7TDMI &cpu);
+        Branch(uint32_t offsetField, uint32_t realOffset, uint32_t cond, ARM7TDMI &cpu);
+        void init(uint32_t op) override;
+        void init(uint32_t offsetField, uint32_t realOffset, uint32_t cond);
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

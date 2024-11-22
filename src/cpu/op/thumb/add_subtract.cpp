@@ -1,16 +1,24 @@
 #include "add_subtract.hpp"
 #include "../arm/data_processing.hpp"
 #include "../fields/rotate_imm.hpp"
+#include "../fields/shift_rm.hpp"
 
 const std::string AddSubtract::op2Mnemonic[2] = {"add", "sub"};
 
 AddSubtract::AddSubtract(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+AddSubtract::AddSubtract(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void AddSubtract::init(uint32_t op){
+    ThumbOpCode::init(op);
     i = Utils::getRegBits(op, I_MASK, I_SHIFT);
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
     rnOffset3 = Utils::getRegBits(op, RN_OFFSET3_MASK, RN_OFFSET3_SHIFT);
     rs = Utils::getRegBits(op, RS_MASK, RS_SHIFT);
     rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
-}   
+}
 
 std::string AddSubtract::getOpMnemonic(){
     return op2Mnemonic[opField];

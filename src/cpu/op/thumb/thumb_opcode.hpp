@@ -2,17 +2,14 @@
 #define _THUMB_OPCODE_ 
 
 class ARM7TDMI;
-class OpCode;
 
+#include <string>
 #include "../opcode.hpp"
-#include <iostream>
-#include "../../../utils/utils.hpp"
-#include "../fields/operand.hpp"
-#include "../../arm7tdmi.hpp"
 
 class ThumbOpCode : public OpCode {
 	public:
 		virtual std::string toString() = 0;
+		virtual void init(uint32_t op) override;
 		bool execute() override;
 		void decode() override;
 		virtual uint32_t cyclesUsed() const = 0;
@@ -40,13 +37,14 @@ class ThumbOpCode : public OpCode {
 
 		static std::string getRegMnemonic(uint16_t reg);
 
-		enum OpCodeEnum {SOFTWARE_INTERRUPT, ADD_OFFSET_TO_SP, PUSH_POP_REGISTERS, ALU_OPERATIONS, HI_REGISTER_BRANCH_EXCHANGE,
+		enum class OpCodeEnum {SOFTWARE_INTERRUPT, ADD_OFFSET_TO_SP, PUSH_POP_REGISTERS, ALU_OPERATIONS, HI_REGISTER_BRANCH_EXCHANGE,
 							  PC_RELATIVE_LOAD, LOAD_STORE_REGISTER_OFFSET, LOAD_STORE_SIGN_EXTENDED, UNCONDITIONAL_BRANCH,
 							  ADD_SUBTRACT, LOAD_STORE_HALFWORD, SP_LOAD_STORE, LOAD_ADDRESS, MULTIPLE_LOAD_STORE, CONDITIONAL_BRANCH,
 							  LONG_BRANCH_WITH_LINK, MOVE_SHIFTED_REGISTER, MOVE_COMP_ADD_SUB_IMM, LOAD_STORE_IMM_OFFSET};
 		OpCodeEnum _type;
 	protected:
 		ThumbOpCode(uint32_t op, ARM7TDMI &cpu);
+		ThumbOpCode(ARM7TDMI &cpu);
 
 	private:
 		virtual void doExecute() = 0;

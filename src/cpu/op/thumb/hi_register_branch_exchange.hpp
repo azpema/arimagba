@@ -1,14 +1,13 @@
 #ifndef _THUMB_OPCODE_HI_REGISTER_BRANCH_EXCHANGE_
 #define _THUMB_OPCODE_HI_REGISTER_BRANCH_EXCHANGE_
 
-#include <iostream>
 #include "thumb_opcode.hpp"
-#include "../opcode.hpp"
-#include "../../../utils/utils.hpp"
 
 class HiRegisterBranchExchange : public ThumbOpCode {
     public:
 		HiRegisterBranchExchange(uint16_t op, ARM7TDMI &cpu);
+        HiRegisterBranchExchange(ARM7TDMI &cpu);
+        void init(uint32_t op) override;
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

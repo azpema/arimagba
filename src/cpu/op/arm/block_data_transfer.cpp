@@ -1,5 +1,7 @@
 #include "block_data_transfer.hpp"
 #include <algorithm>
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string BlockDataTransfer::SFlag2Mnemonic[2] = {"", "^"};
 const std::string BlockDataTransfer::WFlag2Mnemonic[2] = {"", "!"};
@@ -7,6 +9,21 @@ const std::string BlockDataTransfer::opAddressingMode2Mnemonic[2][2][2] = {{{"st
                                                                            {{"ldmfa", "ldmfd"}, {"ldmea", "ldmed"}}};
 
 BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+    // TODO ArmOpCode is initialized twice!! Look in all the rest of opcodes too!!
+    init(op);
+}
+
+BlockDataTransfer::BlockDataTransfer(uint16_t P, uint16_t U, uint16_t S, uint16_t W, uint16_t L,
+  uint16_t Rn, uint16_t registerList, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+    init(P, U, S, W, L, Rn, registerList);
+}
+
+BlockDataTransfer::BlockDataTransfer(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu){
+
+}
+
+void BlockDataTransfer::init(uint32_t op){
+    ArmOpcode::init(op);
     P = Utils::getRegBits(op, P_MASK, P_SHIFT);
     U = Utils::getRegBits(op, U_MASK, U_SHIFT);
     S = Utils::getRegBits(op, S_MASK, S_SHIFT);
@@ -21,8 +38,8 @@ BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::Arm
     }
 }
 
-BlockDataTransfer::BlockDataTransfer(uint16_t P, uint16_t U, uint16_t S, uint16_t W, uint16_t L,
-  uint16_t Rn, uint16_t registerList, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+void BlockDataTransfer::init(uint16_t P, uint16_t U, uint16_t S, uint16_t W, uint16_t L,
+  uint16_t Rn, uint16_t registerList){
     this->P = P;
     this->U = U;
     this->S = S;
@@ -35,7 +52,7 @@ BlockDataTransfer::BlockDataTransfer(uint16_t P, uint16_t U, uint16_t S, uint16_
         if(((registerList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);    
     }
-}  
+}
 
 std::string BlockDataTransfer::getSFlagMnemonic(){
     return SFlag2Mnemonic[S];

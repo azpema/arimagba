@@ -1,9 +1,19 @@
 #include "hi_register_branch_exchange.hpp"
 #include "../arm/data_processing.hpp"
+#include "../../../utils/utils.hpp"
+#include "../fields/shift_rm.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string HiRegisterBranchExchange::op2Mnemonic[4] = {"add", "cmp", "mov", "bx"};
 
 HiRegisterBranchExchange::HiRegisterBranchExchange(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+HiRegisterBranchExchange::HiRegisterBranchExchange(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void HiRegisterBranchExchange::init(uint32_t op){
+    ThumbOpCode::init(op);
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
     h1 = Utils::getRegBits(op, H1_MASK, H1_SHIFT);
     h2 = Utils::getRegBits(op, H2_MASK, H2_SHIFT);
@@ -11,7 +21,7 @@ HiRegisterBranchExchange::HiRegisterBranchExchange(uint16_t op, ARM7TDMI &cpu): 
     rdHd = Utils::getRegBits(op, RD_HD_MASK, RD_HD_SHIFT);
     rs = rsHs + (h2 * 8);
     rd = rdHd + (h1 * 8);
-}   
+}
 
 std::string HiRegisterBranchExchange::getOpMnemonic(){
     return op2Mnemonic[opField];

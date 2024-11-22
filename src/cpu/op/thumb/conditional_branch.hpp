@@ -1,17 +1,16 @@
 #ifndef _THUMB_OPCODE_CONDITIONAL_BRANCH_ 
 #define _THUMB_OPCODE_CONDITIONAL_BRANCH_ 
 
-#include <iostream>
 #include "thumb_opcode.hpp"
-#include "../opcode.hpp"
-#include "../../../utils/utils.hpp"
-#include <vector>
+#include <string>
 
 namespace Thumb {
 
 class ConditionalBranch : public ThumbOpCode {
     public:
-		ConditionalBranch(uint16_t op, uint32_t pc, ARM7TDMI &cpu);
+		ConditionalBranch(uint16_t op, ARM7TDMI &cpu);
+        ConditionalBranch(ARM7TDMI &cpu);
+        void init(uint32_t op) override;
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

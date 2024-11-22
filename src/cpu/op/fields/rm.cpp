@@ -1,5 +1,6 @@
 #include "rm.hpp"
-#include <iostream>
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 Rm::Rm(uint16_t val) : Operand::Operand(val, OperandType::RM){
     rmVal = Utils::getRegBits(val, RM_MASK, RM_SHIFT);

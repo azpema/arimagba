@@ -1,9 +1,18 @@
 #include "push_pop_registers.hpp"
 #include "../arm/block_data_transfer.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string PushPopRegisters::op2Mnemonic[2] = {"push", "pop"};
 
 PushPopRegisters::PushPopRegisters(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+PushPopRegisters::PushPopRegisters(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void PushPopRegisters::init(uint32_t op){
+    ThumbOpCode::init(op);
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
     r = Utils::getRegBits(op, R_MASK, R_SHIFT);
     rList = Utils::getRegBits(op, RLIST_MASK, RLIST_SHIFT);
@@ -12,7 +21,7 @@ PushPopRegisters::PushPopRegisters(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::Thu
         if(((rList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);    
     }
-}   
+}
 
 std::string PushPopRegisters::getOpMnemonic(){
     return op2Mnemonic[l];

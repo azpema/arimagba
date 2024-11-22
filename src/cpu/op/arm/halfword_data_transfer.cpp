@@ -1,5 +1,6 @@
 #include "halfword_data_transfer.hpp"
-#include "../opcode.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string HalfwordDataTransfer::uFlag2Mnemonic[2] = {"-", ""};
 const std::string HalfwordDataTransfer::wFlag2Mnemonic[2] = {"", "!"};
@@ -8,6 +9,18 @@ const std::string HalfwordDataTransfer::hFlag2Mnemonic[2] = {"b", "h"};
 const std::string HalfwordDataTransfer::op2Mnemonic[2] = {"str", "ldr"};
 
 HalfwordDataTransfer::HalfwordDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+    init(op);
+}
+
+HalfwordDataTransfer::HalfwordDataTransfer(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn,
+ uint16_t rd, uint16_t s, uint16_t h, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+    init(p, u, w, l, rn, rd, s, h);
+}
+
+HalfwordDataTransfer::HalfwordDataTransfer(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {}
+
+void HalfwordDataTransfer::init(uint32_t op){
+    ArmOpcode::init(op);
     p = Utils::getRegBits(op, P_FLAG_MASK, P_FLAG_SHIFT);
     u = Utils::getRegBits(op, U_FLAG_MASK, U_FLAG_SHIFT);
     w = Utils::getRegBits(op, W_FLAG_MASK, W_FLAG_SHIFT);
@@ -18,8 +31,7 @@ HalfwordDataTransfer::HalfwordDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcod
     h = Utils::getRegBits(op, H_FLAG_MASK, H_FLAG_SHIFT);
 }
 
-HalfwordDataTransfer::HalfwordDataTransfer(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn,
- uint16_t rd, uint16_t s, uint16_t h, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+void HalfwordDataTransfer::init(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn, uint16_t rd, uint16_t s, uint16_t h){
     this->p = p;
     this->u = u;
     this->w = w;
@@ -28,7 +40,7 @@ HalfwordDataTransfer::HalfwordDataTransfer(uint16_t p, uint16_t u, uint16_t w, u
     this->rd = rd;
     this->s = s;
     this->h = h;
-} 
+}
 
 std::string HalfwordDataTransfer::getUFlagMnemonic(){
     return uFlag2Mnemonic[u];

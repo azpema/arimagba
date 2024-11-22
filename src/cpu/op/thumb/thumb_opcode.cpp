@@ -1,9 +1,19 @@
 #include "thumb_opcode.hpp"
-#include "../opcode.hpp"
+
 #include "../../../utils/utils.hpp"
+#include "../fields/operand.hpp"
+#include "../../arm7tdmi.hpp"
 
 ThumbOpCode::ThumbOpCode(uint32_t op, ARM7TDMI& cpu) : OpCode::OpCode(op, cpu){
     opcode = op;
+}
+
+ThumbOpCode::ThumbOpCode(ARM7TDMI& cpu) : OpCode::OpCode(cpu){
+    
+}
+
+void ThumbOpCode::init(uint32_t op){
+    OpCode::init(op);
 }
 
 // Thumb instructions have no conditions; they are always executed

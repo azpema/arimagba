@@ -1,17 +1,15 @@
 #ifndef _THUMB_OPCODE_LONG_BRANCH_WITH_LINK_ 
 #define _THUMB_OPCODE_LONG_BRANCH_WITH_LINK_ 
 
-#include <iostream>
 #include "thumb_opcode.hpp"
-#include "../opcode.hpp"
-#include "../../../utils/utils.hpp"
-#include <vector>
 
 namespace Thumb {
 
 class LongBranchWithLink : public ThumbOpCode {
 	public:
-		LongBranchWithLink(uint16_t op, uint32_t pc, ARM7TDMI &cpu);
+		LongBranchWithLink(uint16_t op, ARM7TDMI &cpu);
+        LongBranchWithLink(ARM7TDMI &cpu);
+        void init(uint32_t op) override;
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

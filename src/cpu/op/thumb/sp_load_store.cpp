@@ -1,10 +1,19 @@
 #include "sp_load_store.hpp"
 #include "../arm/single_data_transfer.hpp"
 #include "../fields/imm.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string SPLoadStore::l2Mnemonic[2] = {"str", "ldr"};
 
 SPLoadStore::SPLoadStore(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+SPLoadStore::SPLoadStore(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void SPLoadStore::init(uint32_t op){
+    ThumbOpCode::init(op);
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
     rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
     word8 = Utils::getRegBits(op, WORD8_MASK, WORD8_SHIFT);

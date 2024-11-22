@@ -9,6 +9,8 @@
 class AddSubtract : public ThumbOpCode {
     public:
 		AddSubtract(uint16_t op, ARM7TDMI &cpu);
+        AddSubtract(ARM7TDMI &cpu);
+        void init(uint32_t op) override;
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

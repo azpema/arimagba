@@ -1,8 +1,20 @@
 #include "branch_and_exchange.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
+
 
 BranchAndExchange::BranchAndExchange(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+    init(op);
+}
+
+BranchAndExchange::BranchAndExchange(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+    
+}
+
+void BranchAndExchange::init(uint32_t op){
+    ArmOpcode::init(op);
     Rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
-}   
+}
 
 std::string BranchAndExchange::toString(){
     return "bx" + getCondFieldMnemonic() + " " + OpCode::getRegMnemonic(Rn);

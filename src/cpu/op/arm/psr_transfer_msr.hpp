@@ -3,11 +3,7 @@
 
 #include <iostream>
 #include "arm_opcode.hpp"
-#include "../../../utils/utils.hpp"
 #include "../fields/operand.hpp"
-#include "../fields/rotate_imm.hpp"
-#include "../fields/rm.hpp"
-
 
 class PSRTransferMSR : public ArmOpcode {
     public:
@@ -16,7 +12,9 @@ class PSRTransferMSR : public ArmOpcode {
 
     public:
         PSRTransferMSR(uint32_t op, ARM7TDMI &cpu);
+        PSRTransferMSR(ARM7TDMI &cpu);
         ~PSRTransferMSR() override;
+        void init(uint32_t op) override;
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

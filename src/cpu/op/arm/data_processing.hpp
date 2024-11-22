@@ -1,17 +1,21 @@
+#ifndef _OPCODE_DATA_PROCESSING_
+#define _OPCODE_DATA_PROCESSING_
+
 #include <iostream>
 #include "arm_opcode.hpp"
 #include "../fields/operand.hpp"
-#include "../fields/shift_rm.hpp"
-#include "../fields/imm.hpp"
-#include "../fields/rotate_imm.hpp"
 
 class DataProcessing : public ArmOpcode {
     public:
         DataProcessing();
 		DataProcessing(uint32_t op, ARM7TDMI &cpu);
+        DataProcessing(ARM7TDMI &cpu);
         DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2, 
           ARM7TDMI &cpu, bool overrideOperands=false, uint32_t op1Val=0);
         ~DataProcessing();
+        void init(uint32_t op) override;
+        void init(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2, 
+           bool overrideOperands=false, uint32_t op1Val=0);
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;
@@ -91,3 +95,5 @@ class DataProcessing : public ArmOpcode {
         void doExecuteCmn(ARM7TDMI &cpu);
         void doExecuteTeq(ARM7TDMI &cpu);
 };
+
+#endif

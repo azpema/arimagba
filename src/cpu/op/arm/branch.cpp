@@ -1,22 +1,37 @@
 #include "branch.hpp"
-#include <bitset>
+
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 using namespace ARM;
 
 const std::string Branch::linkFlag2Mnemonic[2] = {"", "l"};
 
-Branch::Branch(uint32_t op, uint32_t pc, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+Branch::Branch(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+    init(op);
+}
+
+Branch::Branch(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+    
+} 
+
+Branch::Branch(uint32_t offsetField, uint32_t realOffset, uint32_t cond, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu){
+    init(offsetField, realOffset, cond);
+}
+
+void Branch::init(uint32_t op){
+    ArmOpcode::init(op);
     L = Utils::getRegBits(op, LINK_MASK, LINK_SHIFT);
     offsetField = Utils::getRegBits(op, OFFSET_MASK, OFFSET_SHIFT);
-    realOffset = static_cast<int32_t>(Utils::twosComplementExtendSignTo(offsetField, 24, 32) << 2) + pc + 8;
-    oldPC = pc;
-}   
+    realOffset = static_cast<int32_t>(Utils::twosComplementExtendSignTo(offsetField, 24, 32) << 2) + cpu.getPC() + 8;
+    oldPC = cpu.getPC() - 4;
+}
 
-Branch::Branch(uint32_t pc, uint32_t offsetField, uint32_t realOffset, uint32_t cond, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu){
+void Branch::init(uint32_t offsetField, uint32_t realOffset, uint32_t cond){
     L = 0;
     this->offsetField = offsetField;
     this->realOffset = realOffset;
-    this->oldPC = pc;
+    this->oldPC = cpu.getPC() - 4;
 
     condRaw = cond;
     this->cond = static_cast<Condition>(cond);

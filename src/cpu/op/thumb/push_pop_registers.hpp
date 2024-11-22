@@ -1,15 +1,14 @@
 #ifndef _THUMB_OPCODE_PUSH_POP_REGISTERS_ 
 #define _THUMB_OPCODE_PUSH_POP_REGISTERS_ 
 
-#include <iostream>
 #include <vector>
 #include "thumb_opcode.hpp"
-#include "../opcode.hpp"
-#include "../../../utils/utils.hpp"
 
 class PushPopRegisters : public ThumbOpCode {
     public:
 		PushPopRegisters(uint16_t op, ARM7TDMI &cpu);
+        PushPopRegisters(ARM7TDMI &cpu);
+        void init(uint32_t op) override;
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

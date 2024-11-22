@@ -2,11 +2,20 @@
 
 #include "../arm/single_data_transfer.hpp"
 #include "../fields/imm.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string LoadStoreImmOffset::b2Mnemonic[2] = {"", "b"};
 const std::string LoadStoreImmOffset::op2Mnemonic[2] = {"str", "ldr"};
 
 LoadStoreImmOffset::LoadStoreImmOffset(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+LoadStoreImmOffset::LoadStoreImmOffset(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void LoadStoreImmOffset::init(uint32_t op){
+    ThumbOpCode::init(op);
     b = Utils::getRegBits(op, B_MASK, B_SHIFT);
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
     offset5 = Utils::getRegBits(op, OFFSET5_MASK, OFFSET5_SHIFT);

@@ -1,9 +1,18 @@
 #include "multiple_load_store.hpp"
 #include "../arm/block_data_transfer.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string MultipleLoadStore::op2Mnemonic[2] = {"stmia", "ldmia"};
 
 MultipleLoadStore::MultipleLoadStore(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+MultipleLoadStore::MultipleLoadStore(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void MultipleLoadStore::init(uint32_t op){
+    ThumbOpCode::init(op);
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
     rb = Utils::getRegBits(op, RB_MASK, RB_SHIFT);
     rList = Utils::getRegBits(op, RLIST_MASK, RLIST_SHIFT);
@@ -12,7 +21,7 @@ MultipleLoadStore::MultipleLoadStore(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::T
         if(((rList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);    
     }
-}   
+}
 
 std::string MultipleLoadStore::getOpMnemonic(){
     return op2Mnemonic[l];

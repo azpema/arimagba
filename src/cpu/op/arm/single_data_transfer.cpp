@@ -1,4 +1,7 @@
 #include "single_data_transfer.hpp"
+#include "../fields/shift_rm.hpp"
+#include "../fields/imm.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string SingleDataTransfer::UFlag2Mnemonic[2] = {"-", ""};
 const std::string SingleDataTransfer::BFlag2Mnemonic[2] = {"", "b"};
@@ -6,6 +9,18 @@ const std::string SingleDataTransfer::WFlag2Mnemonic[2] = {"", "!"};
 const std::string SingleDataTransfer::LFlag2Mnemonic[2] = {"str", "ldr"};
 
 SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+    init(op);
+}
+
+SingleDataTransfer::SingleDataTransfer(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {}
+
+SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 
+    uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu, bool forcePcBit1To0) : ArmOpcode::ArmOpcode(cpu){
+        init(i, p, u, b, w, l, rn, rd, offset, forcePcBit1To0);
+}
+
+void SingleDataTransfer::init(uint32_t op){
+    ArmOpcode::init(op);
     I = Utils::getRegBits(op, I_MASK, I_SHIFT);
     P = Utils::getRegBits(op, P_MASK, P_SHIFT);
     U = Utils::getRegBits(op, U_MASK, U_SHIFT);
@@ -26,9 +41,7 @@ SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::A
     forcePcBit1To0 = false;
 }
 
-SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 
-    uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu, bool forcePcBit1To0) : ArmOpcode::ArmOpcode(cpu){
-
+void SingleDataTransfer::init(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, uint8_t rn, uint8_t rd, uint16_t offset, bool forcePcBit1To0){
     this->I = i;
     this->P = p;
     this->U = u;
@@ -59,7 +72,6 @@ SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t 
 
     setRawVal(raw);
 }
-
 
 
 SingleDataTransfer::~SingleDataTransfer(){

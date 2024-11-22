@@ -1,13 +1,22 @@
 #include "move_comp_add_sub_imm.hpp"
 #include "../arm/data_processing.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string MoveCompAddSubImm::op2Mnemonic[4] = {"mov", "cmp", "add", "sub"};
 
 MoveCompAddSubImm::MoveCompAddSubImm(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+MoveCompAddSubImm::MoveCompAddSubImm(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void MoveCompAddSubImm::init(uint32_t op){
+    ThumbOpCode::init(op);
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
     rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
     offset8 = Utils::getRegBits(op, OFFSET8_MASK, OFFSET8_SHIFT);
-}   
+}
 
 std::string MoveCompAddSubImm::getOpMnemonic(){
     return op2Mnemonic[opField];

@@ -1,5 +1,6 @@
 #include "rotate_imm.hpp"
-#include <iostream>
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 //ROR by 32 has result equal to Rm, carry out equal to bit 31 of Rm.
 RotateImm::RotateImm(uint16_t val) : Operand::Operand(val, OperandType::ROTATE_IMM){

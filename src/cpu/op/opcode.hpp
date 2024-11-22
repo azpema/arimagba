@@ -4,13 +4,11 @@
 class ARM7TDMI;
 
 #include <iostream>
-#include "../../utils/utils.hpp"
-#include "../arm7tdmi.hpp"
-#include "../../memory/memory_manager.hpp"
 
 class OpCode {
 	public:
 		virtual ~OpCode() {};
+		virtual void init(uint32_t op);
 		virtual std::string toString() = 0;
 		std::string toHexString();
 		virtual bool execute() = 0;

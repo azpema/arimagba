@@ -1,14 +1,13 @@
 #ifndef _THUMB_OPCODE_LOAD_ADDRESS_ 
 #define _THUMB_OPCODE_LOAD_ADDRESS_ 
 
-#include <iostream>
 #include "thumb_opcode.hpp"
-#include "../opcode.hpp"
-#include "../../../utils/utils.hpp"
 
 class LoadAddress : public ThumbOpCode {
     public:
 		LoadAddress(uint16_t op, ARM7TDMI &cpu);
+        LoadAddress(ARM7TDMI &cpu);
+        void init(uint32_t op) override;
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

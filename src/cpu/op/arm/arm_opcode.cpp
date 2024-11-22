@@ -1,5 +1,8 @@
 #include "arm_opcode.hpp"
+
+#include "../fields/operand.hpp"
 #include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string ArmOpcode::condCode2Suffix[15] = {
             "eq",	// Z set, equal
@@ -20,7 +23,13 @@ const std::string ArmOpcode::condCode2Suffix[15] = {
         };
 
 ArmOpcode::ArmOpcode(uint32_t op, ARM7TDMI& cpu) : OpCode::OpCode(op, cpu) {
-    opcode = op;
+    // TODO OpCode is initialized twice!!!
+    init(op);
+}
+
+ArmOpcode::ArmOpcode(ARM7TDMI& cpu) : OpCode::OpCode(cpu) {
+    // Set some default values
+    opcode = Condition::AL << COND_FIELD_SHIFT;
     condRaw = Utils::getRegBits(opcode, COND_FIELD_MASK, COND_FIELD_SHIFT);
     if(condRaw <= 14){
         cond = static_cast<Condition>(condRaw);
@@ -29,8 +38,9 @@ ArmOpcode::ArmOpcode(uint32_t op, ARM7TDMI& cpu) : OpCode::OpCode(op, cpu) {
     }
 }
 
-ArmOpcode::ArmOpcode(ARM7TDMI& cpu) : OpCode::OpCode(cpu) {
-    opcode = Condition::AL << COND_FIELD_SHIFT;
+void ArmOpcode::init(uint32_t op){
+    OpCode::init(op);
+    opcode = op;
     condRaw = Utils::getRegBits(opcode, COND_FIELD_MASK, COND_FIELD_SHIFT);
     if(condRaw <= 14){
         cond = static_cast<Condition>(condRaw);

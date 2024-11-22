@@ -1,9 +1,20 @@
 #include "add_offset_sp.hpp"
 #include "../arm/data_processing.hpp"
+#include "../../../utils/utils.hpp"
+#include "../fields/rotate_imm.hpp"
+#include "../../arm7tdmi.hpp"
+
 
 const std::string AddOffsetSP::s2Mnemonic[2] = {"", "-"};
 
 AddOffsetSP::AddOffsetSP(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+AddOffsetSP::AddOffsetSP(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void AddOffsetSP::init(uint32_t op){
+    ThumbOpCode::init(op);
     s = Utils::getRegBits(op, S_MASK, S_SHIFT);
     sWord7 = Utils::getRegBits(op, SWORD7_MASK, SWORD7_SHIFT);
     offsetStr = (sWord7 << 2);

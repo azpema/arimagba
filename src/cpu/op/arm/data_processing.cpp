@@ -1,6 +1,10 @@
 #include "data_processing.hpp"
-#include "../../../utils/utils.hpp"
 #include <string>
+#include "../../../utils/utils.hpp"
+#include "../fields/shift_rm.hpp"
+#include "../fields/imm.hpp"
+#include "../fields/rotate_imm.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string DataProcessing::dataOpCode2Mnemonic[16] = { "and", "eor", "sub", "rsb",
                                                               "add", "adc", "sbc", "rsc",
@@ -10,6 +14,22 @@ const std::string DataProcessing::dataOpCode2Mnemonic[16] = { "and", "eor", "sub
 const std::string DataProcessing::SFlag2Mnemonic[2] = {"", "s"};
 
 DataProcessing::DataProcessing(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+    init(op);
+}
+
+DataProcessing::DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2,
+ ARM7TDMI &cpu, bool overrideOperands, uint32_t op1Val) : ArmOpcode::ArmOpcode(cpu){
+    init(i, opCode, s, rn, rd, operand2, overrideOperands, op1Val);
+}
+
+DataProcessing::DataProcessing(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {}
+
+DataProcessing::~DataProcessing() {
+    
+}
+
+void DataProcessing::init(uint32_t op){
+    ArmOpcode::init(op);
     dataOpCode = Utils::getRegBits(op, OPCODE_MASK, OPCODE_SHIFT);
     i = Utils::getRegBits(op, IMMEDIATE_OPERAND_MASK, IMMEDIATE_OPERAND_SHIFT);
     s = Utils::getRegBits(op, SET_CONDITION_MASK, SET_CONDITION_SHIFT);
@@ -27,8 +47,7 @@ DataProcessing::DataProcessing(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode
     overrideOperands = false;
 }
 
-DataProcessing::DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2,
- ARM7TDMI &cpu, bool overrideOperands, uint32_t op1Val) : ArmOpcode::ArmOpcode(cpu){
+void DataProcessing::init(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn, uint8_t rd, uint16_t operand2, bool overrideOperands, uint32_t op1Val){
     this->dataOpCode = opCode;
     this->i = i;
     this->s = s;
@@ -56,10 +75,6 @@ DataProcessing::DataProcessing(uint8_t i, uint8_t opCode, uint8_t s, uint8_t rn,
 
     setRawVal(raw);
 }
-
-
-DataProcessing::~DataProcessing() {
-}   
 
 /*
 Certain operations (TST, TEQ, CMP, CMN) do not write the result to Rd. They are used

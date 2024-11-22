@@ -1,9 +1,18 @@
 #include "long_branch_with_link.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 using namespace Thumb;
 
-LongBranchWithLink::LongBranchWithLink(uint16_t op, uint32_t pc, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
-    _type = LONG_BRANCH_WITH_LINK;
+LongBranchWithLink::LongBranchWithLink(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+LongBranchWithLink::LongBranchWithLink(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void LongBranchWithLink::init(uint32_t op){
+    ThumbOpCode::init(op);
+    _type = ThumbOpCode::OpCodeEnum::LONG_BRANCH_WITH_LINK;
     h = Utils::getRegBits(op, H_MASK, H_SHIFT);
     offset = Utils::getRegBits(op, OFFSET_MASK, OFFSET_SHIFT);
     // TODO fix possible bug
@@ -17,7 +26,7 @@ LongBranchWithLink::LongBranchWithLink(uint16_t op, uint32_t pc, ARM7TDMI &cpu):
     }else{
         throw std::runtime_error("ERROR: Invalid h value in LongBranchWithLink::LongBranchWithLink");
     }
-}   
+}
 
 
 std::string LongBranchWithLink::toString(){

@@ -1,10 +1,19 @@
 #include "multiply_accumulate_long.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string MultiplyAccumulateLong::uFlag2Mnemonic[2] = {"u", "s"};
 const std::string MultiplyAccumulateLong::sFlag2Mnemonic[2] = {"", "s"};
 const std::string MultiplyAccumulateLong::op2Mnemonic[2] = {"mull", "mlal"};
 
 MultiplyAccumulateLong::MultiplyAccumulateLong(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+    init(op);
+}
+
+MultiplyAccumulateLong::MultiplyAccumulateLong(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {}
+
+void MultiplyAccumulateLong::init(uint32_t op){
+    ArmOpcode::init(op);
     u = Utils::getRegBits(op, U_FLAG_MASK, U_FLAG_SHIFT);
     a = Utils::getRegBits(op, A_FLAG_MASK, A_FLAG_SHIFT);
     s = Utils::getRegBits(op, S_FLAG_MASK, S_FLAG_SHIFT);
@@ -12,7 +21,7 @@ MultiplyAccumulateLong::MultiplyAccumulateLong(uint32_t op, ARM7TDMI &cpu): ArmO
     rdLo = Utils::getRegBits(op, RDLO_FLAG_MASK, RDLO_FLAG_SHIFT);
     rs = Utils::getRegBits(op, RS_FLAG_MASK, RS_FLAG_SHIFT);
     rm = Utils::getRegBits(op, RM_FLAG_MASK, RM_FLAG_SHIFT);
-}   
+}
 
 std::string MultiplyAccumulateLong::getUFlagMnemonic(){
     return uFlag2Mnemonic[u];

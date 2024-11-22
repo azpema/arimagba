@@ -1,13 +1,20 @@
 #include "pc_relative_load.hpp"
 #include "../arm/single_data_transfer.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 PCRelativeLoad::PCRelativeLoad(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+PCRelativeLoad::PCRelativeLoad(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void PCRelativeLoad::init(uint32_t op){
+    ThumbOpCode::init(op);
     rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
     word8 = Utils::getRegBits(op, WORD8_MASK, WORD8_SHIFT);
     offset = word8 << 2;
-}   
-
-
+}
 
 std::string PCRelativeLoad::toString(){
     return "ldr " + OpCode::getRegMnemonic(rd) + ",[pc,#" + Utils::toHexString(offset) + "]";

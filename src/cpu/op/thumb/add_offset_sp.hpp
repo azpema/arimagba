@@ -1,14 +1,13 @@
 #ifndef _THUMB_OPCODE_ADD_OFFSET_SP_ 
 #define _THUMB_OPCODE_ADD_OFFSET_SP_ 
 
-#include <iostream>
 #include "thumb_opcode.hpp"
-#include "../opcode.hpp"
-#include "../../../utils/utils.hpp"
 
 class AddOffsetSP : public ThumbOpCode {
     public:
 		AddOffsetSP(uint16_t op, ARM7TDMI &cpu);
+        AddOffsetSP(ARM7TDMI &cpu);
+        void init(uint32_t op) override;
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

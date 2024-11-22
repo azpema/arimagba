@@ -1,15 +1,16 @@
 #ifndef _OPCODE_MULTIPLY_ACCUMULATE_ 
 #define _OPCODE_MULTIPLY_ACCUMULATE_ 
 
-#include <iostream>
+#include <string>
 #include "arm_opcode.hpp"
-#include "../../../utils/utils.hpp"
-
 
 class MultiplyAccumulate : public ArmOpcode {
 	public:
 		MultiplyAccumulate(uint32_t op, ARM7TDMI &cpu);
+        MultiplyAccumulate(ARM7TDMI &cpu);
         MultiplyAccumulate(uint32_t a, uint32_t s, uint32_t rd, uint32_t rn, uint32_t rs, uint32_t rm, ARM7TDMI &cpu);
+        void init(uint32_t op) override;
+        void init(uint32_t a, uint32_t s, uint32_t rd, uint32_t rn, uint32_t rs, uint32_t rm);
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

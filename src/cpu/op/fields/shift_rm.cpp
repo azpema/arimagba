@@ -1,5 +1,6 @@
 #include "shift_rm.hpp"
-#include <iostream>
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string ShiftRm::shiftType2Mnemonic[4] = {"lsl", "lsr", "asr", "ror"};
 

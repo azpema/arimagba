@@ -1,8 +1,16 @@
 #include "single_data_swap.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string SingleDataSwap::bFlag2Mnemonic[2] = {"", "b"};
 
 SingleDataSwap::SingleDataSwap(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+    init(op);
+}
+
+SingleDataSwap::SingleDataSwap(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {}
+
+void SingleDataSwap::init(uint32_t op){
+    ArmOpcode::init(op);
     b = Utils::getRegBits(op, B_MASK, B_SHIFT);
     rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
     rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);

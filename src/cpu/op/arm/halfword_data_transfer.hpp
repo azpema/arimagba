@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "arm_opcode.hpp"
-#include "../../../utils/utils.hpp"
+
 
 class HalfwordDataTransfer : public ArmOpcode {
     public:
@@ -11,12 +11,15 @@ class HalfwordDataTransfer : public ArmOpcode {
         virtual void doExecute() = 0;
         virtual void doDecode() = 0;
     protected:
-        void _doExecute(uint32_t offsetVal);
-        uint16_t p, u, w, l, rn, rd, s, h;
         HalfwordDataTransfer(uint32_t op, ARM7TDMI &cpu);
+        HalfwordDataTransfer(ARM7TDMI &cpu);
         HalfwordDataTransfer(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn,
             uint16_t rd, uint16_t s, uint16_t h, ARM7TDMI &cpu);
-
+        void init(uint32_t op) override;
+        void init(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn,
+            uint16_t rd, uint16_t s, uint16_t h);
+        void _doExecute(uint32_t offsetVal);
+        uint16_t p, u, w, l, rn, rd, s, h;
         const static uint32_t P_FLAG_MASK = 0b00000001000000000000000000000000; 
         const static uint32_t P_FLAG_SHIFT = 24;
 

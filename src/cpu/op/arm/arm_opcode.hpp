@@ -3,15 +3,13 @@
 
 class ARM7TDMI;
 
+#include <string>
 #include "../opcode.hpp"
-#include <iostream>
-#include "../../../utils/utils.hpp"
-#include "../fields/operand.hpp"
-#include "../../arm7tdmi.hpp"
 
 class ArmOpcode : public OpCode {
 	public:
 		virtual ~ArmOpcode() {};
+		virtual void init(uint32_t op) override;
 		virtual std::string toString() = 0;
 		std::string toHexString();
 		bool execute() override;
@@ -44,6 +42,22 @@ class ArmOpcode : public OpCode {
 		ArmOpcode::Condition getCondField();
 		std::string getCondFieldMnemonic();
 		static std::string getRegMnemonic(uint16_t reg);
+
+		enum class OpCodeEnum {	BRANCH_AND_EXCHANGE,
+								BLOCK_DATA_TRANSFER,
+								BRANCH,
+								SOFTWARE_INTERRUPT,
+								UNDEFINED,
+								SINGLE_DATA_TRANSFER,
+								SINGLE_DATA_SWAP,
+								MULTIPLY,
+								MULTIPLY_LONG,
+								HALFWORD_DATA_TRANSFER_REGISTER,
+								HALFWORD_DATA_TRANSFER_OFFSET,
+								PSR_TRANSFER_MRS,
+								PSR_TRANSFER_MSR,
+								DATA_PROCESSING
+		};
 
 	protected:
 		ArmOpcode(uint32_t op, ARM7TDMI &cpu);

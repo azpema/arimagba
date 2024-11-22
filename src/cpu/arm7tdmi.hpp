@@ -1,18 +1,22 @@
 #ifndef _ARM7TDMI_ 
 #define _ARM7TDMI_ 
 
+class ArmPool;
 class OpCode;
 class BarrelShifter;
 class ExceptionHandler;
 
 #include <iostream>
 #include <memory>
+#include <functional>
 #include "registers/cpsr.hpp"
-#include "../memory/memory_manager.hpp"
 #include "components/alu.hpp"
 #include "components/barrel_shifter.hpp"
 #include "components/exception_handler.hpp"
 #include "op/opcode.hpp"
+#include "op/arm_pool.hpp"
+#include "op/thumb_pool.hpp"
+#include "../memory/memory_manager.hpp"
 
 class MemoryManager;
 
@@ -21,7 +25,7 @@ class ARM7TDMI {
 		ARM7TDMI(MemoryManager *memoryManager);
 		~ARM7TDMI();
 		
-		std::unique_ptr<OpCode> decodeInstruction(uint32_t op, uint32_t pc);
+		OpCode* decodeInstruction(uint32_t op, uint32_t pc);
 
 		PSR& getCPSR();
 		PSR& getSPSR();
@@ -57,6 +61,9 @@ class ARM7TDMI {
 		const static uint32_t CPU_CYCLES_PER_I_CYCLE = 1;
 
 	private:
+		void generateThumbDecodingLookup();
+		ArmPool armPool;
+		ThumbPool thumbPool;
 		/*
 		The ARM7TDMI processor has a total of 37 registers:
 			- 31 general-purpose 32-bit registers:
@@ -112,7 +119,7 @@ class ARM7TDMI {
 
 		// Pipeline
 		uint32_t insFetch, insDecode;
-		std::unique_ptr<OpCode> opExecute;
+		OpCode* opExecute;
 		bool insFetchSet = false;
 		bool insDecodeSet = false;
 		bool insExecuteSet = false;
@@ -122,8 +129,8 @@ class ARM7TDMI {
 		PSR& getCorrespondingSPSR();
 		uint32_t getSPSRval();
 
-		std::unique_ptr<OpCode> decodeInstructionARM(uint32_t op, uint32_t pc);
-		std::unique_ptr<OpCode> decodeInstructionThumb(uint16_t op, uint32_t pc);
+		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
+		OpCode* decodeInstructionThumb(uint16_t op);
 };	
 
 #endif

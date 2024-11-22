@@ -1,9 +1,19 @@
 #include "load_address.hpp"
 #include "../arm/data_processing.hpp"
+#include "../../../utils/utils.hpp"
+#include "../fields/rotate_imm.hpp"
+#include "../../arm7tdmi.hpp"
 
 const uint8_t LoadAddress::sp2RegVal[2] = {15, 13};
 
 LoadAddress::LoadAddress(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+LoadAddress::LoadAddress(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void LoadAddress::init(uint32_t op){
+    ThumbOpCode::init(op);
     sp = Utils::getRegBits(op, SP_MASK, SP_SHIFT);
     rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
     word8 = Utils::getRegBits(op, WORD8_MASK, WORD8_SHIFT);

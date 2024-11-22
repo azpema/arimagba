@@ -1,47 +1,11 @@
 #include "arm7tdmi.hpp"
 #include "op/arm/arm_opcode.hpp"
 #include "op/thumb/thumb_opcode.hpp"
-
-// ARM
-#include "op/arm/data_processing.hpp"
-#include "op/arm/branch.hpp"
-#include "op/arm/branch_and_exchange.hpp"
-#include "op/arm/single_data_transfer.hpp"
-#include "op/arm/block_data_transfer.hpp"
-#include "op/arm/psr_transfer_mrs.hpp"
-#include "op/arm/psr_transfer_msr.hpp"
-#include "op/arm/undefined.hpp"
-#include "op/arm/software_interrupt.hpp"
-#include "op/arm/multiply_accumulate.hpp"
-#include "op/arm/multiply_accumulate_long.hpp"
-#include "op/arm/single_data_swap.hpp"
-#include "op/arm/halfword_data_transfer_register.hpp"
-#include "op/arm/halfword_data_transfer_offset.hpp"
-
-// Thumb
-#include "op/thumb/move_comp_add_sub_imm.hpp"
-#include "op/thumb/move_shifted_register.hpp"
-#include "op/thumb/add_subtract.hpp"
-#include "op/thumb/alu_operations.hpp"
-#include "op/thumb/hi_register_branch_exchange.hpp"
-#include "op/thumb/pc_relative_load.hpp"
-#include "op/thumb/load_store_register_offset.hpp"
-#include "op/thumb/push_pop_registers.hpp"
-#include "op/thumb/add_offset_sp.hpp"
-#include "op/thumb/sp_load_store.hpp"
-#include "op/thumb/load_address.hpp"
-#include "op/thumb/load_store_sign_extended.hpp"
-#include "op/thumb/load_store_halfword.hpp"
-#include "op/thumb/load_store_imm_offset.hpp"
-#include "op/thumb/multiple_load_store.hpp"
-#include "op/thumb/software_interrupt.hpp"
-#include "op/thumb/unconditional_branch.hpp"
-#include "op/thumb/conditional_branch.hpp"
-#include "op/thumb/long_branch_with_link.hpp"
-
+#include "op/arm_pool.hpp"
+#include "op/thumb_pool.hpp"
 #include <iostream>
 
-ARM7TDMI::ARM7TDMI(MemoryManager *memManager) {
+ARM7TDMI::ARM7TDMI(MemoryManager *memManager) : armPool(*this), thumbPool(*this){
 	mem = memManager;
 	//cpsr = PSR();
 	for(size_t i=0; i<16; i++){
@@ -70,20 +34,62 @@ ARM7TDMI::ARM7TDMI(MemoryManager *memManager) {
 	exceptionHandler = std::make_unique<ExceptionHandler>(*this);
 
 	spsr_fiq.setValue(0xF00000FF);
+
+	generateThumbDecodingLookup();
 }
 
 ARM7TDMI::~ARM7TDMI() {
 }
 
-std::unique_ptr<OpCode> ARM7TDMI::decodeInstruction(uint32_t op, uint32_t pc){
+OpCode* ARM7TDMI::decodeInstruction(uint32_t op, uint32_t pc){
 	if(cpsr.isThumbMode()){
-		return decodeInstructionThumb(op, pc);
+		return decodeInstructionThumb(op);
 	}else{
 		return decodeInstructionARM(op, pc);
 	}
 }
 
-std::unique_ptr<OpCode> ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
+OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
+	OpCode * armOpcodeInstance = nullptr;
+
+	if(ArmOpcode::isBranchAndExchange(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::BRANCH_AND_EXCHANGE);
+	}else if (ArmOpcode::isBlockDataTransfer(op)) {
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::BRANCH_AND_EXCHANGE);
+	}else if(ArmOpcode::isBranch(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::BRANCH);
+	}else if(ArmOpcode::isSoftwareInterrupt(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::SOFTWARE_INTERRUPT);
+	}else if(ArmOpcode::isUndefined(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::UNDEFINED);
+	}else if(ArmOpcode::isSingleDataTransfer(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::SINGLE_DATA_TRANSFER);
+	}else if(ArmOpcode::isSingleDataSwap(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::SINGLE_DATA_SWAP);
+	}else if(ArmOpcode::isMultiply(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::MULTIPLY);
+	}else if(ArmOpcode::isMultiplyLong(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::MULTIPLY_LONG);
+	}else if(ArmOpcode::isHalfwordDataTransferRegister(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::HALFWORD_DATA_TRANSFER_REGISTER);
+	}else if(ArmOpcode::isHalfwordDataTransferOffset(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::HALFWORD_DATA_TRANSFER_OFFSET);
+	}else if(ArmOpcode::isPSRTransferMRS(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::PSR_TRANSFER_MRS);
+	}else if(ArmOpcode::isPSRTransferMSR(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::PSR_TRANSFER_MSR);
+	}else if(ArmOpcode::isDataProcessing(op)){
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING);
+	}else{
+		throw std::runtime_error("ERROR: Unrecognized instruction in decodeInstructionARM");
+	}
+
+	armOpcodeInstance->init(op);
+
+	return armOpcodeInstance;
+}
+
+/*OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 	if(ArmOpcode::isBranchAndExchange(op)){
 		return std::make_unique<BranchAndExchange>(op, *this);
 	}else if (ArmOpcode::isBlockDataTransfer(op)) {
@@ -116,51 +122,123 @@ std::unique_ptr<OpCode> ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc)
 
 	throw std::runtime_error("ERROR: Unrecognized instruction in decodeInstructionARM");
 	return nullptr;
+}*/
+
+/*static std::unordered_map<uint16_t, std::function<std::unique_ptr<OpCode>(uint16_t)>> opCodeHandlers;
+
+void ARM7TDMI::generateThumbDecodingLookup(){
+	for(size_t i=0; i<256; i++){
+		uint16_t op = i << 8;
+
+		if(ThumbOpCode::isSoftwareInterrupt(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<Thumb::SoftwareInterrupt>(op, *this); } });
+		}else if (ThumbOpCode::isAddOffsetToSP(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<AddOffsetSP>(op, *this); } });
+		}else if(ThumbOpCode::isPushPopRegisters(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<PushPopRegisters>(op, *this); } });
+		}else if(ThumbOpCode::isALUOperations(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<ALUOperations>(op, *this); } });
+		}else if(ThumbOpCode::isHiRegisterBranchExchange(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<HiRegisterBranchExchange>(op, *this); } });
+		}else if(ThumbOpCode::isPCRelativeLoad(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<PCRelativeLoad>(op, *this); } });
+		}else if(ThumbOpCode::isLoadStoreRegisterOffset(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<LoadStoreRegisterOffset>(op, *this); } });
+		}else if(ThumbOpCode::isLoadStoreSignExtended(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<LoadStoreSignExtended>(op, *this); } });
+		}else if(ThumbOpCode::isUnconditionalBranch(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<Thumb::UnconditionalBranch>(op, *this); } });
+		}else if(ThumbOpCode::isAddSubtract(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<AddSubtract>(op, *this); } });
+		}else if(ThumbOpCode::isLoadStoreHalfword(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<LoadStoreHalfword>(op, *this); } });
+		}else if(ThumbOpCode::isSPLoadStore(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<SPLoadStore>(op, *this); } });
+		}else if(ThumbOpCode::isLoadAddress(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<LoadAddress>(op, *this); } });
+		}else if(ThumbOpCode::isMultipleLoadStore(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<MultipleLoadStore>(op, *this); } });
+		}else if(ThumbOpCode::isConditionalBranch(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<Thumb::ConditionalBranch>(op, *this); } });
+		}else if(ThumbOpCode::isLongBranchWithLink(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<Thumb::LongBranchWithLink>(op, *this); } });
+		}else if(ThumbOpCode::isMoveShiftedRegister(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<MoveShiftedRegister>(op, *this); } });
+		}else if(ThumbOpCode::isMoveCompAddSubImm(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<MoveCompAddSubImm>(op, *this); } });
+		}else if(ThumbOpCode::isLoadStoreImmOffset(op)){
+			opCodeHandlers.insert({ op, [this](uint16_t op) { return std::make_unique<LoadStoreImmOffset>(op, *this); } });
+		}
+
+	}
+}*/
+
+static std::unordered_map<uint16_t, OpCode*> thumbOpcodeInstance;
+
+void ARM7TDMI::generateThumbDecodingLookup(){
+	for(size_t i=0; i<256; i++){
+		uint16_t op = i << 8;
+
+		ThumbOpCode::OpCodeEnum thumbEnum;
+
+		if(ThumbOpCode::isSoftwareInterrupt(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::SOFTWARE_INTERRUPT;
+		}else if (ThumbOpCode::isAddOffsetToSP(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::ADD_OFFSET_TO_SP;
+		}else if(ThumbOpCode::isPushPopRegisters(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::PUSH_POP_REGISTERS;
+		}else if(ThumbOpCode::isALUOperations(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::ALU_OPERATIONS;
+		}else if(ThumbOpCode::isHiRegisterBranchExchange(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::HI_REGISTER_BRANCH_EXCHANGE;
+		}else if(ThumbOpCode::isPCRelativeLoad(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::PC_RELATIVE_LOAD;
+		}else if(ThumbOpCode::isLoadStoreRegisterOffset(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::LOAD_STORE_REGISTER_OFFSET;
+		}else if(ThumbOpCode::isLoadStoreSignExtended(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::LOAD_STORE_SIGN_EXTENDED;
+		}else if(ThumbOpCode::isUnconditionalBranch(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::UNCONDITIONAL_BRANCH;
+		}else if(ThumbOpCode::isAddSubtract(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::ADD_SUBTRACT;
+		}else if(ThumbOpCode::isLoadStoreHalfword(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::LOAD_STORE_HALFWORD;
+		}else if(ThumbOpCode::isSPLoadStore(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::SP_LOAD_STORE;
+		}else if(ThumbOpCode::isLoadAddress(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::LOAD_ADDRESS;
+		}else if(ThumbOpCode::isMultipleLoadStore(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::MULTIPLE_LOAD_STORE;
+		}else if(ThumbOpCode::isConditionalBranch(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::CONDITIONAL_BRANCH;
+		}else if(ThumbOpCode::isLongBranchWithLink(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::LONG_BRANCH_WITH_LINK;
+		}else if(ThumbOpCode::isMoveShiftedRegister(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::MOVE_SHIFTED_REGISTER;
+		}else if(ThumbOpCode::isMoveCompAddSubImm(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::MOVE_COMP_ADD_SUB_IMM;
+		}else if(ThumbOpCode::isLoadStoreImmOffset(op)){
+			thumbEnum = ThumbOpCode::OpCodeEnum::LOAD_STORE_IMM_OFFSET;
+		}
+
+		thumbOpcodeInstance.insert({op, thumbPool.getThumbInstance(thumbEnum)});
+	}
 }
 
-std::unique_ptr<OpCode> ARM7TDMI::decodeInstructionThumb(uint16_t op, uint32_t pc) {
-	if(ThumbOpCode::isSoftwareInterrupt(op)){
-		return std::make_unique<Thumb::SoftwareInterrupt>(op, *this);
-	}else if (ThumbOpCode::isAddOffsetToSP(op)) {
-		return std::make_unique<AddOffsetSP>(op, *this);
-	}else if(ThumbOpCode::isPushPopRegisters(op)) {
-		return std::make_unique<PushPopRegisters>(op, *this);
-	}else if(ThumbOpCode::isALUOperations(op)) {
-		return std::make_unique<ALUOperations>(op, *this);
-	}else if(ThumbOpCode::isHiRegisterBranchExchange(op)) {
-		return std::make_unique<HiRegisterBranchExchange>(op, *this);
-	}else if(ThumbOpCode::isPCRelativeLoad(op)) {
-		return std::make_unique<PCRelativeLoad>(op, *this);
-	}else if(ThumbOpCode::isLoadStoreRegisterOffset(op)) {
-		return std::make_unique<LoadStoreRegisterOffset>(op, *this);
-	}else if(ThumbOpCode::isLoadStoreSignExtended(op)) {
-		return std::make_unique<LoadStoreSignExtended>(op, *this);
-	}else if(ThumbOpCode::isUnconditionalBranch(op)) {
-		return std::make_unique<Thumb::UnconditionalBranch>(op, pc, *this);
-	}else if(ThumbOpCode::isAddSubtract(op)) {
-		return std::make_unique<AddSubtract>(op, *this);
-	}else if(ThumbOpCode::isLoadStoreHalfword(op)) {
-		return std::make_unique<LoadStoreHalfword>(op, *this);
-	}else if(ThumbOpCode::isSPLoadStore(op)) {
-		return std::make_unique<SPLoadStore>(op, *this);
-	}else if(ThumbOpCode::isLoadAddress(op)) {
-		return std::make_unique<LoadAddress>(op, *this);
-	}else if(ThumbOpCode::isMultipleLoadStore(op)) {
-		return std::make_unique<MultipleLoadStore>(op, *this);
-	}else if(ThumbOpCode::isConditionalBranch(op)) {
-		return std::make_unique<Thumb::ConditionalBranch>(op, pc, *this);
-	}else if(ThumbOpCode::isLongBranchWithLink(op)) {
-		return std::make_unique<Thumb::LongBranchWithLink>(op, pc, *this);
-	}else if(ThumbOpCode::isMoveShiftedRegister(op)) {
-		return std::make_unique<MoveShiftedRegister>(op, *this);
-	}else if(ThumbOpCode::isMoveCompAddSubImm(op)) {
-		return std::make_unique<MoveCompAddSubImm>(op, *this);
-	}else if(ThumbOpCode::isLoadStoreImmOffset(op)) {
-		return std::make_unique<LoadStoreImmOffset>(op, *this);
-	}
+OpCode* ARM7TDMI::decodeInstructionThumb(uint16_t op) {
 
-	std::runtime_error("ERROR: Unrecognized instruction in decodeInstructionARM");
-	return nullptr;
+   	auto it = thumbOpcodeInstance.find(op & 0xFF00);
+	if (it != thumbOpcodeInstance.end()) {
+        // Call the handler to create the OpCode instance
+		OpCode* poolOpcode = it->second;
+		poolOpcode->init(op);
+
+        return poolOpcode;
+    }
+
+    // Handle unknown opcode
+    throw std::runtime_error("Unknown op in decodeInstructionThumb");
+    return nullptr;
 }
 
 PSR& ARM7TDMI::getCPSR(){
@@ -471,7 +549,7 @@ uint32_t ARM7TDMI::fetchNextInstruction(){
 
 uint32_t ARM7TDMI::executeNextInstruction(){
 	uint32_t cpuCycles = 0;
-	static bool printDebug = false;
+	static bool printDebug = true;
 	// Flush for IRQ
 		if(getMustFlushPipeline()){
 			insFetchSet = false;
@@ -508,14 +586,14 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 				insExecuteSet = false;
 			}
 
-			opExecute.reset();
+			opExecute = nullptr;
 		}
 
 
 		// decode
 		if(insFetchSet){
-			if(opExecute.get() != nullptr)
-				opExecute.reset();
+			if(opExecute != nullptr)
+				opExecute = nullptr;
 			opExecute = decodeInstruction(insDecode, fetchPC);
 			//opExecute->decode();
 			insDecodeSet = true;
@@ -524,6 +602,11 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 		// fetch
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
+
+		// suite.gba
+		/*if(fetchPC == 0x03003060){
+			std::cout << "a";
+		}*/
 
 		insFetchSet = true;
 		insDecode = insFetch;

@@ -3,15 +3,18 @@
 
 #include <iostream>
 #include "arm_opcode.hpp"
-#include "../fields/shift_rm.hpp"
-#include "../fields/imm.hpp"
+#include "../fields/operand.hpp"
 
 class SingleDataTransfer : public ArmOpcode {
 	public:
 		SingleDataTransfer(uint32_t op, ARM7TDMI &cpu);
+        SingleDataTransfer(ARM7TDMI &cpu);
         SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 
                            uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu, bool forcePcBit1To0=false);
         ~SingleDataTransfer();
+        void init(uint32_t op) override;
+        void init(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 
+                           uint8_t rn, uint8_t rd, uint16_t offset, bool forcePcBit1To0=false);
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

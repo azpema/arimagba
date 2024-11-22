@@ -1,10 +1,7 @@
 #ifndef _OPCODE_FIELD_RM_
 #define _OPCODE_FIELD_RM_
 
-#include <iostream>
 #include "operand.hpp"
-#include "../opcode.hpp"
-#include "../../../utils/utils.hpp"
 
 class Rm : public Operand {
     public:

@@ -1,9 +1,20 @@
 #include "psr_transfer_msr.hpp"
 #include <bitset>
+#include "../fields/rotate_imm.hpp"
+#include "../fields/rm.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string PSRTransferMSR::PSR2Mnemonic[2] = {"cpsr", "spsr"};
 
 PSRTransferMSR::PSRTransferMSR(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+    init(op);
+}
+
+PSRTransferMSR::PSRTransferMSR(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {}
+
+void PSRTransferMSR::init(uint32_t op){
+    ArmOpcode::init(op);
     psr = Utils::getRegBits(op, PSR_MASK, PSR_SHIFT);
     I = Utils::getRegBits(op, I_MASK, I_SHIFT);
     c = Utils::getRegBits(op, C_MASK, C_SHIFT);

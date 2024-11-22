@@ -7,6 +7,8 @@
 class SingleDataSwap : public ArmOpcode {
     public:
 		SingleDataSwap(uint32_t op, ARM7TDMI &cpu);
+        SingleDataSwap(ARM7TDMI &cpu);
+        void init(uint32_t op) override;
         std::string toString() override;
         void doExecute() override;
         void doDecode() override;

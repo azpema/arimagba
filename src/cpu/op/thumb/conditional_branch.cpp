@@ -1,6 +1,7 @@
 #include "conditional_branch.hpp"
 #include "../arm/branch.hpp"
-#include "../arm/arm_opcode.hpp"
+#include "../../../utils/utils.hpp"
+#include "../../arm7tdmi.hpp"
 
 using namespace Thumb;
 
@@ -9,10 +10,17 @@ const std::string ConditionalBranch::cond2Mnemonic[16] = {"eq", "ne", "cs", "cc"
                                                           "hi", "ls", "ge", "lt",
                                                           "gt", "le", "ERR", "ERR"};
 
-ConditionalBranch::ConditionalBranch(uint16_t op, uint32_t pc, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+ConditionalBranch::ConditionalBranch(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+ConditionalBranch::ConditionalBranch(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void ConditionalBranch::init(uint32_t op){
+    ThumbOpCode::init(op);
     cond = Utils::getRegBits(op, COND_MASK, COND_SHIFT);
     sOffset8 = Utils::getRegBits(op, SOFFSET8_MASK, SOFFSET8_SHIFT);
-    oldPC = pc;
+    oldPC = cpu.getPC() - 2;
     int16_t signExtended = Utils::twosComplementExtendSignTo(sOffset8 << 1, 9, 16);
     offsetVal = oldPC + signExtended + 4;
 }
@@ -147,7 +155,7 @@ void ConditionalBranch::doExecute(){
     }
         
     if(execute){
-        ARM::Branch opArm = ARM::Branch(oldPC, sOffset8, offsetVal, cond, cpu);
+        ARM::Branch opArm = ARM::Branch(sOffset8, offsetVal, cond, cpu);
         opArm.doExecute();
         //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     }else{

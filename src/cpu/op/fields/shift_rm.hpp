@@ -1,10 +1,7 @@
 #ifndef _OPCODE_FIELD_SHIFT_RM_
 #define _OPCODE_FIELD_SHIFT_RM_
 
-#include <iostream>
 #include "operand.hpp"
-#include "../opcode.hpp"
-#include "../../../utils/utils.hpp"
 
 class ShiftRm : public Operand {
     public:

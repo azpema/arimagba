@@ -1,6 +1,10 @@
 #include "alu_operations.hpp"
 #include "../arm/data_processing.hpp"
 #include "../arm/multiply_accumulate.hpp"
+#include "../../../utils/utils.hpp"
+#include "../fields/rotate_imm.hpp"
+#include "../fields/shift_rm.hpp"
+#include "../../arm7tdmi.hpp"
 
 const std::string ALUOperations::op2Mnemonic[16] = {"and", "eor", "lsl", "lsr",
                                                     "asr", "adc", "sbc", "ror",
@@ -8,10 +12,17 @@ const std::string ALUOperations::op2Mnemonic[16] = {"and", "eor", "lsl", "lsr",
                                                     "orr", "mul", "bic", "mvn"};
 
 ALUOperations::ALUOperations(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
+    init(op);
+}
+
+ALUOperations::ALUOperations(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+
+void ALUOperations::init(uint32_t op){
+    ThumbOpCode::init(op);
     opField = Utils::getRegBits(op, OP_MASK, OP_SHIFT);
     rs = Utils::getRegBits(op, RS_MASK, RS_SHIFT);
     rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
-}   
+}
 
 std::string ALUOperations::getOpMnemonic(){
     return op2Mnemonic[opField];
