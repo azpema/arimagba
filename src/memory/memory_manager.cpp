@@ -52,17 +52,15 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
         Even though VRAM is sized 96K (64K+32K), it is repeated in steps of 128K (64K+32K+32K),
          the two 32K blocks itself being mirrors of each other)
         */
-        uint32_t relativeAddr = addr - VRAM_OFFSET_START;
+        uint32_t relativeAddr = (addr - VRAM_OFFSET_START) % VRAM_MIRROR_BLOCK_SIZE;
         if(relativeAddr >= 0x18000){
             relativeAddr -= 0x8000;
         }
-        relativeAddr = relativeAddr % VRAM_MIRROR_BLOCK_SIZE;
 
         if(relativeAddr >= 0x18000){
-            throw new std::runtime_error("Invalid address calculated for VRAM mirror");
+            throw std::runtime_error("Invalid address calculated for VRAM mirror");
         }
         
-
         val = vram.read(relativeAddr, bytes);
     }else if(Utils::inRange(addr, IO_REGISTERS_OFFSET_START, IO_REGISTERS_OFFSET_END)){
         val = io.read(addr - IO_REGISTERS_OFFSET_START, bytes);
@@ -123,15 +121,13 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
         Even though VRAM is sized 96K (64K+32K), it is repeated in steps of 128K (64K+32K+32K),
          the two 32K blocks itself being mirrors of each other)
         */
-        uint32_t relativeAddr = addr - VRAM_OFFSET_START;
+        uint32_t relativeAddr = (addr - VRAM_OFFSET_START) % VRAM_MIRROR_BLOCK_SIZE;
         if(relativeAddr >= 0x18000){
             relativeAddr -= 0x8000;
         }
 
-        relativeAddr = relativeAddr % VRAM_MIRROR_BLOCK_SIZE;
-
         if(relativeAddr >= 0x18000){
-            throw new std::runtime_error("Invalid address calculated for VRAM mirror");
+            throw std::runtime_error("Invalid address calculated for VRAM mirror");
         }
 
         uint32_t newAddr = relativeAddr;
