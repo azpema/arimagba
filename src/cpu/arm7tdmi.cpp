@@ -41,15 +41,15 @@ ARM7TDMI::ARM7TDMI(MemoryManager *memManager) : armPool(*this), thumbPool(*this)
 ARM7TDMI::~ARM7TDMI() {
 }
 
-OpCode* ARM7TDMI::decodeInstruction(uint32_t op, uint32_t pc){
+OpCode* ARM7TDMI::decodeInstruction(uint32_t op){
 	if(cpsr.isThumbMode()){
 		return decodeInstructionThumb(op);
 	}else{
-		return decodeInstructionARM(op, pc);
+		return decodeInstructionARM(op);
 	}
 }
 
-OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
+OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op) {
 	OpCode * armOpcodeInstance = nullptr;
 
 	if(ArmOpcode::isBranchAndExchange(op)){
@@ -586,7 +586,7 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 		if(insFetchSet){
 			if(opExecute != nullptr)
 				opExecute = nullptr;
-			opExecute = decodeInstruction(insDecode, fetchPC);
+			opExecute = decodeInstruction(insDecode);
 			//opExecute->decode();
 			insDecodeSet = true;
 		}

@@ -25,7 +25,7 @@ class ARM7TDMI {
 		ARM7TDMI(MemoryManager *memoryManager);
 		~ARM7TDMI();
 		
-		OpCode* decodeInstruction(uint32_t op, uint32_t pc);
+		OpCode* decodeInstruction(uint32_t op);
 
 		PSR& getCPSR();
 		PSR& getSPSR();
@@ -131,7 +131,7 @@ class ARM7TDMI {
 		PSR& getCorrespondingSPSR();
 		uint32_t getSPSRval();
 
-		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
+		OpCode* decodeInstructionARM(uint32_t op);
 		OpCode* decodeInstructionThumb(uint16_t op);
 
 		

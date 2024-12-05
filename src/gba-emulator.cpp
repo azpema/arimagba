@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 		cpuCycles += lastCpuCycles;
 		totalCpuCycles += lastCpuCycles;
 		// Render scanline if necessary cycles have been consumed
-		if(cpuCycles >= 500){ // 1006?
+		if(cpuCycles >= 200){ // 1006?
 			ppu.renderScanline();
 			cpuCycles = 0;
 		}
