@@ -32,6 +32,8 @@ void BlockDataTransfer::init(uint32_t op){
     Rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
     registerList = Utils::getRegBits(op, REGISTER_LIST_MASK, REGISTER_LIST_SHIFT);
 
+    registerListVec = {};
+    registerListVec.reserve(16);
     for(size_t i = 0; i < 16; i++){
         if(((registerList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);    
@@ -48,6 +50,7 @@ void BlockDataTransfer::init(uint16_t P, uint16_t U, uint16_t S, uint16_t W, uin
     this->Rn = Rn;
     this->registerList = registerList;
 
+    registerListVec = {};
     for(size_t i = 0; i < 16; i++){
         if(((registerList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);    
