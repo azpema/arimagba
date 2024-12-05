@@ -23,7 +23,7 @@ void Branch::init(uint32_t op){
     ArmOpcode::init(op);
     L = Utils::getRegBits(op, LINK_MASK, LINK_SHIFT);
     offsetField = Utils::getRegBits(op, OFFSET_MASK, OFFSET_SHIFT);
-    realOffset = static_cast<int32_t>(Utils::twosComplementExtendSignTo(offsetField, 24, 32) << 2) + cpu.getPC() + 8;
+    realOffset = static_cast<int32_t>(Utils::twosComplementExtendSignTo(offsetField, 24, 32) << 2) + cpu.getPC() + 4;
     oldPC = cpu.getPC() - 4;
 }
 
