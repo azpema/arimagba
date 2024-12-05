@@ -30,8 +30,10 @@ void UnconditionalBranch::doDecode(){
 }
 
 void UnconditionalBranch::doExecute(){
-    ARM::Branch opArm = ARM::Branch(offset11, offsetVal, 0, cpu);
-    opArm.doExecute();
+    //ARM::Branch opArm = ARM::Branch(offset11, offsetVal, 0, cpu);
+    ARM::Branch *opArm = static_cast<ARM::Branch*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BRANCH));
+    opArm->init(offset11, offsetVal, 0);
+    opArm->doExecute();
     //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 }
 

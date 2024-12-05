@@ -39,18 +39,24 @@ void ALUOperations::doDecode(){
 void ALUOperations::doExecute(){
     if(opField == Opcode::CMP){
         ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
-        DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_CMP_VAL, 1, rd, rs, shiftRm.getRawVal(), cpu);
-        opArm.doExecute();
+        //DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_CMP_VAL, 1, rd, rs, shiftRm.getRawVal(), cpu);
+        DataProcessing *opArm = static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));
+        opArm->init(0, DataProcessing::OPCODE_CMP_VAL, 1, rd, rs, shiftRm.getRawVal());
+        opArm->doExecute();
         //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     }else if(opField == Opcode::MVN){
         ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
-        DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MVN_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
-        opArm.doExecute();
+        //DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MVN_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
+        DataProcessing *opArm = static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));
+        opArm->init(0, DataProcessing::OPCODE_MVN_VAL, 1, rd, rd, shiftRm.getRawVal());
+        opArm->doExecute();
         //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     }else if(opField == Opcode::AND){
         ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
-        DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_AND_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
-        opArm.doExecute();
+        //DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_AND_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
+        DataProcessing *opArm = static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));
+        opArm->init(0, DataProcessing::OPCODE_AND_VAL, 1, rd, rd, shiftRm.getRawVal());
+        opArm->doExecute();
         //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     }else if(opField == Opcode::TST){
         ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);

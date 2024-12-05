@@ -55,7 +55,7 @@ OpCode* ARM7TDMI::decodeInstructionARM(uint32_t op, uint32_t pc) {
 	if(ArmOpcode::isBranchAndExchange(op)){
 		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::BRANCH_AND_EXCHANGE);
 	}else if (ArmOpcode::isBlockDataTransfer(op)) {
-		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::BRANCH_AND_EXCHANGE);
+		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::BLOCK_DATA_TRANSFER);
 	}else if(ArmOpcode::isBranch(op)){
 		armOpcodeInstance = armPool.getArmInstance(ArmOpcode::OpCodeEnum::BRANCH);
 	}else if(ArmOpcode::isSoftwareInterrupt(op)){
@@ -173,7 +173,7 @@ void ARM7TDMI::generateThumbDecodingLookup(){
 	}
 }*/
 
-static std::unordered_map<uint16_t, OpCode*> thumbOpcodeInstance;
+static OpCode* thumbOpcodeInstance[256];
 
 void ARM7TDMI::generateThumbDecodingLookup(){
 	for(size_t i=0; i<256; i++){
@@ -221,24 +221,16 @@ void ARM7TDMI::generateThumbDecodingLookup(){
 			thumbEnum = ThumbOpCode::OpCodeEnum::LOAD_STORE_IMM_OFFSET;
 		}
 
-		thumbOpcodeInstance.insert({op, thumbPool.getThumbInstance(thumbEnum)});
+		thumbOpcodeInstance[i] = thumbPool.getThumbInstance(thumbEnum);
+
 	}
 }
 
 OpCode* ARM7TDMI::decodeInstructionThumb(uint16_t op) {
+   	OpCode* poolOpcode = thumbOpcodeInstance[op >> 8];
+	poolOpcode->init(op);
 
-   	auto it = thumbOpcodeInstance.find(op & 0xFF00);
-	if (it != thumbOpcodeInstance.end()) {
-        // Call the handler to create the OpCode instance
-		OpCode* poolOpcode = it->second;
-		poolOpcode->init(op);
-
-        return poolOpcode;
-    }
-
-    // Handle unknown opcode
-    throw std::runtime_error("Unknown op in decodeInstructionThumb");
-    return nullptr;
+    return poolOpcode;
 }
 
 PSR& ARM7TDMI::getCPSR(){
@@ -616,4 +608,8 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 		}
 
 		return cpuCycles;
+}
+
+ArmPool& ARM7TDMI::getArmPool(){
+	return armPool;
 }

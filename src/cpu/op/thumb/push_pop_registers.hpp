@@ -1,7 +1,6 @@
 #ifndef _THUMB_OPCODE_PUSH_POP_REGISTERS_ 
 #define _THUMB_OPCODE_PUSH_POP_REGISTERS_ 
 
-#include <vector>
 #include "thumb_opcode.hpp"
 
 class PushPopRegisters : public ThumbOpCode {
@@ -16,7 +15,7 @@ class PushPopRegisters : public ThumbOpCode {
 
     private:
         uint16_t l, r, rList;
-        std::vector<uint16_t> registerListVec;
+        uint16_t registerListVec[8];
         
         const static uint16_t L_MASK = 0b0000100000000000; 
         const static uint16_t L_SHIFT = 11;

@@ -155,8 +155,10 @@ void ConditionalBranch::doExecute(){
     }
         
     if(execute){
-        ARM::Branch opArm = ARM::Branch(sOffset8, offsetVal, cond, cpu);
-        opArm.doExecute();
+        //ARM::Branch opArm = ARM::Branch(sOffset8, offsetVal, cond, cpu);
+        ARM::Branch *opArm = static_cast<ARM::Branch*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BRANCH));
+        opArm->init(sOffset8, offsetVal, cond);
+        opArm->doExecute();
         //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
     }else{
         //std::cout << "Condition not met; skipping instruction" << std::endl;

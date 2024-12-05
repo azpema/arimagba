@@ -16,10 +16,9 @@ void PushPopRegisters::init(uint32_t op){
     l = Utils::getRegBits(op, L_MASK, L_SHIFT);
     r = Utils::getRegBits(op, R_MASK, R_SHIFT);
     rList = Utils::getRegBits(op, RLIST_MASK, RLIST_SHIFT);
-    
+
     for(size_t i = 0; i < 8; i++){
-        if(((rList >> i) & 0x1) == 0x1)
-            registerListVec.push_back(i);    
+        registerListVec[i] = ((rList >> i) & 0x1);    
     }
 }
 
@@ -30,12 +29,17 @@ std::string PushPopRegisters::getOpMnemonic(){
 std::string PushPopRegisters::toString(){
     std::string mnemonic = getOpMnemonic() + " {";
 
-    for(auto it = registerListVec.begin(); it != registerListVec.end(); it++){
-        mnemonic += OpCode::getRegMnemonic(*it);
-        if(std::next(it) != registerListVec.end())
-            mnemonic += ",";
+    bool insertComma = false;
+    for(size_t i = 0; i < 8; i++){
+        if(i == 1){
+            if(insertComma){
+                mnemonic += ",";
+            }
+            mnemonic += OpCode::getRegMnemonic(i);
+            insertComma = true;
+        }
     }
-    
+
     if(r == 1){
         if(l == 0){
             mnemonic += "," + OpCode::getRegMnemonic(14);
@@ -55,23 +59,31 @@ void PushPopRegisters::doDecode(){
 
 void PushPopRegisters::doExecute(){
     if(l == 0 && r == 0){
-        BlockDataTransfer opArm = BlockDataTransfer(1, 0, 0, 1, 0, 13, rList, cpu);
+        //BlockDataTransfer opArm = BlockDataTransfer(1, 0, 0, 1, 0, 13, rList, cpu);
+        BlockDataTransfer *opArm = static_cast<BlockDataTransfer*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BLOCK_DATA_TRANSFER));
+        opArm->init(1, 0, 0, 1, 0, 13, rList);
+        opArm->doExecute();
         //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
-        opArm.doExecute();  
     }else if (l == 1 && r == 0){
-        BlockDataTransfer opArm = BlockDataTransfer(0, 1, 0, 1, 1, 13, rList, cpu);
+        //BlockDataTransfer opArm = BlockDataTransfer(0, 1, 0, 1, 1, 13, rList, cpu);
+        BlockDataTransfer *opArm = static_cast<BlockDataTransfer*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BLOCK_DATA_TRANSFER));
+        opArm->init(0, 1, 0, 1, 1, 13, rList);
+        opArm->doExecute();
         //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
-        opArm.doExecute();  
     }else if (l == 0 && r == 1){
         uint16_t rListWithLr = rList | (0x1 << 14);
-        BlockDataTransfer opArm = BlockDataTransfer(1, 0, 0, 1, 0, 13, rListWithLr, cpu);
+        //BlockDataTransfer opArm = BlockDataTransfer(1, 0, 0, 1, 0, 13, rListWithLr, cpu);
+        BlockDataTransfer *opArm = static_cast<BlockDataTransfer*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BLOCK_DATA_TRANSFER));
+        opArm->init(1, 0, 0, 1, 0, 13, rListWithLr);
+        opArm->doExecute();
         //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
-        opArm.doExecute();  
     }else if (l == 1 && r == 1){
         uint16_t rListWithPc = rList | (0x1 << 15);
-        BlockDataTransfer opArm = BlockDataTransfer(0, 1, 0, 1, 1, 13, rListWithPc, cpu);
+        //BlockDataTransfer opArm = BlockDataTransfer(0, 1, 0, 1, 1, 13, rListWithPc, cpu);
+        BlockDataTransfer *opArm = static_cast<BlockDataTransfer*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BLOCK_DATA_TRANSFER));
+        opArm->init(0, 1, 0, 1, 1, 13, rListWithPc);
+        opArm->doExecute();
         //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
-        opArm.doExecute(); 
     }else{
         throw std::runtime_error("Error: Unimplemented instruction: PushPopRegisters");
     }

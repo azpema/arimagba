@@ -60,6 +60,8 @@ class ARM7TDMI {
 		const static uint32_t CPU_CYCLES_PER_N_CYCLE = 1;
 		const static uint32_t CPU_CYCLES_PER_I_CYCLE = 1;
 
+		ArmPool& getArmPool();
+
 	private:
 		void generateThumbDecodingLookup();
 		ArmPool armPool;
@@ -131,6 +133,8 @@ class ARM7TDMI {
 
 		OpCode* decodeInstructionARM(uint32_t op, uint32_t pc);
 		OpCode* decodeInstructionThumb(uint16_t op);
+
+		
 };	
 
 #endif

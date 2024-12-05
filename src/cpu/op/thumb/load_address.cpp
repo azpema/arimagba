@@ -49,8 +49,10 @@ void LoadAddress::doExecute(){
         pcSpVal &= 0xFFFFFFFD;
 
     RotateImm imm = RotateImm(0, offsetVal);
-    DataProcessing opArm = DataProcessing(1, DataProcessing::OPCODE_ADD_VAL, 0, getSPRegVal(), rd, imm.getRawVal(), cpu, true, pcSpVal);
-    opArm.doExecute();
+    //DataProcessing opArm = DataProcessing(1, DataProcessing::OPCODE_ADD_VAL, 0, getSPRegVal(), rd, imm.getRawVal(), cpu, true, pcSpVal);
+    DataProcessing *opArm = static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));
+    opArm->init(1, DataProcessing::OPCODE_ADD_VAL, 0, getSPRegVal(), rd, imm.getRawVal(), true, pcSpVal);
+    opArm->doExecute();
     //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 }
 

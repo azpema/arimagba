@@ -39,8 +39,10 @@ void AddOffsetSP::doDecode(){
 void AddOffsetSP::doExecute(){
     RotateImm imm = RotateImm(0, offsetStr);
     uint16_t operation = s == 0 ? DataProcessing::OPCODE_ADD_VAL : DataProcessing::OPCODE_SUB_VAL;
-    DataProcessing opArm = DataProcessing(1, operation, 0, 13, 13, imm.getRawVal(), cpu);
-    opArm.doExecute();
+    //DataProcessing opArm = DataProcessing(1, operation, 0, 13, 13, imm.getRawVal(), cpu);
+    DataProcessing *opArm = static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));
+    opArm->init(1, operation, 0, 13, 13, imm.getRawVal());
+    opArm->doExecute();
     //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
 }
 
