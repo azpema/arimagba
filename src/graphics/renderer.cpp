@@ -37,7 +37,7 @@ Renderer::~Renderer(){
 
 void Renderer::renderScanlineMode0(){
     if(ppu.getBgColorMode(0) != 0){
-        throw new std::runtime_error("Unimplemented 256 color mode");
+        throw std::runtime_error("Unimplemented 256 color mode");
     }
     uint8_t screenPixelX = 0;
     uint8_t screenPixelY = ppu.getVcount();
@@ -225,7 +225,7 @@ uint32_t Renderer::getBgRelativeTileY(uint32_t tileY) const{
     if(bgSize == 0 || bgSize == 1){
         return tileY % 32;
     }else{
-        throw new std::runtime_error("TODO getBgRelativeTileY");
+        throw std::runtime_error("TODO getBgRelativeTileY");
     }
 }
 
@@ -241,6 +241,6 @@ uint32_t Renderer::getSbcOffset(uint32_t pixelX, uint32_t pixelY) const{
             return 0;
         }
     }
-    throw new std::runtime_error("TODO getSbcOffset");
+    throw std::runtime_error("TODO getSbcOffset");
 }
 

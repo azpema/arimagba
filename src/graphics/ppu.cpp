@@ -95,7 +95,7 @@ uint32_t PPU::getBgOffsetH(uint8_t bg) const{
             return *BG0HOFS;
             break;
         default:
-            throw new std::runtime_error("TODO getBgOffsetH");
+            throw std::runtime_error("TODO getBgOffsetH");
     }
 }
 
@@ -105,7 +105,7 @@ uint32_t PPU::getBgOffsetV(uint8_t bg) const{
             return *BG0VOFS;
             break;
         default:
-            throw new std::runtime_error("TODO getBgOffsetV");
+            throw std::runtime_error("TODO getBgOffsetV");
     }
 }
 
@@ -168,7 +168,7 @@ uint8_t PPU::getBgCharacterBaseBlock(uint8_t bgNum) const{
             bgCntVal = *BG0CNT;
             break;
         default:
-            throw new std::runtime_error("TODO: getBgCharacterBaseBlock");
+            throw std::runtime_error("TODO: getBgCharacterBaseBlock");
     }
     return Utils::getRegBits(bgCntVal, REG_BGxCNT::BG_CBB_NUM_MASK, REG_BGxCNT::BG_CBB_NUM_SHIFT);
 }
@@ -180,7 +180,7 @@ uint8_t PPU::getBgColorMode(uint8_t bgNum) const{
             bgCntVal = *BG0CNT;
             break;
         default:
-            throw new std::runtime_error("TODO: getBgColorMode");
+            throw std::runtime_error("TODO: getBgColorMode");
     }
     return Utils::getRegBits(bgCntVal, REG_BGxCNT::BG_8BPP_MASK, REG_BGxCNT::BG_8BPP_SHIFT);
 }
@@ -192,7 +192,7 @@ uint8_t PPU::getBgScreenBaseBlock(uint8_t bgNum) const{
             bgCntVal = *BG0CNT;
             break;
         default:
-            throw new std::runtime_error("TODO: getBgCharacterBaseBlock");
+            throw std::runtime_error("TODO: getBgCharacterBaseBlock");
     }
     return Utils::getRegBits(bgCntVal, REG_BGxCNT::BG_SBB_NUM_MASK, REG_BGxCNT::BG_SBB_NUM_SHIFT);
 }
@@ -212,7 +212,7 @@ uint8_t PPU::getBgSize(uint8_t bgNum) const{
             bgCntVal = *BG0CNT;
             break;
         default:
-            throw new std::runtime_error("TODO: getBgCharacterBaseBlock");
+            throw std::runtime_error("TODO: getBgCharacterBaseBlock");
     }
     return Utils::getRegBits(bgCntVal, REG_BGxCNT::BG_SIZE_NUM_MASK, REG_BGxCNT::BG_SIZE_NUM_SHIFT);
 }

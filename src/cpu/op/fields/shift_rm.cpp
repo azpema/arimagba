@@ -21,7 +21,7 @@ ShiftRm::ShiftRm(uint16_t val) : Operand::Operand(val, OperandType::SHIFT_RM){
         _shiftReg = Utils::getRegBits(_shift, SHIFT_RS_MASK, SHIFT_RS_SHIFT);
         type = REGISTER;
     }else{
-        throw new std::runtime_error("ERROR: Unknown ShiftRm");
+        throw std::runtime_error("ERROR: Unknown ShiftRm");
     }
 }
 

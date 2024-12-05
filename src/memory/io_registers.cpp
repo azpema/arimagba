@@ -25,13 +25,13 @@ void IOregisters::storeWrapper(uint32_t addr, uint32_t val, uint8_t bytes){
         newVal &= 0b00000000000000000000000000000001;
     }else if(addr == (REG_ADDR::IF - MemoryManager::IO_REGISTERS_OFFSET_START)){
         if(bytes != 2){
-            throw new std::runtime_error("TODO storeWrapper");
+            throw std::runtime_error("TODO storeWrapper");
         }
         newVal = writeToIf(val);
     }
     if(addr == (REG_ADDR::IE - MemoryManager::IO_REGISTERS_OFFSET_START)){
         if(bytes == 1){
-            throw new std::runtime_error("TODO storeWrapper");
+            throw std::runtime_error("TODO storeWrapper");
         }else if(bytes == 2){
             // Do nothing
         }else if(bytes == 4){

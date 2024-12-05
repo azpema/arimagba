@@ -107,7 +107,7 @@ std::string SingleDataTransfer::toString(){
     }else if(I == 1){
         shiftRm= static_cast<ShiftRm*>(offsetField.get());
     }else{
-        throw new std::runtime_error("Error: invalid I value for SingleDataTransfer::toString");
+        throw std::runtime_error("Error: invalid I value for SingleDataTransfer::toString");
     }
 
 

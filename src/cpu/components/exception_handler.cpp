@@ -20,7 +20,7 @@ void ExceptionHandler::raiseException(Exception ex, Interrupt inter){
     }else if(ex == Exception::SWI){
         doHandleException();
     }else{
-        throw new std::runtime_error("Unimplemented raiseException exception type");
+        throw std::runtime_error("Unimplemented raiseException exception type");
     }
 }
 
@@ -117,7 +117,7 @@ bool ExceptionHandler::isSpecificInterruptEnabled(Interrupt inter){
             return ((*IE & 0b100) >> 2) == 0x1;
 
     default:
-        throw new std::runtime_error("TODO isSpecificInterruptEnabled");
+        throw std::runtime_error("TODO isSpecificInterruptEnabled");
         break;
     }
 }
@@ -135,7 +135,7 @@ void ExceptionHandler::setInterruptIF(Interrupt inter, bool raise){
             newVal = Utils::setRegBits(newVal, 0b0000000000000100, (raise ? 1 : 0) << 2);
             break;
         default:
-            throw new std::runtime_error("TODO setInterruptIF");
+            throw std::runtime_error("TODO setInterruptIF");
             break;
     }
     *IF = newVal;
