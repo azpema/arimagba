@@ -6,8 +6,7 @@ uint32_t Utils::clearRegBits(uint32_t &reg, const uint32_t mask){
 }
 
 uint32_t Utils::setRegBits(uint32_t &reg, const uint32_t mask, const uint32_t val){
-    clearRegBits(reg, mask);
-    reg |= val;
+    reg = (reg & ~mask) | (val & mask);
     return reg;
 }
 
@@ -41,23 +40,19 @@ std::string Utils::toHexString(uint32_t val, uint32_t paddingNum){
     return stream.str();
 }
 
-int32_t Utils::twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint32_t toBits){
+int32_t Utils::twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint32_t toBits) {
     if(fromBits >= toBits){
         std::cout << "ERROR: extend sign" << std::endl;
+        return val;
     }
 
     uint32_t sign = (val >> (fromBits - 1)) & 0x1;
-    if(sign == 0)
+    if(sign == 0){
         return val;
-    else{
-        uint32_t orVal = 0x1;
-        for(size_t i=0; i<toBits-fromBits-1; i++){
-            orVal = (orVal << 1) | 1;
-        }
-        orVal <<= fromBits;
-        return val | orVal;
+    }else{
+        uint32_t mask = ((1u << (toBits - fromBits)) - 1) << fromBits;
+        return val | mask;
     }
-
 }
 
 bool Utils::inRange(uint32_t val, uint32_t from, uint32_t to){
