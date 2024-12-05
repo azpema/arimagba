@@ -37,6 +37,21 @@ void PPU::renderScanline(){
     }else{
         setVcountFlag(false);
     }
+
+    // Update VCOUNT
+    *VCOUNT += 1;
+    if(*VCOUNT == VCOUNT_START_VBLANK){
+        setVBlankFlag(true);
+        if(vBlankIrqEnabled()){
+            cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::IRQ, ExceptionHandler::Interrupt::VBLANK);
+        }
+    }else if(*VCOUNT == VCOUNT_END_VBLANK){
+        setVBlankFlag(false);
+    }
+    else if(*VCOUNT == 228){
+        *VCOUNT = 0;
+    }
+    
     // Check BG Mode in DISPCNT
     // Panda will stop working!!!
     if(*VCOUNT <= 160){
@@ -59,25 +74,14 @@ void PPU::renderScanline(){
                 throw std::runtime_error("ERROR: Unsupported PPU Mode: " + std::to_string(dcntMode));
         }
     }
-
-    // Update VCOUNT
-    *VCOUNT += 1; 
-    if(*VCOUNT == VCOUNT_START_VBLANK){
-        setVBlankFlag(true);
-        if(vBlankIrqEnabled()){
-            cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::IRQ, ExceptionHandler::Interrupt::VBLANK);
-        }
-    }else if(*VCOUNT == VCOUNT_END_VBLANK){
-        setVBlankFlag(false);
-    }
-    else if(*VCOUNT == 228){
-        *VCOUNT = 0;
-    }
         
-    //TODO REMOVE
-    setHBlankFlag(true);
-    if(hBlankIrqEnabled()){
-        cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::IRQ, ExceptionHandler::Interrupt::HBLANK);
+    if(*VCOUNT % 2 == 0){
+        setHBlankFlag(true);
+        if(hBlankIrqEnabled()){
+            cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::IRQ, ExceptionHandler::Interrupt::HBLANK);
+        }
+    }else{
+        setHBlankFlag(false);
     }
 }
 
