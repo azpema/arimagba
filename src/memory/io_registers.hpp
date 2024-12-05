@@ -33,6 +33,8 @@ namespace REG_ADDR{
     const static uint32_t IF            = 0x04000202;
     const static uint32_t WAITCNT       = 0x04000204;
     const static uint32_t IME           = 0x04000208;
+
+    const static uint32_t HALTCNT       = 0x04000301;
 }
 
 
@@ -42,10 +44,17 @@ class IOregisters : public GenericMemory<IOREGISTERS_SIZE>{
         void storeWrapper(uint32_t addr, uint32_t val, uint8_t bytes);
 
         uint32_t getDISPCNT();
+        uint32_t getIE();
+        uint32_t getIF();
         uint8_t getDCNT_MODE();
+        bool getMustHaltCpu();
+        void clearMustHaltCpu();
 
     private:
         uint16_t writeToIf(uint16_t val);
+        void setMustHaltCpu();
+
+        bool mustHaltCpu;
 };
 
 #endif

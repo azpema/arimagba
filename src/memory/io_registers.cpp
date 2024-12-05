@@ -1,6 +1,6 @@
 #include "io_registers.hpp"
 
-IOregisters::IOregisters() {
+IOregisters::IOregisters() : mustHaltCpu(false) {
     std::cerr << "TODO Set proper initial values at IOregisters" << std::endl;
     for(size_t i=0; i<IOREGISTERS_SIZE; i++){
         mem[i] = 0x00;
@@ -38,6 +38,12 @@ void IOregisters::storeWrapper(uint32_t addr, uint32_t val, uint8_t bytes){
             uint16_t newRegIf = writeToIf(val >> 16);
             newVal = (newVal & 0b0000000011111111) | (newRegIf << 16);
         }
+    }else if(Utils::inRange(addr, REG_ADDR::HALTCNT - MemoryManager::IO_REGISTERS_OFFSET_START, REG_ADDR::HALTCNT + bytes - MemoryManager::IO_REGISTERS_OFFSET_START)){
+        if(bytes == 1){
+            setMustHaltCpu();
+        }else{
+            throw std::runtime_error("HALTCNT write bigger than 1 byte");
+        }
     }
     store(addr, newVal, bytes);
 }
@@ -47,6 +53,28 @@ uint32_t IOregisters::getDISPCNT(){
     return dispcnt;
 }
 
+uint32_t IOregisters::getIE(){
+    uint32_t ie = read(REG_ADDR::IE - MemoryManager::IO_REGISTERS_OFFSET_START, 2);
+    return ie;
+}
+
+uint32_t IOregisters::getIF(){
+    uint32_t regIf = read(REG_ADDR::IF - MemoryManager::IO_REGISTERS_OFFSET_START, 2);
+    return regIf;
+}
+
 uint8_t IOregisters::getDCNT_MODE(){
     return Utils::getRegBits(getDISPCNT(), 0b0000000000000111, 0);
+}
+
+bool IOregisters::getMustHaltCpu(){
+    return mustHaltCpu;
+}
+
+void IOregisters::setMustHaltCpu(){
+    mustHaltCpu = true;
+}
+
+void IOregisters::clearMustHaltCpu(){
+    mustHaltCpu = false;
 }

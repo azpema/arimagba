@@ -59,11 +59,21 @@ int main(int argc, char** argv)
 				}
 			}
 		}
-		uint32_t lastCpuCycles = cpu.executeNextInstruction();
+		uint32_t lastCpuCycles;
+		if(io.getMustHaltCpu()){
+			if(io.getIE() & io.getIF()){
+				io.clearMustHaltCpu();
+			}
+			// TODO how many cycles should I count on cpu halt?
+			lastCpuCycles += 1;
+		}else{
+			lastCpuCycles = cpu.executeNextInstruction();
+		}
+		 
 		cpuCycles += lastCpuCycles;
 		totalCpuCycles += lastCpuCycles;
 		// Render scanline if necessary cycles have been consumed
-		if(cpuCycles >= 1006){ // 1006?
+		if(cpuCycles >= 500){ // 1006?
 			ppu.renderScanline();
 			cpuCycles = 0;
 		}
