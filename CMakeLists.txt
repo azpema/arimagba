@@ -10,8 +10,8 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-set(CMAKE_C_FLAGS_INIT "-fsanitize=undefined")
-set(CMAKE_CXX_FLAGS_INIT "-fsanitize=undefined")
+# set(CMAKE_C_FLAGS_INIT "-fsanitize=undefined")
+# set(CMAKE_CXX_FLAGS_INIT "-fsanitize=undefined")
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "src/*.hpp")
