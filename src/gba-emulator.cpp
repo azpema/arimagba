@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 {
     std::cout << "Current path is " << std::filesystem::current_path() << '\n';
 
-	std::string gamePath = "../files/retAddr.gba";
+	std::string gamePath = "../files/irq_demo.gba";
 	if(argc >= 2){
 		gamePath = std::string(argv[1]);
 	}
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 		cpuCycles += lastCpuCycles;
 		totalCpuCycles += lastCpuCycles;
 		// Render scanline if necessary cycles have been consumed
-		if(cpuCycles >= 200){ // 1006?
+		if(cpuCycles >= 300){ // 1006?
 			ppu.renderScanline();
 			cpuCycles = 0;
 		}

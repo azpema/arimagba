@@ -32,7 +32,7 @@ void MoveCompAddSubImm::doDecode(){
 }
 
 void MoveCompAddSubImm::doExecute(){
-    //RotateImm imm = RotateImm(0, rnOffset3);
+    //RotateImm imm = RotateImm(rnOffset3, RotateImm::ConstructorType::FINAL_IMM_VAL);
     uint32_t opDataProcessing[4] = {DataProcessing::OPCODE_MOV_VAL, DataProcessing::OPCODE_CMP_VAL,
                                     DataProcessing::OPCODE_ADD_VAL, DataProcessing::OPCODE_SUB_VAL};
 

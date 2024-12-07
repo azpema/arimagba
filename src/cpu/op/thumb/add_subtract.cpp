@@ -52,7 +52,7 @@ void AddSubtract::doExecute(){
 
     if(opField == 0){
         if(i == 1){
-            RotateImm imm = RotateImm(0, rnOffset3);
+            RotateImm imm = RotateImm(rnOffset3, RotateImm::ConstructorType::FINAL_IMM_VAL);
             DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_ADD_VAL, 1, rs, rd, imm.getRawVal(), cpu);
             opArm.doExecute();
             //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
@@ -64,7 +64,7 @@ void AddSubtract::doExecute(){
         }
     }else if(opField == 1){
         if(i == 1){
-            RotateImm imm = RotateImm(0, rnOffset3);
+            RotateImm imm = RotateImm(rnOffset3, RotateImm::ConstructorType::FINAL_IMM_VAL);
             DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, imm.getRawVal(), cpu);
             opArm.doExecute();
             //std::cout << "<< ARM >> " << opArm.toString() << std::endl;

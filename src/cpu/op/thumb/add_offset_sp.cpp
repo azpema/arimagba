@@ -37,7 +37,7 @@ void AddOffsetSP::doDecode(){
 }
 
 void AddOffsetSP::doExecute(){
-    RotateImm imm = RotateImm(0, offsetStr);
+    RotateImm imm = RotateImm(offsetStr, RotateImm::ConstructorType::FINAL_IMM_VAL);
     uint16_t operation = s == 0 ? DataProcessing::OPCODE_ADD_VAL : DataProcessing::OPCODE_SUB_VAL;
     //DataProcessing opArm = DataProcessing(1, operation, 0, 13, 13, imm.getRawVal(), cpu);
     DataProcessing *opArm = static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));

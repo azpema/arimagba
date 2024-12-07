@@ -5,14 +5,18 @@
 
 class RotateImm : public Operand {
 	public:
-		RotateImm(uint16_t val);
+        enum class ConstructorType {RAW_ROTATE_IMM, FINAL_IMM_VAL};
+		RotateImm(uint32_t val, ConstructorType constructorType=ConstructorType::RAW_ROTATE_IMM);
         RotateImm(uint8_t rot, uint8_t imm);
         ~RotateImm() override;
+        void init(uint8_t rot, uint8_t imm);
         uint32_t getMnemonicVal();
 
         uint32_t getOperandVal(ARM7TDMI &cpu) override;
         uint32_t getRorShiftAmount();
         bool getC() override;
+
+        
 
     private:
         bool c;

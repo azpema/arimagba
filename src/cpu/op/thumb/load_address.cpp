@@ -48,7 +48,7 @@ void LoadAddress::doExecute(){
     if(sp == 0)
         pcSpVal &= 0xFFFFFFFD;
 
-    RotateImm imm = RotateImm(0, offsetVal);
+    RotateImm imm = RotateImm(offsetVal, RotateImm::ConstructorType::FINAL_IMM_VAL);
     //DataProcessing opArm = DataProcessing(1, DataProcessing::OPCODE_ADD_VAL, 0, getSPRegVal(), rd, imm.getRawVal(), cpu, true, pcSpVal);
     DataProcessing *opArm = static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));
     opArm->init(1, DataProcessing::OPCODE_ADD_VAL, 0, getSPRegVal(), rd, imm.getRawVal(), true, pcSpVal);
