@@ -61,7 +61,7 @@ void Renderer::renderScanlineMode0(){
         //std::cout << "bgRelativeTileY" << Utils::toHexString(bgRelativeTileY) << std::endl;
 
         uint32_t seIndex = ((bgRelativeTileY % 32)*32 + (bgRelativeTileX % 32)) * 2;
-        uint32_t sbcOffset = getSbcOffset(bgRelativeTileX*8, 0);
+        uint32_t sbcOffset = getSbcOffset(bgRelativeTileX*8, bgRelativeTileY*8);
         uint32_t seOffset = tileMapStartOffset + sbcOffset + seIndex;
 
         
@@ -225,22 +225,37 @@ uint32_t Renderer::getBgRelativeTileY(uint32_t tileY) const{
     if(bgSize == 0 || bgSize == 1){
         return tileY % 32;
     }else{
-        throw std::runtime_error("TODO getBgRelativeTileY");
+        return tileY % 64;
     }
 }
 
 uint32_t Renderer::getSbcOffset(uint32_t pixelX, uint32_t pixelY) const{
     uint32_t tileSize = ppu.getBgSize(0);
-    if(tileSize == 0){
-        return 0;
-    }
-    if(tileSize == 1){
-        if(pixelX >= 32 * BG_TILE_WIDTH_HEIGHT){
-            return 0x800;
-        }else{
+    switch(tileSize){
+        case 0:
             return 0;
-        }
+            break;
+        case 1:
+            return (pixelX >= 32 * BG_TILE_WIDTH_HEIGHT) ? 0x800 : 0;
+            break;
+        case 2:
+            return (pixelY >= 32 * BG_TILE_WIDTH_HEIGHT) ? 0x800 : 0;
+            break;
+        case 3:
+            if(pixelX >= 32 * BG_TILE_WIDTH_HEIGHT){
+                if(pixelY >= 32 * BG_TILE_WIDTH_HEIGHT){
+                    return 3 * 0x800;
+                }else{
+                    return 0x800;
+                }
+            }else{
+                if(pixelY >= 32 * BG_TILE_WIDTH_HEIGHT){
+                    return 2 * 0x800;
+                }else{
+                    return 0;
+                }
+            }
     }
-    throw std::runtime_error("TODO getSbcOffset");
+
 }
 

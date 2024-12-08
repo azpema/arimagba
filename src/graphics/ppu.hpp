@@ -183,9 +183,10 @@ class PPU {
         uint16_t* DISPSTAT;
         uint16_t* VCOUNT;
 
-        uint16_t* BG0CNT;
-        uint16_t* BG0HOFS;
-        uint16_t* BG0VOFS;
+        const static uint8_t BG_NUM = 4;
+        uint16_t* BGxCNT[BG_NUM];
+        uint16_t* BGxHOFS[BG_NUM];
+        uint16_t* BGxVOFS[BG_NUM];
 
         // ***************** VCOUNT ***************** 
         const static uint8_t VCOUNT_START_VBLANK = 160;

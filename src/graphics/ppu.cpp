@@ -10,9 +10,22 @@ PPU::PPU(const std::string &title, ARM7TDMI &cpu, MemoryManager *memManager): cp
     GREEN_SWAP = reinterpret_cast<uint16_t*>(io + (REG_ADDR::GREEN_SWAP - MemoryManager::IO_REGISTERS_OFFSET_START));
     DISPSTAT = reinterpret_cast<uint16_t*>(io + (REG_ADDR::DISPSTAT - MemoryManager::IO_REGISTERS_OFFSET_START));
     VCOUNT = reinterpret_cast<uint16_t*>(io + (REG_ADDR::VCOUNT - MemoryManager::IO_REGISTERS_OFFSET_START));
-    BG0CNT = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG0CNT - MemoryManager::IO_REGISTERS_OFFSET_START));
-    BG0HOFS = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG0HOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
-    BG0VOFS = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG0VOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
+
+    BGxCNT[0] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG0CNT - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxHOFS[0] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG0HOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxVOFS[0] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG0VOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
+
+    BGxCNT[1] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG1CNT - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxHOFS[1] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG1HOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxVOFS[1] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG1VOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
+
+    BGxCNT[2] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG2CNT - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxHOFS[2] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG2HOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxVOFS[2] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG2VOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
+
+    BGxCNT[3] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG3CNT - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxHOFS[3] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG3HOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxVOFS[3] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG3VOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
 
     setDCNT_MODE(3);
     *VCOUNT = VCOUNT_INITIAL_VALUE;
@@ -90,23 +103,11 @@ uint32_t PPU::getVcount() const{
 }
 
 uint32_t PPU::getBgOffsetH(uint8_t bg) const{
-    switch(bg){
-        case 0:
-            return *BG0HOFS;
-            break;
-        default:
-            throw std::runtime_error("TODO getBgOffsetH");
-    }
+    return *(BGxHOFS[bg]);
 }
 
 uint32_t PPU::getBgOffsetV(uint8_t bg) const{
-    switch(bg){
-        case 0:
-            return *BG0VOFS;
-            break;
-        default:
-            throw std::runtime_error("TODO getBgOffsetV");
-    }
+    return *(BGxVOFS[bg]);
 }
 
 void PPU::setVBlankFlag(bool val){
@@ -162,39 +163,15 @@ bool PPU::vCountIrqEnabled() const{
 }
 
 uint8_t PPU::getBgCharacterBaseBlock(uint8_t bgNum) const{
-    uint16_t bgCntVal;
-    switch(bgNum){
-        case 0:
-            bgCntVal = *BG0CNT;
-            break;
-        default:
-            throw std::runtime_error("TODO: getBgCharacterBaseBlock");
-    }
-    return Utils::getRegBits(bgCntVal, REG_BGxCNT::BG_CBB_NUM_MASK, REG_BGxCNT::BG_CBB_NUM_SHIFT);
+    return Utils::getRegBits(*(BGxCNT[bgNum]), REG_BGxCNT::BG_CBB_NUM_MASK, REG_BGxCNT::BG_CBB_NUM_SHIFT);
 }
 
 uint8_t PPU::getBgColorMode(uint8_t bgNum) const{
-    uint16_t bgCntVal;
-    switch(bgNum){
-        case 0:
-            bgCntVal = *BG0CNT;
-            break;
-        default:
-            throw std::runtime_error("TODO: getBgColorMode");
-    }
-    return Utils::getRegBits(bgCntVal, REG_BGxCNT::BG_8BPP_MASK, REG_BGxCNT::BG_8BPP_SHIFT);
+    return Utils::getRegBits(*(BGxCNT[bgNum]), REG_BGxCNT::BG_8BPP_MASK, REG_BGxCNT::BG_8BPP_SHIFT);
 }
 
 uint8_t PPU::getBgScreenBaseBlock(uint8_t bgNum) const{
-    uint16_t bgCntVal;
-    switch(bgNum){
-        case 0:
-            bgCntVal = *BG0CNT;
-            break;
-        default:
-            throw std::runtime_error("TODO: getBgCharacterBaseBlock");
-    }
-    return Utils::getRegBits(bgCntVal, REG_BGxCNT::BG_SBB_NUM_MASK, REG_BGxCNT::BG_SBB_NUM_SHIFT);
+    return Utils::getRegBits(*(BGxCNT[bgNum]), REG_BGxCNT::BG_SBB_NUM_MASK, REG_BGxCNT::BG_SBB_NUM_SHIFT);
 }
 
 uint32_t PPU::getTileSetVramOffset(uint8_t bgNum) const{
@@ -206,13 +183,5 @@ uint32_t PPU::getTileMapVramOffset(uint8_t bgNum) const{
 }
 
 uint8_t PPU::getBgSize(uint8_t bgNum) const{
-    uint16_t bgCntVal;
-    switch(bgNum){
-        case 0:
-            bgCntVal = *BG0CNT;
-            break;
-        default:
-            throw std::runtime_error("TODO: getBgCharacterBaseBlock");
-    }
-    return Utils::getRegBits(bgCntVal, REG_BGxCNT::BG_SIZE_NUM_MASK, REG_BGxCNT::BG_SIZE_NUM_SHIFT);
+    return Utils::getRegBits(*(BGxCNT[bgNum]), REG_BGxCNT::BG_SIZE_NUM_MASK, REG_BGxCNT::BG_SIZE_NUM_SHIFT);
 }
