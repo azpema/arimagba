@@ -41,8 +41,6 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
         throw std::runtime_error("Unimplemented 256 color mode");
     }
 
-    uint8_t tiles[PPU::SCREEN_WIDTH / 2];
-
     uint8_t screenPixelX = 0;
     uint8_t screenPixelY = ppu.getVcount();
 
@@ -125,7 +123,6 @@ void Renderer::renderScanlineMode0(){
     
     auto bgBlendOrder = ppu.getBgBlendOrder();
     for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
-        bool pixelChosen = false;
         for(auto it = bgBlendOrder.begin(); it != bgBlendOrder.end(); ++it){
             const auto &bgNum = *it;
             // -1 corresponds to transparency
@@ -140,10 +137,6 @@ void Renderer::renderScanlineMode0(){
             }
         }
     }
-
-
-    void* pixels;
-    int pitch;
 
     SDL_UpdateTexture(texture, NULL, toPaintEnd, PPU::SCREEN_WIDTH * sizeof(uint16_t));
     SDL_Rect rect;
@@ -279,7 +272,11 @@ uint32_t Renderer::getSbcOffset(uint8_t bg, uint32_t pixelX, uint32_t pixelY) co
                     return 0;
                 }
             }
+            break;
+        default:
+            throw std::runtime_error("Unknown background size in Renderer::getSbcOffset");
+            break;
     }
-
+    return 0;
 }
 
