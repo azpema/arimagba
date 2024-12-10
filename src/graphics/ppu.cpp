@@ -102,11 +102,11 @@ uint32_t PPU::getVcount() const{
     return *VCOUNT;
 }
 
-uint32_t PPU::getBgOffsetH(uint8_t bg) const{
+uint32_t PPU::getBgOffsetH(const uint8_t bg) const{
     return *(BGxHOFS[bg]);
 }
 
-uint32_t PPU::getBgOffsetV(uint8_t bg) const{
+uint32_t PPU::getBgOffsetV(const uint8_t bg) const{
     return *(BGxVOFS[bg]);
 }
 
@@ -146,6 +146,13 @@ uint8_t PPU::getDCNT_PAGE() const{
     return Utils::getRegBits(*DISPCNT, REG_DISPCNT::DCNT_PAGE_MASK, REG_DISPCNT::DCNT_PAGE_SHIFT);
 }
 
+bool PPU::getBgEnabled(const uint8_t bgNum) const {
+    const static uint16_t mask[4] = {REG_DISPCNT::DCNT_BG0_MASK, REG_DISPCNT::DCNT_BG1_MASK, REG_DISPCNT::DCNT_BG2_MASK, REG_DISPCNT::DCNT_BG3_MASK};
+    const static uint16_t shift[4] = {REG_DISPCNT::DCNT_BG0_SHIFT, REG_DISPCNT::DCNT_BG1_SHIFT, REG_DISPCNT::DCNT_BG2_SHIFT, REG_DISPCNT::DCNT_BG3_SHIFT};
+
+    return Utils::getRegBits(*DISPCNT, mask[bgNum], shift[bgNum]) == 1;
+}
+
 uint32_t PPU::getPageFlipOffset() const{
     return getDCNT_PAGE() ? PAGE_FLIP_SECOND_OFFSET : 0;
 }
@@ -162,26 +169,56 @@ bool PPU::vCountIrqEnabled() const{
     return Utils::getRegBits(*DISPSTAT, REG_DISPSTAT::DSTAT_VCT_IRQ_MASK, REG_DISPSTAT::DSTAT_VCT_IRQ_SHIFT);
 }
 
-uint8_t PPU::getBgCharacterBaseBlock(uint8_t bgNum) const{
+uint8_t PPU::getBgCharacterBaseBlock(const uint8_t bgNum) const{
     return Utils::getRegBits(*(BGxCNT[bgNum]), REG_BGxCNT::BG_CBB_NUM_MASK, REG_BGxCNT::BG_CBB_NUM_SHIFT);
 }
 
-uint8_t PPU::getBgColorMode(uint8_t bgNum) const{
+uint8_t PPU::getBgColorMode(const uint8_t bgNum) const{
     return Utils::getRegBits(*(BGxCNT[bgNum]), REG_BGxCNT::BG_8BPP_MASK, REG_BGxCNT::BG_8BPP_SHIFT);
 }
 
-uint8_t PPU::getBgScreenBaseBlock(uint8_t bgNum) const{
+uint8_t PPU::getBgScreenBaseBlock(const uint8_t bgNum) const{
     return Utils::getRegBits(*(BGxCNT[bgNum]), REG_BGxCNT::BG_SBB_NUM_MASK, REG_BGxCNT::BG_SBB_NUM_SHIFT);
 }
 
-uint32_t PPU::getTileSetVramOffset(uint8_t bgNum) const{
+uint32_t PPU::getTileSetVramOffset(const uint8_t bgNum) const{
     return getBgCharacterBaseBlock(bgNum) * 0x4000;
 }
 
-uint32_t PPU::getTileMapVramOffset(uint8_t bgNum) const{
+uint32_t PPU::getTileMapVramOffset(const uint8_t bgNum) const{
     return getBgScreenBaseBlock(bgNum) * 0x800;
 }
 
-uint8_t PPU::getBgSize(uint8_t bgNum) const{
+uint8_t PPU::getBgSize(const uint8_t bgNum) const{
     return Utils::getRegBits(*(BGxCNT[bgNum]), REG_BGxCNT::BG_SIZE_NUM_MASK, REG_BGxCNT::BG_SIZE_NUM_SHIFT);
+}
+
+uint8_t PPU::getBgPriority(const uint8_t bgNum) const{
+    return Utils::getRegBits(*(BGxCNT[bgNum]), REG_BGxCNT::BG_PRIO_NUM_MASK, REG_BGxCNT::BG_PRIO_NUM_SHIFT);
+}
+
+// Will only return enabled backgrounds!
+std::vector<uint8_t> PPU::getBgsWithPriorityX(const uint8_t prio) const{
+    std::vector<uint8_t> res = {};
+    for(size_t bgNum=0; bgNum<BG_NUM; bgNum++){
+        if(getBgPriority(bgNum) == prio && getBgEnabled(bgNum)){
+            res.emplace_back(bgNum);
+        }
+    }
+
+    return res;
+}
+
+// Descending order (from highest to lowest priority).
+std::vector<uint8_t> PPU::getBgBlendOrder() const {
+    std::vector<uint8_t> res;
+    int index = 0;
+    for(size_t bgNum=0; bgNum<BG_NUM; bgNum++){
+        auto bgs = getBgsWithPriorityX(bgNum);
+
+        res.insert(res.end(), bgs.begin(), bgs.end());
+        index += bgs.size();
+    }
+
+    return res;
 }

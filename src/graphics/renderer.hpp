@@ -18,9 +18,11 @@ class Renderer {
         void renderScanlineMode4();
         
     private:
-        uint32_t getBgRelativeTileX(uint32_t tileX) const;
-        uint32_t getBgRelativeTileY(uint32_t tileY) const;
-        uint32_t getSbcOffset(uint32_t pixelX, uint32_t pixelY) const;
+        void getBackgroundScanline(const uint8_t bg, int32_t *toPaint);
+
+        uint32_t getBgRelativeTileX(uint8_t bg, uint32_t tileX) const;
+        uint32_t getBgRelativeTileY(uint8_t bg, uint32_t tileY) const;
+        uint32_t getSbcOffset(uint8_t bg, uint32_t pixelX, uint32_t pixelY) const;
 
         SDL_Window *window = nullptr;
         SDL_Renderer *renderer = nullptr;

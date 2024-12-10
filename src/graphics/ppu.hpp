@@ -150,18 +150,23 @@ class PPU {
 
         uint8_t *getPaletteRAM() const;
         uint8_t *getVRAM() const;
+        const static uint8_t BG_NUM = 4;
 
         uint32_t getPageFlipOffset() const;
-        uint8_t getBgCharacterBaseBlock(uint8_t bgNum) const;
-        uint8_t getBgScreenBaseBlock(uint8_t bgNum) const;
-        uint8_t getBgColorMode(uint8_t bgNum) const;
-        uint32_t getTileSetVramOffset(uint8_t bgNum) const;
-        uint32_t getTileMapVramOffset(uint8_t bgNum) const;
-        uint8_t getBgSize(uint8_t bgNum) const;
+        uint8_t getBgCharacterBaseBlock(const uint8_t bgNum) const;
+        uint8_t getBgScreenBaseBlock(const uint8_t bgNum) const;
+        uint8_t getBgColorMode(const uint8_t bgNum) const;
+        uint32_t getTileSetVramOffset(const uint8_t bgNum) const;
+        uint32_t getTileMapVramOffset(const uint8_t bgNum) const;
+        uint8_t getBgSize(const uint8_t bgNum) const;
+        uint8_t getBgPriority(const uint8_t bgNum) const;
+        std::vector<uint8_t> getBgsWithPriorityX(const uint8_t prio) const;
+        bool getBgEnabled(const uint8_t bgNum) const;
+        std::vector<uint8_t> getBgBlendOrder() const;
 
         uint32_t getVcount() const;
-        uint32_t getBgOffsetH(uint8_t bg) const;
-        uint32_t getBgOffsetV(uint8_t bg) const;
+        uint32_t getBgOffsetH(const uint8_t bg) const;
+        uint32_t getBgOffsetV(const uint8_t bg) const;
 
         const static uint32_t SCREEN_WIDTH = 240;
         const static uint32_t SCREEN_HEIGHT = 160;
@@ -183,7 +188,6 @@ class PPU {
         uint16_t* DISPSTAT;
         uint16_t* VCOUNT;
 
-        const static uint8_t BG_NUM = 4;
         uint16_t* BGxCNT[BG_NUM];
         uint16_t* BGxHOFS[BG_NUM];
         uint16_t* BGxVOFS[BG_NUM];
