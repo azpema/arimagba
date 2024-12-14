@@ -113,29 +113,34 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
 }
 
 void Renderer::renderScanlineMode0(){
-    int32_t toPaint[4][PPU::SCREEN_WIDTH * 1];
-    getBackgroundScanline(0, toPaint[0]);
-    getBackgroundScanline(1, toPaint[1]);
-    getBackgroundScanline(2, toPaint[2]);
-    getBackgroundScanline(3, toPaint[3]);
+    int32_t toPaint[PPU::BG_NUM][PPU::SCREEN_WIDTH * 1];
+    // Get enabled backgrounds' data
+    auto bgBlendOrder = ppu.getBgBlendOrder();
+    for(const auto &bgNum : bgBlendOrder){
+        getBackgroundScanline(bgNum, toPaint[bgNum]);
+    }
 
     uint16_t toPaintEnd[PPU::SCREEN_WIDTH * 1];
+    uint16_t backdropPixel = *reinterpret_cast<uint16_t *>(ppu.getPaletteRAM());
     
-    auto bgBlendOrder = ppu.getBgBlendOrder();
-    for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
-        for(auto it = bgBlendOrder.begin(); it != bgBlendOrder.end(); ++it){
-            const auto &bgNum = *it;
-            // -1 corresponds to transparency
-            if(toPaint[bgNum][i] != -1){
-                toPaintEnd[i] = static_cast<uint16_t>(toPaint[bgNum][i]);
-                break;
-            }
-            
-            // If I am looking at the last bg and this pixel was -1, set backdrop color
-            if(std::next(it) == bgBlendOrder.end()){
-                toPaintEnd[i] = *reinterpret_cast<uint16_t *>(ppu.getPaletteRAM());
+    if(!bgBlendOrder.empty()){
+        for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
+            for(auto it = bgBlendOrder.begin(); it != bgBlendOrder.end(); ++it){
+                const auto &bgNum = *it;
+                // -1 corresponds to transparency
+                if(toPaint[bgNum][i] != -1){
+                    toPaintEnd[i] = static_cast<uint16_t>(toPaint[bgNum][i]);
+                    break;
+                }
+                
+                // If I am looking at the last bg and this pixel was -1, set backdrop color
+                if(std::next(it) == bgBlendOrder.end()){
+                    toPaintEnd[i] = backdropPixel;
+                }
             }
         }
+    }else{
+        memset(toPaintEnd, backdropPixel, PPU::SCREEN_WIDTH * sizeof(uint16_t));
     }
 
     SDL_UpdateTexture(texture, NULL, toPaintEnd, PPU::SCREEN_WIDTH * sizeof(uint16_t));
@@ -190,12 +195,6 @@ void Renderer::renderScanlineMode4(){
     //SDL_Texture *texture = SDL_CreateTexture(renderer,
     //    SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
 
-    void* pixels;
-    int pitch;
-
-    // Lock the texture, which allows direct pixel access
-    SDL_LockTexture(texture, NULL, &pixels, &pitch);
-
     // Get full palette
     uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getPaletteRAM());
     // Get VRAM corresponding to scanline
@@ -205,13 +204,9 @@ void Renderer::renderScanlineMode4(){
     // TODO: Improve mode4 rendering; too slow!"
     uint16_t toPaint[240];
 
-    for(int i=0; i<240; i++){
-        toPaint[i] = paletteRAM[VRAM[i]];
-    }
-    memcpy(pixels, &toPaint, PPU::SCREEN_WIDTH * 1 * sizeof(Uint16));
+    std::transform(VRAM, VRAM + PPU::SCREEN_WIDTH, toPaint, [&](uint8_t val) { return paletteRAM[val]; });
 
-    // Unlock the texture to update the changes
-    SDL_UnlockTexture(texture);
+    SDL_UpdateTexture(texture, NULL, toPaint, PPU::SCREEN_WIDTH * sizeof(uint16_t));
 
     // Copy the texture to the renderer
     SDL_Rect rect;
