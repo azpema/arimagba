@@ -6,7 +6,9 @@
 
 class PaletteRAM : public GenericMemory<PALETTERAM_SIZE>{
     public:
-        PaletteRAM();     
+        PaletteRAM();
+        const static uint32_t BG_OFFSET = 0;  
+        const static uint32_t OBJ_OFFSET = 0x200;     
 };
 
 #endif

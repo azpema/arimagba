@@ -178,7 +178,7 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
                 return;
             }
         }
-        sram.store((addr & OAM_OBJ_OFFSET_END) - OAM_OBJ_OFFSET_START, val, bytes);
+        oam.store((addr & OAM_OBJ_OFFSET_END) - OAM_OBJ_OFFSET_START, val, bytes);
     }else if(Utils::inRange(addr, UNUSED_MEMORY_1_OFFSET_START, UNUSED_MEMORY_1_OFFSET_END) ||
              Utils::inRange(addr, UNUSED_MEMORY_2_OFFSET_START, UNUSED_MEMORY_2_OFFSET_END)){
         std::cout << "TODO: Openbus write" << std::endl;
@@ -202,3 +202,6 @@ uint8_t* MemoryManager::getIOregisters(){
     return io.getRawMemory();
 }
 
+uint8_t* MemoryManager::getOAM(){
+    return oam.getRawMemory();
+}

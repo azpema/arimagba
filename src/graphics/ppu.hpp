@@ -148,8 +148,11 @@ class PPU {
         ~PPU();
         void renderScanline();
 
-        uint8_t *getPaletteRAM() const;
+        uint8_t *getBgPaletteRAM() const;
+        uint8_t *getObjPaletteRAM() const;
         uint8_t *getVRAM() const;
+        uint8_t *getOVRAM() const;
+        uint8_t *getOAM() const;
         const static uint8_t BG_NUM = 4;
 
         uint32_t getPageFlipOffset() const;
@@ -163,6 +166,9 @@ class PPU {
         std::vector<uint8_t> getBgsWithPriorityX(const uint8_t prio) const;
         bool getBgEnabled(const uint8_t bgNum) const;
         std::vector<uint8_t> getBgBlendOrder() const;
+
+        uint8_t getObjMappingMode() const;
+        bool getObjEnabled() const;
 
         uint32_t getVcount() const;
         uint32_t getBgOffsetH(const uint8_t bg) const;

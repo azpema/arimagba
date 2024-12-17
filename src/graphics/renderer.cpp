@@ -1,6 +1,8 @@
 #include "renderer.hpp"
 #include "../memory/memory_manager.hpp"
 #include "screen_entry.hpp"
+#include "obj/obj_attributes.hpp"
+
 // TODO delete later, for std::memcpy
 #include <cstring>
 
@@ -55,8 +57,8 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
         uint32_t bgPixelX = screenPixelX + pixelScrollX;
         uint32_t bgPixelY = screenPixelY + pixelScrollY;
 
-        uint32_t bgRelativeTileX = getBgRelativeTileX(BG_NUM, (bgPixelX) / BG_TILE_WIDTH_HEIGHT);
-        uint32_t bgRelativeTileY = getBgRelativeTileY(BG_NUM, (bgPixelY) / BG_TILE_WIDTH_HEIGHT);
+        uint32_t bgRelativeTileX = getBgRelativeTileX(BG_NUM, (bgPixelX) / TILE_WIDTH_HEIGHT);
+        uint32_t bgRelativeTileY = getBgRelativeTileY(BG_NUM, (bgPixelY) / TILE_WIDTH_HEIGHT);
         //std::cout << "bgRelativeTileX" << Utils::toHexString(bgRelativeTileX) << std::endl;
         //std::cout << "bgRelativeTileY" << Utils::toHexString(bgRelativeTileY) << std::endl;
 
@@ -82,12 +84,12 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
 
         // check BG_8BPP to determine palette
         uint32_t paletteOffset = 0x20 * screenEntry.getPaletteBank();
-        uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getPaletteRAM() + paletteOffset);
+        uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getBgPaletteRAM() + paletteOffset);
         
-        uint8_t pixelsLeftInTile = BG_TILE_WIDTH_HEIGHT;
+        uint8_t pixelsLeftInTile = TILE_WIDTH_HEIGHT;
         uint8_t tileStartOffset = 0;
         if(screenPixelX == 0){
-            pixelsLeftInTile = BG_TILE_WIDTH_HEIGHT - (pixelScrollX % 8);
+            pixelsLeftInTile = TILE_WIDTH_HEIGHT - (pixelScrollX % 8);
             tileStartOffset = pixelScrollX % 8;
         }else if(PPU::SCREEN_WIDTH - toPaintIndex < 8){
             pixelsLeftInTile = PPU::SCREEN_WIDTH - toPaintIndex;
@@ -95,7 +97,7 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
 
         for(uint8_t i=tileStartOffset; i < tileStartOffset + pixelsLeftInTile; i++){
             // Take the pixel from the given palette!!!!
-            uint32_t tileOffset = ((ppu.getVcount() + pixelScrollY) % BG_TILE_WIDTH_HEIGHT)*4 + i/2;
+            uint32_t tileOffset = ((ppu.getVcount() + pixelScrollY) % TILE_WIDTH_HEIGHT)*4 + i/2;
             uint8_t tile = *(tileSetRaw + tileOffset);
 
             uint8_t paletteIndex;
@@ -119,6 +121,65 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
     }
 }
 
+void Renderer::getObjScanline(int32_t *toPaint){
+    uint64_t rawObjAttributes = *reinterpret_cast<uint64_t *>(ppu.getOAM());
+    ObjAttributes obj(rawObjAttributes);
+    auto height = obj.getHeight();
+    auto width = obj.getWidth();
+
+    auto spriteX = obj.getXCoord();
+    auto spriteY = obj.getYCoord();
+    
+    uint8_t screenPixelY = ppu.getVcount();
+    auto ovram = ppu.getOVRAM();
+    uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getObjPaletteRAM());
+    // Sprite should be drawn in this scanline
+    for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
+        uint8_t screenPixelX = i;
+        if(spriteY <= screenPixelY && screenPixelY < spriteY + height && 
+           spriteX <= screenPixelX && screenPixelX < spriteX + width ){
+            // Determine tile
+            // Check REG_DISPCNT mapping: 2d or 1d
+            auto objRelativeX = screenPixelX - spriteX;
+            auto objRelativeY = screenPixelY - spriteY;
+            if(objRelativeY == 8 && objRelativeX == 24){
+                std::cout << "a";
+            }
+
+            auto tileBlockY = (objRelativeY / TILE_WIDTH_HEIGHT) * (width / TILE_WIDTH_HEIGHT);
+            auto tileBlockX = (objRelativeX / TILE_WIDTH_HEIGHT);
+
+            auto tileIndex = obj.getTileIndex() + tileBlockY + tileBlockX;
+            auto tileRelativeX = (objRelativeX % TILE_WIDTH_HEIGHT);
+            auto tileRelativeY = (objRelativeY % TILE_WIDTH_HEIGHT);
+
+            auto pixelOffset = (tileIndex * 0x20) + tileRelativeX/2 + (tileRelativeY * TILE_WIDTH_HEIGHT)/2;
+
+            auto tile = *(ovram + pixelOffset);
+            //toPaint[i] = 0x1234;
+
+            uint8_t paletteIndex;
+            if(i % 2 == 0){
+                paletteIndex = tile & 0b1111;
+            }else{
+                paletteIndex = tile >> 4;
+            }
+
+
+            if(paletteIndex != 0){
+                uint16_t pixel = paletteRAM[paletteIndex];
+                
+                toPaint[i] = pixel;
+            }else{
+                toPaint[i] = -1;
+            }
+        }else{
+            toPaint[i] = -1;
+        }
+    }
+    
+}
+
 void Renderer::renderScanlineMode0(){
     int32_t toPaint[PPU::BG_NUM][PPU::SCREEN_WIDTH * 1];
     // Get enabled backgrounds' data
@@ -128,7 +189,7 @@ void Renderer::renderScanlineMode0(){
     }
 
     uint16_t toPaintEnd[PPU::SCREEN_WIDTH * 1];
-    uint16_t backdropPixel = *reinterpret_cast<uint16_t *>(ppu.getPaletteRAM());
+    uint16_t backdropPixel = *reinterpret_cast<uint16_t *>(ppu.getBgPaletteRAM());
     
     if(!bgBlendOrder.empty()){
         for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
@@ -148,6 +209,16 @@ void Renderer::renderScanlineMode0(){
         }
     }else{
         memset(toPaintEnd, backdropPixel, PPU::SCREEN_WIDTH * sizeof(uint16_t));
+    }
+
+    // For now just draw the sprites over the backgrounds...
+    int32_t toPaintSprites[PPU::SCREEN_WIDTH];
+    getObjScanline(toPaintSprites);
+
+    for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
+        if(toPaintSprites[i] != -1){
+            toPaintEnd[i] = static_cast<uint16_t>(toPaintSprites[i]);
+        }
     }
 
     SDL_UpdateTexture(texture, NULL, toPaintEnd, PPU::SCREEN_WIDTH * sizeof(uint16_t));
@@ -203,7 +274,7 @@ void Renderer::renderScanlineMode4(){
     //    SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
 
     // Get full palette
-    uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getPaletteRAM());
+    uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getBgPaletteRAM());
     // Get VRAM corresponding to scanline
     uint8_t* VRAM = ppu.getVRAM() + ppu.getPageFlipOffset() + PPU::SCREEN_WIDTH*(ppu.getVcount());
     // Copy your pixel data into the texture's pixel data
@@ -255,20 +326,20 @@ uint32_t Renderer::getSbcOffset(uint8_t bg, uint32_t pixelX, uint32_t pixelY) co
             return 0;
             break;
         case 1:
-            return (pixelX >= 32 * BG_TILE_WIDTH_HEIGHT) ? 0x800 : 0;
+            return (pixelX >= 32 * TILE_WIDTH_HEIGHT) ? 0x800 : 0;
             break;
         case 2:
-            return (pixelY >= 32 * BG_TILE_WIDTH_HEIGHT) ? 0x800 : 0;
+            return (pixelY >= 32 * TILE_WIDTH_HEIGHT) ? 0x800 : 0;
             break;
         case 3:
-            if(pixelX >= 32 * BG_TILE_WIDTH_HEIGHT){
-                if(pixelY >= 32 * BG_TILE_WIDTH_HEIGHT){
+            if(pixelX >= 32 * TILE_WIDTH_HEIGHT){
+                if(pixelY >= 32 * TILE_WIDTH_HEIGHT){
                     return 3 * 0x800;
                 }else{
                     return 0x800;
                 }
             }else{
-                if(pixelY >= 32 * BG_TILE_WIDTH_HEIGHT){
+                if(pixelY >= 32 * TILE_WIDTH_HEIGHT){
                     return 2 * 0x800;
                 }else{
                     return 0;

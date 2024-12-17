@@ -35,12 +35,24 @@ PPU::~PPU(){
   
 }
 
-uint8_t *PPU::getPaletteRAM() const{
-    return mem->getPaletteRAM();
+uint8_t *PPU::getBgPaletteRAM() const{
+    return mem->getPaletteRAM() + PaletteRAM::BG_OFFSET;
+}
+
+uint8_t *PPU::getObjPaletteRAM() const{
+    return mem->getPaletteRAM() + PaletteRAM::OBJ_OFFSET;
+}
+
+uint8_t *PPU::getOAM() const{
+    return mem->getOAM();
 }
 
 uint8_t *PPU::getVRAM() const{
     return mem->getRawVRAM();
+}
+
+uint8_t *PPU::getOVRAM() const{
+    return mem->getRawVRAM() + VRAM::OBJECT_VRAM_OFFSET;
 }
 
 void PPU::renderScanline(){
@@ -151,6 +163,14 @@ bool PPU::getBgEnabled(const uint8_t bgNum) const {
     const static uint16_t shift[4] = {REG_DISPCNT::DCNT_BG0_SHIFT, REG_DISPCNT::DCNT_BG1_SHIFT, REG_DISPCNT::DCNT_BG2_SHIFT, REG_DISPCNT::DCNT_BG3_SHIFT};
 
     return Utils::getRegBits(*DISPCNT, mask[bgNum], shift[bgNum]) == 1;
+}
+
+uint8_t PPU::getObjMappingMode() const {
+    return Utils::getRegBits(*DISPCNT, REG_DISPCNT::DCNT_OBJ_1D_MASK, REG_DISPCNT::DCNT_OBJ_1D_SHIFT);
+}
+
+bool PPU::getObjEnabled() const {
+    return Utils::getRegBits(*DISPCNT, REG_DISPCNT::DCNT_OBJ_MASK, REG_DISPCNT::DCNT_OBJ_SHIFT);
 }
 
 uint32_t PPU::getPageFlipOffset() const{
