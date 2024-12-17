@@ -93,16 +93,20 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
             pixelsLeftInTile = PPU::SCREEN_WIDTH - toPaintIndex;
         }
 
-       for(uint8_t i=tileStartOffset; i < tileStartOffset + pixelsLeftInTile; i++){
+        for(uint8_t i=tileStartOffset; i < tileStartOffset + pixelsLeftInTile; i++){
             // Take the pixel from the given palette!!!!
             uint32_t tileOffset = ((ppu.getVcount() + pixelScrollY) % BG_TILE_WIDTH_HEIGHT)*4 + i/2;
             uint8_t tile = *(tileSetRaw + tileOffset);
-            if(tile != 0){
-                uint16_t pixel;
-                if(i % 2 == 0) 
-                    pixel = paletteRAM[tile & 0b1111];
-                else
-                    pixel = paletteRAM[(tile & 0b11110000) >> 4];
+
+            uint8_t paletteIndex;
+            if(i % 2 == 0){
+                paletteIndex = tile & 0b1111;
+            }else{
+                paletteIndex = (tile & 0b11110000) >> 4;
+            }
+
+            if(paletteIndex != 0){
+                uint16_t pixel = paletteRAM[paletteIndex];
                 
                 toPaint[toPaintIndex++] = pixel;
             }else{
