@@ -17,11 +17,13 @@ class Renderer {
         void renderScanlineMode3();
         void renderScanlineMode4();
         
+        
+
     private:
         void getBackgroundScanline(const uint8_t bg, int32_t *toPaint);
         void getSpriteScanline(const uint8_t bg, int32_t *toPaint);
 
-        void getObjScanline(int32_t *toPaint);
+        bool getObjScanline(const uint8_t objNum, int32_t *toPaint);
 
         uint32_t getBgRelativeTileX(uint8_t bg, uint32_t tileX) const;
         uint32_t getBgRelativeTileY(uint8_t bg, uint32_t tileY) const;
@@ -31,7 +33,7 @@ class Renderer {
         SDL_Renderer *renderer = nullptr;
         SDL_Texture *texture = nullptr;
         const PPU &ppu;
-        const static uint32_t TILE_WIDTH_HEIGHT = 8;
+        
         const static uint32_t SCREENBLOCK_SIZE = 0x0800;
         const static uint32_t PAGE_FLIP_SECOND_OFFSET = 0xA000;
 };

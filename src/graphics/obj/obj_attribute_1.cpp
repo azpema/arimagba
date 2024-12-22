@@ -3,7 +3,7 @@
 
 ObjAttribute1::ObjAttribute1(uint16_t rawVal) : rawVal(rawVal) {}
 
-uint8_t ObjAttribute1::getXCoord() const{
+uint16_t ObjAttribute1::getXCoord() const{
     return Utils::getRegBits(rawVal, X_COORD_MASK, X_COORD_SHIFT);
 }
 

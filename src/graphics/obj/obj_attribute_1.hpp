@@ -8,7 +8,7 @@ class ObjAttribute1 {
         ObjAttribute1(uint16_t rawVal);
         ~ObjAttribute1() = default;
 
-        uint8_t getXCoord() const;
+        uint16_t getXCoord() const;
         uint8_t getAffineIndex() const;
         bool getHorizontalFlip() const;
         bool getVerticalFlip() const;

@@ -6,19 +6,21 @@
 #include "obj_attribute_1.hpp"
 #include "obj_attribute_2.hpp"
 
+enum class ObjMode {NORMAL = 0b00, AFFINE = 0b01, DISABLED = 0b10, AFFINE_DOUBLE = 0b11};
+
 class ObjAttributes {
     public:
         ObjAttributes(uint64_t rawVal);
         ~ObjAttributes() = default;
 
         uint8_t getYCoord() const;
-        uint8_t getObjMode() const;
+        ObjMode getObjMode() const;
         uint8_t getGfxMode() const;
         bool getMosaicEnabled() const;
         uint8_t getColorMode() const;
         uint8_t getSpriteShape() const;
 
-        uint8_t getXCoord() const;
+        uint16_t getXCoord() const;
         uint8_t getAffineIndex() const;
         bool getHorizontalFlip() const;
         bool getVerticalFlip() const;
@@ -31,6 +33,10 @@ class ObjAttributes {
         // Calc
         uint8_t getWidth() const;
         uint8_t getHeight() const;
+
+        uint32_t getPaletteIndex(const uint8_t coordX, const uint8_t coordY, const bool mapping1D) const;
+
+        
         
     private:
         ObjAttribute0 objAttr0;

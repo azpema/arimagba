@@ -167,7 +167,7 @@ class PPU {
         bool getBgEnabled(const uint8_t bgNum) const;
         std::vector<uint8_t> getBgBlendOrder() const;
 
-        uint8_t getObjMappingMode() const;
+        bool getObjMapping1D() const;
         bool getObjEnabled() const;
 
         uint32_t getVcount() const;
@@ -177,6 +177,7 @@ class PPU {
         const static uint32_t SCREEN_WIDTH = 240;
         const static uint32_t SCREEN_HEIGHT = 160;
         const static uint32_t PAGE_FLIP_SECOND_OFFSET = 0xA000;
+        const static uint32_t TILE_WIDTH_HEIGHT = 8;
         
     private:
         //void renderScanlineMode0();
@@ -214,7 +215,7 @@ class PPU {
         bool vCountIrqEnabled() const;
         uint8_t getVcountTrigger() const;
 
-
+        bool getObj1DMapping() const;
 
 
         /*

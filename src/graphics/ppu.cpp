@@ -165,7 +165,7 @@ bool PPU::getBgEnabled(const uint8_t bgNum) const {
     return Utils::getRegBits(*DISPCNT, mask[bgNum], shift[bgNum]) == 1;
 }
 
-uint8_t PPU::getObjMappingMode() const {
+bool PPU::getObjMapping1D() const {
     return Utils::getRegBits(*DISPCNT, REG_DISPCNT::DCNT_OBJ_1D_MASK, REG_DISPCNT::DCNT_OBJ_1D_SHIFT);
 }
 

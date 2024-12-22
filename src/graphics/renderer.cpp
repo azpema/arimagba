@@ -57,8 +57,8 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
         uint32_t bgPixelX = screenPixelX + pixelScrollX;
         uint32_t bgPixelY = screenPixelY + pixelScrollY;
 
-        uint32_t bgRelativeTileX = getBgRelativeTileX(BG_NUM, (bgPixelX) / TILE_WIDTH_HEIGHT);
-        uint32_t bgRelativeTileY = getBgRelativeTileY(BG_NUM, (bgPixelY) / TILE_WIDTH_HEIGHT);
+        uint32_t bgRelativeTileX = getBgRelativeTileX(BG_NUM, (bgPixelX) / PPU::TILE_WIDTH_HEIGHT);
+        uint32_t bgRelativeTileY = getBgRelativeTileY(BG_NUM, (bgPixelY) / PPU::TILE_WIDTH_HEIGHT);
         //std::cout << "bgRelativeTileX" << Utils::toHexString(bgRelativeTileX) << std::endl;
         //std::cout << "bgRelativeTileY" << Utils::toHexString(bgRelativeTileY) << std::endl;
 
@@ -86,10 +86,10 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
         uint32_t paletteOffset = 0x20 * screenEntry.getPaletteBank();
         uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getBgPaletteRAM() + paletteOffset);
         
-        uint8_t pixelsLeftInTile = TILE_WIDTH_HEIGHT;
+        uint8_t pixelsLeftInTile = PPU::TILE_WIDTH_HEIGHT;
         uint8_t tileStartOffset = 0;
         if(screenPixelX == 0){
-            pixelsLeftInTile = TILE_WIDTH_HEIGHT - (pixelScrollX % 8);
+            pixelsLeftInTile = PPU::TILE_WIDTH_HEIGHT - (pixelScrollX % 8);
             tileStartOffset = pixelScrollX % 8;
         }else if(PPU::SCREEN_WIDTH - toPaintIndex < 8){
             pixelsLeftInTile = PPU::SCREEN_WIDTH - toPaintIndex;
@@ -97,7 +97,7 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
 
         for(uint8_t i=tileStartOffset; i < tileStartOffset + pixelsLeftInTile; i++){
             // Take the pixel from the given palette!!!!
-            uint32_t tileOffset = ((ppu.getVcount() + pixelScrollY) % TILE_WIDTH_HEIGHT)*4 + i/2;
+            uint32_t tileOffset = ((ppu.getVcount() + pixelScrollY) % PPU::TILE_WIDTH_HEIGHT)*4 + i/2;
             uint8_t tile = *(tileSetRaw + tileOffset);
 
             uint8_t paletteIndex;
@@ -121,9 +121,19 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
     }
 }
 
-void Renderer::getObjScanline(int32_t *toPaint){
-    uint64_t rawObjAttributes = *reinterpret_cast<uint64_t *>(ppu.getOAM());
+bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
+    uint64_t rawObjAttributes = *reinterpret_cast<uint64_t *>(ppu.getOAM() + objNum*0x8);
     ObjAttributes obj(rawObjAttributes);
+
+    switch(obj.getObjMode()){
+        case ObjMode::DISABLED:
+            return false;
+        case ObjMode::NORMAL:
+            break;
+        default:
+        throw std::runtime_error("Unimplemented OBJ Mode");
+    }
+
     auto height = obj.getHeight();
     auto width = obj.getWidth();
 
@@ -142,27 +152,23 @@ void Renderer::getObjScanline(int32_t *toPaint){
             // Check REG_DISPCNT mapping: 2d or 1d
             auto objRelativeX = screenPixelX - spriteX;
             auto objRelativeY = screenPixelY - spriteY;
-            if(objRelativeY == 8 && objRelativeX == 24){
-                std::cout << "a";
-            }
 
-            auto tileBlockY = (objRelativeY / TILE_WIDTH_HEIGHT) * (width / TILE_WIDTH_HEIGHT);
-            auto tileBlockX = (objRelativeX / TILE_WIDTH_HEIGHT);
-
-            auto tileIndex = obj.getTileIndex() + tileBlockY + tileBlockX;
-            auto tileRelativeX = (objRelativeX % TILE_WIDTH_HEIGHT);
-            auto tileRelativeY = (objRelativeY % TILE_WIDTH_HEIGHT);
-
-            auto pixelOffset = (tileIndex * 0x20) + tileRelativeX/2 + (tileRelativeY * TILE_WIDTH_HEIGHT)/2;
-
+            auto pixelOffset = obj.getPaletteIndex(objRelativeX, objRelativeY, ppu.getObjMapping1D());
             auto tile = *(ovram + pixelOffset);
-            //toPaint[i] = 0x1234;
 
             uint8_t paletteIndex;
             if(i % 2 == 0){
-                paletteIndex = tile & 0b1111;
+                if(spriteX % 2 == 0){
+                    paletteIndex = tile & 0b1111;
+                }else{
+                    paletteIndex = tile >> 4;
+                }
             }else{
-                paletteIndex = tile >> 4;
+                if(spriteX % 2 == 0){
+                    paletteIndex = tile >> 4;
+                }else{
+                    paletteIndex = tile & 0b1111;
+                }
             }
 
 
@@ -171,13 +177,19 @@ void Renderer::getObjScanline(int32_t *toPaint){
                 
                 toPaint[i] = pixel;
             }else{
-                toPaint[i] = -1;
+                if(toPaint[i] == -2){
+                    toPaint[i] = -1;
+                }
+                
             }
         }else{
-            toPaint[i] = -1;
+            if(toPaint[i] == -2){
+                toPaint[i] = -1;
+            }
+                
         }
     }
-    
+    return true;
 }
 
 void Renderer::renderScanlineMode0(){
@@ -213,7 +225,15 @@ void Renderer::renderScanlineMode0(){
 
     // For now just draw the sprites over the backgrounds...
     int32_t toPaintSprites[PPU::SCREEN_WIDTH];
-    getObjScanline(toPaintSprites);
+    std::fill(std::begin(toPaintSprites), std::end(toPaintSprites)+10, -2);
+
+    for(size_t i=0; i<128; i++){
+        bool ret = getObjScanline(i, toPaintSprites);
+        if(!ret){
+            break;
+        }
+    }
+    
 
     for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
         if(toPaintSprites[i] != -1){
@@ -326,20 +346,20 @@ uint32_t Renderer::getSbcOffset(uint8_t bg, uint32_t pixelX, uint32_t pixelY) co
             return 0;
             break;
         case 1:
-            return (pixelX >= 32 * TILE_WIDTH_HEIGHT) ? 0x800 : 0;
+            return (pixelX >= 32 * PPU::TILE_WIDTH_HEIGHT) ? 0x800 : 0;
             break;
         case 2:
-            return (pixelY >= 32 * TILE_WIDTH_HEIGHT) ? 0x800 : 0;
+            return (pixelY >= 32 * PPU::TILE_WIDTH_HEIGHT) ? 0x800 : 0;
             break;
         case 3:
-            if(pixelX >= 32 * TILE_WIDTH_HEIGHT){
-                if(pixelY >= 32 * TILE_WIDTH_HEIGHT){
+            if(pixelX >= 32 * PPU::TILE_WIDTH_HEIGHT){
+                if(pixelY >= 32 * PPU::TILE_WIDTH_HEIGHT){
                     return 3 * 0x800;
                 }else{
                     return 0x800;
                 }
             }else{
-                if(pixelY >= 32 * TILE_WIDTH_HEIGHT){
+                if(pixelY >= 32 * PPU::TILE_WIDTH_HEIGHT){
                     return 2 * 0x800;
                 }else{
                     return 0;
