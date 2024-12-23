@@ -1,10 +1,7 @@
 #include "imm.hpp"
 #include <iostream>
 
-Imm::Imm(uint16_t val) : Operand::Operand(val, OperandType::IMM){
-    c = false;
-    immVal = val;
-}
+Imm::Imm(uint16_t val) : Operand::Operand(val, OperandType::IMM), c(false), immVal(val) {}
 
 Imm::~Imm()
 {

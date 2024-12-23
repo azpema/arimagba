@@ -4,14 +4,13 @@
 
 const std::string ShiftRm::shiftType2Mnemonic[4] = {"lsl", "lsr", "asr", "ror"};
 
-ShiftRm::ShiftRm(uint16_t val) : Operand::Operand(val, OperandType::SHIFT_RM){
-    c = false;
-    _shift = Utils::getRegBits(val, SHIFT_MASK, SHIFT_SHIFT);
-    _rm = Utils::getRegBits(val, RM_MASK, RM_SHIFT);
-    _shiftType = Utils::getRegBits(_shift, SHIFT_TYPE_MASK, SHIFT_TYPE_SHIFT);
-
-    shiftAmount = 0xDEAD;
-
+ShiftRm::ShiftRm(uint16_t val) : Operand::Operand(val, OperandType::SHIFT_RM), 
+                                 c(false), 
+                                 _shift(Utils::getRegBits(val, SHIFT_MASK, SHIFT_SHIFT)),
+                                 _rm(Utils::getRegBits(val, RM_MASK, RM_SHIFT)),
+                                 _shiftType(Utils::getRegBits(_shift, SHIFT_TYPE_MASK, SHIFT_TYPE_SHIFT)),
+                                 shiftAmount(0xDEAD)
+{
     // Shift amount
     if((_shift & 0b00000001) == 0b00000000){
         _shiftAmount = Utils::getRegBits(_shift, SHIFT_AMOUNT_MASK, SHIFT_AMOUNT_SHIFT);
@@ -26,13 +25,12 @@ ShiftRm::ShiftRm(uint16_t val) : Operand::Operand(val, OperandType::SHIFT_RM){
 }
 
 ShiftRm::ShiftRm(uint8_t rm, bool typeShiftAmount, uint8_t amount, uint8_t type, uint8_t rs)
- : Operand::Operand(0xDEAD, OperandType::SHIFT_RM){
-    c = false;
-    _rm = rm;
-    _shiftType = type;
-
-    shiftAmount = 0xDEAD;
-
+ : Operand::Operand(0xDEAD, OperandType::SHIFT_RM),
+   c(false),
+   _rm(rm),
+   _shiftType(type),
+    shiftAmount(0xDEAD)
+ {
     // Shift amount
     if(typeShiftAmount){
         shiftAmount = amount;
