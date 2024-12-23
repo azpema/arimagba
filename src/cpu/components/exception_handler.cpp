@@ -5,7 +5,7 @@ ExceptionHandler::ExceptionHandler(ARM7TDMI &cpu) : cpu(cpu),
                                                     io(cpu.getMemManager().getIOregisters()), 
                                                     IE(reinterpret_cast<uint16_t*>(io + (REG_ADDR::IE - MemoryManager::IO_REGISTERS_OFFSET_START))),
                                                     IF(reinterpret_cast<uint16_t*>(io + (REG_ADDR::IF - MemoryManager::IO_REGISTERS_OFFSET_START))),
-                                                    IME(IME = reinterpret_cast<uint16_t*>(io + (REG_ADDR::IME - MemoryManager::IO_REGISTERS_OFFSET_START)))
+                                                    IME(reinterpret_cast<uint16_t*>(io + (REG_ADDR::IME - MemoryManager::IO_REGISTERS_OFFSET_START)))
                                                     {}
 
 void ExceptionHandler::raiseException(Exception ex, Interrupt inter){

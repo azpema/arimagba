@@ -63,6 +63,7 @@ class ARM7TDMI {
 		ArmPool& getArmPool();
 
 	private:
+		void generateArmDecodingLookup();
 		void generateThumbDecodingLookup();
 		ArmPool armPool;
 		ThumbPool thumbPool;
