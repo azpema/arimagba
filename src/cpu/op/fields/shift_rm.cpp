@@ -24,6 +24,27 @@ ShiftRm::ShiftRm(uint16_t val) : Operand::Operand(val, OperandType::SHIFT_RM),
     }
 }
 
+void ShiftRm::init(uint16_t val){
+    Operand::init(val, OperandType::SHIFT_RM);
+    c = false; 
+    _shift = Utils::getRegBits(val, SHIFT_MASK, SHIFT_SHIFT);
+    _rm = Utils::getRegBits(val, RM_MASK, RM_SHIFT);
+    _shiftType = Utils::getRegBits(_shift, SHIFT_TYPE_MASK, SHIFT_TYPE_SHIFT);
+    shiftAmount = 0xDEAD;
+
+    // Shift amount
+    if((_shift & 0b00000001) == 0b00000000){
+        _shiftAmount = Utils::getRegBits(_shift, SHIFT_AMOUNT_MASK, SHIFT_AMOUNT_SHIFT);
+        type = AMOUNT;
+    // SHift register
+    }else if((_shift & 0b00001001) == 0b00000001){
+        _shiftReg = Utils::getRegBits(_shift, SHIFT_RS_MASK, SHIFT_RS_SHIFT);
+        type = REGISTER;
+    }else{
+        throw std::runtime_error("ERROR: Unknown ShiftRm");
+    }
+}
+
 ShiftRm::ShiftRm(uint8_t rm, bool typeShiftAmount, uint8_t amount, uint8_t type, uint8_t rs)
  : Operand::Operand(0xDEAD, OperandType::SHIFT_RM),
    c(false),

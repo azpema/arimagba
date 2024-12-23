@@ -4,6 +4,14 @@
 
 //ROR by 32 has result equal to Rm, carry out equal to bit 31 of Rm.
 RotateImm::RotateImm(uint32_t val, ConstructorType constructorType) : Operand::Operand(0xDEAD, OperandType::ROTATE_IMM){
+    init(val, constructorType);
+}
+
+RotateImm::RotateImm(uint8_t rot, uint8_t imm) : Operand::Operand(0xDEAD, OperandType::ROTATE_IMM){
+    init(rot, imm);
+}
+
+void RotateImm::init(uint32_t val, ConstructorType constructorType){
     switch(constructorType){
         case ConstructorType::FINAL_IMM_VAL:
         {
@@ -36,11 +44,9 @@ RotateImm::RotateImm(uint32_t val, ConstructorType constructorType) : Operand::O
     
 }
 
-RotateImm::RotateImm(uint8_t rot, uint8_t imm) : Operand::Operand(0xDEAD, OperandType::ROTATE_IMM){
-    init(rot, imm);
-}
 
 void RotateImm::init(uint8_t rot, uint8_t imm){
+    Operand::init(0xDEAD, OperandType::ROTATE_IMM);
     this->rotate = rot;
     this->imm = imm;
 

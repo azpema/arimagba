@@ -7,6 +7,12 @@ Imm::~Imm()
 {
 }
 
+void Imm::init(uint16_t val){
+    Operand::init(val, OperandType::IMM);
+    c = false;
+    immVal = val;
+}
+
 uint32_t Imm::getMnemonicVal(){
     return immVal;
 }

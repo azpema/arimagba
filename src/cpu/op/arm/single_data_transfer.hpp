@@ -4,6 +4,8 @@
 #include <iostream>
 #include "arm_opcode.hpp"
 #include "../fields/operand.hpp"
+#include "../fields/shift_rm.hpp"
+#include "../fields/imm.hpp"
 
 class SingleDataTransfer : public ArmOpcode {
 	public:
@@ -22,7 +24,9 @@ class SingleDataTransfer : public ArmOpcode {
 
     private:
         uint8_t I, P, U, B, W, L, Rn, Rd;
-        std::unique_ptr<Operand> offsetField;
+        Operand *offsetField = nullptr;
+        ShiftRm shiftRmOp2;
+        Imm immOp2;
         bool forcePcBit1To0;
 
         const static uint32_t I_MASK = 0b00000010000000000000000000000000; 

@@ -8,14 +8,23 @@ const std::string SingleDataTransfer::BFlag2Mnemonic[2] = {"", "b"};
 const std::string SingleDataTransfer::WFlag2Mnemonic[2] = {"", "!"};
 const std::string SingleDataTransfer::LFlag2Mnemonic[2] = {"str", "ldr"};
 
-SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu),
+                                                                    shiftRmOp2(0),
+                                                                    immOp2(0)
+{
     init(op);
 }
 
-SingleDataTransfer::SingleDataTransfer(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {}
+SingleDataTransfer::SingleDataTransfer(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu),
+                                                       shiftRmOp2(0),
+                                                       immOp2(0)
+{}
 
 SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 
-    uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu, bool forcePcBit1To0) : ArmOpcode::ArmOpcode(cpu){
+    uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu, bool forcePcBit1To0) : ArmOpcode::ArmOpcode(cpu),
+                                                                                   shiftRmOp2(0),
+                                                                                   immOp2(0)
+{
         init(i, p, u, b, w, l, rn, rd, offset, forcePcBit1To0);
 }
 
@@ -33,9 +42,11 @@ void SingleDataTransfer::init(uint32_t op){
     uint16_t off = Utils::getRegBits(op, OFFSET_MASK, OFFSET_SHIFT);
 
     if(I == 0){
-        offsetField = std::make_unique<Imm>(off);
+        immOp2.init(off);
+        offsetField = &immOp2;
     }else if(I == 1){
-        offsetField = std::make_unique<ShiftRm>(off);
+        shiftRmOp2.init(off);
+        offsetField = &shiftRmOp2;
     }
 
     forcePcBit1To0 = false;
@@ -54,9 +65,11 @@ void SingleDataTransfer::init(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_
 
 
     if(I == 0){
-        this->offsetField = std::make_unique<Imm>(offset);
+        immOp2.init(offset);
+        offsetField = &immOp2;
     }else if(I == 1){
-        this->offsetField = std::make_unique<ShiftRm>(offset);
+        shiftRmOp2.init(offset);
+        offsetField = &shiftRmOp2;
     }
 
     uint32_t raw = Condition::AL << COND_FIELD_SHIFT;
@@ -103,9 +116,9 @@ std::string SingleDataTransfer::toString(){
     ShiftRm* shiftRm;
 
     if(I == 0){
-        imm= static_cast<Imm*>(offsetField.get());
+        imm = static_cast<Imm*>(offsetField);
     }else if(I == 1){
-        shiftRm= static_cast<ShiftRm*>(offsetField.get());
+        shiftRm = static_cast<ShiftRm*>(offsetField);
     }else{
         throw std::runtime_error("Error: invalid I value for SingleDataTransfer::toString");
     }

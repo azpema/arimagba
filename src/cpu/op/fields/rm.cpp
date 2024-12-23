@@ -8,6 +8,11 @@ Rm::~Rm()
 {
 }
 
+void Rm::init(uint16_t val){
+    Operand::init(val, OperandType::RM);
+    rmVal = Utils::getRegBits(val, RM_MASK, RM_SHIFT);
+}
+
 uint32_t Rm::getOperandVal(ARM7TDMI &cpu){
     return cpu.getReg(rmVal);
 }

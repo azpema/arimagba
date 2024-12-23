@@ -4,6 +4,9 @@
 #include <iostream>
 #include "arm_opcode.hpp"
 #include "../fields/operand.hpp"
+#include "../fields/operand.hpp"
+#include "../fields/shift_rm.hpp"
+#include "../fields/rotate_imm.hpp"
 
 class DataProcessing : public ArmOpcode {
     public:
@@ -47,7 +50,9 @@ class DataProcessing : public ArmOpcode {
     private:
         uint16_t i, s, rn, rd, dataOpCode;
         uint32_t op1, op2;
-        std::unique_ptr<Operand> operand2;
+        Operand *operand2 = nullptr;
+        ShiftRm shiftRmOp2;
+        RotateImm rotateImmOp2;
 
         // These values are only used from THUMB mode to force PC value bit 1 to 0.
         bool overrideOperands;

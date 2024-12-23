@@ -9,6 +9,7 @@ class RotateImm : public Operand {
 		RotateImm(uint32_t val, ConstructorType constructorType=ConstructorType::RAW_ROTATE_IMM);
         RotateImm(uint8_t rot, uint8_t imm);
         ~RotateImm() override;
+        void init(uint32_t val, ConstructorType constructorType=ConstructorType::RAW_ROTATE_IMM);
         void init(uint8_t rot, uint8_t imm);
         uint32_t getMnemonicVal();
 
