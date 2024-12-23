@@ -79,7 +79,7 @@ void PPU::renderScanline(){
     
     // Check BG Mode in DISPCNT
     // Panda will stop working!!!
-    if(*VCOUNT <= 160){
+    if(*VCOUNT < PPU::SCREEN_HEIGHT){
         uint8_t dcntMode = getDCNT_MODE();
         switch(dcntMode){
             case 0:

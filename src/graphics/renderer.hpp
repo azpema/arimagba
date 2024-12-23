@@ -6,6 +6,7 @@
 
 #include "ppu.hpp"
 
+//#define RENDER_SCANLINE
 class PPU;
 
 class Renderer {
@@ -31,7 +32,9 @@ class Renderer {
 
         SDL_Window *window = nullptr;
         SDL_Renderer *renderer = nullptr;
-        SDL_Texture *texture = nullptr;
+        SDL_Texture *textureScanline = nullptr;
+        SDL_Texture *textureFrame = nullptr;
+        uint16_t pixelsFrame[160][240] = {{0}};
         const PPU &ppu;
         
         const static uint32_t SCREENBLOCK_SIZE = 0x0800;

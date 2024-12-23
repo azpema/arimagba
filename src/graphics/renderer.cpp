@@ -23,7 +23,8 @@ Renderer::Renderer(const PPU &ppu, const std::string &title) : ppu(ppu) {
         throw std::runtime_error("SDL: Renderer could not be created: " + std::string(SDL_GetError()));
     }
 
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
+    textureScanline = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
+    textureFrame = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, PPU::SCREEN_HEIGHT);
 }
 
 Renderer::~Renderer(){
@@ -33,8 +34,11 @@ Renderer::~Renderer(){
     if(window != nullptr)
         SDL_DestroyWindow(window);
 
-    if(texture != nullptr)
-        SDL_DestroyTexture(texture);
+    if(textureScanline != nullptr)
+        SDL_DestroyTexture(textureScanline);
+    
+    if(textureFrame != nullptr)
+        SDL_DestroyTexture(textureFrame);
 }
 
 void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
@@ -200,7 +204,7 @@ void Renderer::renderScanlineMode0(){
         getBackgroundScanline(bgNum, toPaint[bgNum]);
     }
 
-    uint16_t toPaintEnd[PPU::SCREEN_WIDTH * 1];
+    uint16_t *toPaintEnd = pixelsFrame[ppu.getVcount()];
     uint16_t backdropPixel = *reinterpret_cast<uint16_t *>(ppu.getBgPaletteRAM());
     
     if(!bgBlendOrder.empty()){
@@ -241,7 +245,8 @@ void Renderer::renderScanlineMode0(){
         }
     }
 
-    SDL_UpdateTexture(texture, NULL, toPaintEnd, PPU::SCREEN_WIDTH * sizeof(uint16_t));
+#ifdef RENDER_SCANLINE
+    SDL_UpdateTexture(textureScanline, NULL, toPaintEnd, PPU::SCREEN_WIDTH * sizeof(uint16_t));
     SDL_Rect rect;
 
     rect.x = 0;
@@ -249,49 +254,57 @@ void Renderer::renderScanlineMode0(){
     rect.w = PPU::SCREEN_WIDTH;
     rect.h = 1;
     
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-    SDL_RenderPresent(renderer);
+    SDL_RenderCopy(renderer, textureScanline, NULL, &rect);
     
-    //std::cout << "" << std::endl;
+#else
+    if(ppu.getVcount() == PPU::SCREEN_HEIGHT - 1){
+        SDL_UpdateTexture(textureFrame, NULL, pixelsFrame, 240 * sizeof(uint16_t));
+        SDL_Rect rect;
+
+        rect.x = 0;
+        rect.y = 0;
+        rect.w = PPU::SCREEN_WIDTH;
+        rect.h = PPU::SCREEN_HEIGHT;
+
+        SDL_RenderCopy(renderer, textureFrame, NULL, &rect);
+        SDL_RenderPresent(renderer);
+    }
+#endif
+    
 }
 
+// test this
 void Renderer::renderScanlineMode3(){
-    // Create a texture
-    //SDL_Texture *texture = SDL_CreateTexture(renderer,
-    //    SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
+#ifdef RENDER_SCANLINE
+    SDL_UpdateTexture(textureScanline, NULL, ppu.getVRAM() + 2*PPU::SCREEN_WIDTH*(ppu.getVcount()), PPU::SCREEN_WIDTH * sizeof(uint16_t));
 
-    void* pixels;
-    int pitch;
-
-    // Lock the texture, which allows direct pixel access
-    SDL_LockTexture(texture, NULL, &pixels, &pitch);
-
-    // Copy your pixel data into the texture's pixel data
-    memcpy(pixels, ppu.getVRAM() + 2*PPU::SCREEN_WIDTH*(ppu.getVcount()), PPU::SCREEN_WIDTH * sizeof(uint8_t)*2);
-
-    // Unlock the texture to update the changes
-    SDL_UnlockTexture(texture);
-
-    // Copy the texture to the renderer
     SDL_Rect rect;
     rect.x = 0;
     rect.y = ppu.getVcount();
     rect.w = PPU::SCREEN_WIDTH;
     rect.h = 1;
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-
-    // Present the renderer
+    SDL_RenderCopy(renderer, textureScanline, NULL, &rect);
     SDL_RenderPresent(renderer);
+#else
+    auto vCount = ppu.getVcount();
+    std::memcpy(pixelsFrame[vCount], ppu.getVRAM() + 2*PPU::SCREEN_WIDTH*(ppu.getVcount()), PPU::SCREEN_WIDTH * sizeof(uint16_t));
+    if(vCount == PPU::SCREEN_HEIGHT - 1){
+        SDL_UpdateTexture(textureFrame, NULL, pixelsFrame, 240 * sizeof(uint16_t));
+        SDL_Rect rect;
 
-    // Clean up
-    //SDL_DestroyTexture(texture);
+        rect.x = 0;
+        rect.y = 0;
+        rect.w = PPU::SCREEN_WIDTH;
+        rect.h = PPU::SCREEN_HEIGHT;
+        
+        SDL_RenderCopy(renderer, textureFrame, NULL, &rect);
+        SDL_RenderPresent(renderer);
+    }
+#endif
 
 }
 
 void Renderer::renderScanlineMode4(){
-    // Create a texture
-    //SDL_Texture *texture = SDL_CreateTexture(renderer,
-    //    SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
 
     // Get full palette
     uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getBgPaletteRAM());
@@ -300,25 +313,34 @@ void Renderer::renderScanlineMode4(){
     // Copy your pixel data into the texture's pixel data
 
     // TODO: Improve mode4 rendering; too slow!"
-    uint16_t toPaint[240];
+    uint16_t *toPaint = pixelsFrame[ppu.getVcount()];
 
     std::transform(VRAM, VRAM + PPU::SCREEN_WIDTH, toPaint, [&](uint8_t val) { return paletteRAM[val]; });
 
-    SDL_UpdateTexture(texture, NULL, toPaint, PPU::SCREEN_WIDTH * sizeof(uint16_t));
+#ifdef RENDER_SCANLINE
+    SDL_UpdateTexture(textureScanline, NULL, toPaint, PPU::SCREEN_WIDTH * sizeof(uint16_t));
 
-    // Copy the texture to the renderer
     SDL_Rect rect;
     rect.x = 0;
     rect.y = ppu.getVcount();
     rect.w = PPU::SCREEN_WIDTH;
     rect.h = 1;
-    SDL_RenderCopy(renderer, texture, NULL, &rect);
-
-    // Present the renderer
+    SDL_RenderCopy(renderer, textureScanline, NULL, &rect);
     SDL_RenderPresent(renderer);
+#else
+    if(ppu.getVcount() == PPU::SCREEN_HEIGHT - 1){
+        SDL_UpdateTexture(textureFrame, NULL, pixelsFrame, 240 * sizeof(uint16_t));
+        SDL_Rect rect;
 
-    // Clean up
-    //SDL_DestroyTexture(texture);
+        rect.x = 0;
+        rect.y = 0;
+        rect.w = PPU::SCREEN_WIDTH;
+        rect.h = PPU::SCREEN_HEIGHT;
+        
+        SDL_RenderCopy(renderer, textureFrame, NULL, &rect);
+        SDL_RenderPresent(renderer);
+    }
+#endif
 }
 
 uint32_t Renderer::getBgRelativeTileX(uint8_t bg,uint32_t tileX) const{ 
