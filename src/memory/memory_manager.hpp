@@ -118,7 +118,7 @@ class MemoryManager {
         const static uint32_t GAMEPAK_WAIT_1_OFFSET_END = 0x0BFFFFFF;
 
         const static uint32_t GAMEPAK_WAIT_2_OFFSET_START = 0x0C000000;
-        const static uint32_t GAMEPAK_WAIT_2_OFFSET_END = 0x0DFFFFF;
+        const static uint32_t GAMEPAK_WAIT_2_OFFSET_END = 0x0DFFFFFF;
 
         const static uint32_t GAMEPAK_SRAM_OFFSET_START = 0x0E000000;
         const static uint32_t GAMEPAK_SRAM_OFFSET_END = 0x0E00FFFF;
