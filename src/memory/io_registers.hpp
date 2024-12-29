@@ -37,6 +37,21 @@ namespace REG_ADDR{
     const static uint32_t HALTCNT       = 0x04000301;
 }
 
+namespace REG_SIZE{
+    const static uint8_t IE            = 2;
+    const static uint8_t IF            = 2;
+    const static uint8_t WAITCNT       = 4;
+    const static uint8_t IME           = 4;
+
+    const static uint8_t HALTCNT       = 1;
+}
+
+namespace REG_ADDR_END{
+    constexpr static uint32_t IE        = REG_ADDR::IE + REG_SIZE::IE;
+    constexpr static uint32_t IF        = REG_ADDR::IF + REG_SIZE::IF;
+    constexpr static uint32_t IME       = REG_ADDR::IME + REG_SIZE::IME;
+    constexpr static uint32_t HALTCNT   = REG_ADDR::HALTCNT + REG_SIZE::HALTCNT;
+}
 
 class IOregisters : public GenericMemory<IOREGISTERS_SIZE>{
     public:
@@ -51,6 +66,11 @@ class IOregisters : public GenericMemory<IOREGISTERS_SIZE>{
         void clearMustHaltCpu();
 
     private:
+        void writeCallbackIME();
+        void writeCallbackIE();
+        void writeCallbackIF();
+        void writeCallbackHALTCNT();
+
         uint16_t writeToIf(uint16_t val);
         void setMustHaltCpu();
 

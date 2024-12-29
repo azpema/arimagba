@@ -54,7 +54,3 @@ int32_t Utils::twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint3
         return val | mask;
     }
 }
-
-bool Utils::inRange(uint32_t val, uint32_t from, uint32_t to){
-    return from <= val && val <= to;
-}

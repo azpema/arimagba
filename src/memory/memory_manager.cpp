@@ -1,4 +1,5 @@
 #include "memory_manager.hpp"
+#include "../utils/utils.hpp"
 
 MemoryManager::MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, SRAM &sram, OAM &oam, PaletteRAM &paletteRam, IOregisters &io)
  : bios(bios), gamepak(gamepak), vram(vram), ewram(ewram), iwram(iwram), sram(sram), oam(oam), paletteRam(paletteRam), io(io) {}
@@ -17,33 +18,33 @@ uint16_t MemoryManager::readByte(uint32_t addr) {
 
 uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
     uint32_t val = 0;
-    if(Utils::inRange(addr, BIOS_OFFSET_START, BIOS_OFFSET_END)){
+    if(Utils::inRange<>(addr, BIOS_OFFSET_START, BIOS_OFFSET_END)){
         val = bios.read(addr, bytes);
-    }else if(Utils::inRange(addr, GAMEPAK_WAIT_0_OFFSET_START, GAMEPAK_WAIT_0_OFFSET_END)) {
+    }else if(Utils::inRange<>(addr, GAMEPAK_WAIT_0_OFFSET_START, GAMEPAK_WAIT_0_OFFSET_END)) {
         // GamePak Wait State 0
         val = gamepak.read(addr - GAMEPAK_WAIT_0_OFFSET_START, bytes);
-    }else if(Utils::inRange(addr, GAMEPAK_WAIT_1_OFFSET_START, GAMEPAK_WAIT_1_OFFSET_END)) {
+    }else if(Utils::inRange<>(addr, GAMEPAK_WAIT_1_OFFSET_START, GAMEPAK_WAIT_1_OFFSET_END)) {
         // GamePak Wait State 1
         val = gamepak.read(addr - GAMEPAK_WAIT_1_OFFSET_START, bytes);
-    }else if(Utils::inRange(addr, GAMEPAK_WAIT_2_OFFSET_START, GAMEPAK_WAIT_2_OFFSET_END)) {
+    }else if(Utils::inRange<>(addr, GAMEPAK_WAIT_2_OFFSET_START, GAMEPAK_WAIT_2_OFFSET_END)) {
         // GamePak Wait State 2
         val = gamepak.read(addr - GAMEPAK_WAIT_2_OFFSET_START, bytes);
-    }else if(Utils::inRange(addr, EWRAM_OFFSET_START, EWRAM_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, EWRAM_OFFSET_START, EWRAM_MIRROR_OFFSET_END)){
         val = ewram.read((addr & EWRAM_OFFSET_END) - EWRAM_OFFSET_START, bytes);
-    }else if(Utils::inRange(addr, IWRAM_OFFSET_START, IWRAM_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, IWRAM_OFFSET_START, IWRAM_MIRROR_OFFSET_END)){
         val = iwram.read((addr & IWRAM_OFFSET_END) - IWRAM_OFFSET_START, bytes);
-    }else if(Utils::inRange(addr, PALETTE_RAM_OFFSET_START, PALETTE_RAM_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, PALETTE_RAM_OFFSET_START, PALETTE_RAM_MIRROR_OFFSET_END)){
         val = paletteRam.read((addr & PALETTE_RAM_OFFSET_END) - PALETTE_RAM_OFFSET_START, bytes);
-    }else if(Utils::inRange(addr, VRAM_OFFSET_START, VRAM_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, VRAM_OFFSET_START, VRAM_OFFSET_END)){
         //std::cerr << "TODO: VRAM Unimplemented memory region in MemoryManager::read" << std::endl;
         //std::cerr << "TODO: VRAM Mirroring" << std::endl;
         val = vram.read(addr - VRAM_OFFSET_START, bytes);
-    }else if(Utils::inRange(addr, VRAM_MIRROR_OFFSET_START, VRAM_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, VRAM_MIRROR_OFFSET_START, VRAM_MIRROR_OFFSET_END)){
         /*
         In bitmap modes reads and writes to 0x06018000 - 0x0601BFFF do not work (writes are discarded; reads may always return 0?).
         https://github.com/nba-emu/hw-test/tree/master/ppu/vram-mirror
         */
-        if(Utils::inRange(addr, 0x06018000, 0x0601BFFF)){
+        if(Utils::inRange<>(addr, 0x06018000, 0x0601BFFF)){
             if(3 <= io.getDCNT_MODE() && io.getDCNT_MODE() <= 5){
                 return 0;
             }
@@ -62,14 +63,14 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
         }
         
         val = vram.read(relativeAddr, bytes);
-    }else if(Utils::inRange(addr, IO_REGISTERS_OFFSET_START, IO_REGISTERS_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, IO_REGISTERS_OFFSET_START, IO_REGISTERS_OFFSET_END)){
         val = io.read(addr - IO_REGISTERS_OFFSET_START, bytes);
-    }else if(Utils::inRange(addr, GAMEPAK_SRAM_OFFSET_START, GAMEPAK_SRAM_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, GAMEPAK_SRAM_OFFSET_START, GAMEPAK_SRAM_MIRROR_OFFSET_END)){
         val = sram.read((addr & GAMEPAK_SRAM_OFFSET_END) - GAMEPAK_SRAM_OFFSET_START, bytes);
-    }else if(Utils::inRange(addr, UNUSED_MEMORY_1_OFFSET_START, UNUSED_MEMORY_1_OFFSET_END) ||
-             Utils::inRange(addr, UNUSED_MEMORY_2_OFFSET_START, UNUSED_MEMORY_2_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, UNUSED_MEMORY_1_OFFSET_START, UNUSED_MEMORY_1_OFFSET_END) ||
+             Utils::inRange<>(addr, UNUSED_MEMORY_2_OFFSET_START, UNUSED_MEMORY_2_OFFSET_END)){
         //std::cout << "TODO: Openbus read" << std::endl;
-    }else if(Utils::inRange(addr, OAM_OBJ_OFFSET_START, OAM_OBJ_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, OAM_OBJ_OFFSET_START, OAM_OBJ_MIRROR_OFFSET_END)){
         val = oam.read((addr & OAM_OBJ_OFFSET_END) - OAM_OBJ_OFFSET_START, bytes);
     }else{
         throw std::runtime_error("Error: Unimplemented memory region in MemoryManager::read");
@@ -79,11 +80,11 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
 }
 
 void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
-    if(Utils::inRange(addr, BIOS_OFFSET_START, BIOS_OFFSET_END)){
+    if(Utils::inRange<>(addr, BIOS_OFFSET_START, BIOS_OFFSET_END)){
         std::cout << "TODO: BIOS write" << std::endl;
-    }else if(Utils::inRange(addr, GAMEPAK_WAIT_0_OFFSET_START, GAMEPAK_WAIT_0_OFFSET_END)) {
+    }else if(Utils::inRange<>(addr, GAMEPAK_WAIT_0_OFFSET_START, GAMEPAK_WAIT_0_OFFSET_END)) {
         // Do nothing
-    }else if(Utils::inRange(addr, VRAM_OFFSET_START, VRAM_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, VRAM_OFFSET_START, VRAM_MIRROR_OFFSET_END)){
         /*
         In bitmap modes reads and writes to 0x06018000 - 0x0601BFFF do not work (writes are discarded; reads may always return 0?).
         https://github.com/nba-emu/hw-test/tree/master/ppu/vram-mirror
@@ -100,17 +101,17 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
         */
         // Bitmap modes
         if(3 <= io.getDCNT_MODE() && io.getDCNT_MODE() <= 5){
-            if(Utils::inRange(addr, 0x06018000, 0x0601BFFF)){
+            if(Utils::inRange<>(addr, 0x06018000, 0x0601BFFF)){
                 return;
             }
 
-            if(Utils::inRange(addr, 0x06014000, 0x06017FFF)){
+            if(Utils::inRange<>(addr, 0x06014000, 0x06017FFF)){
                 if(bytes == 1){
                     return;
                 }
             }
         }else{
-            if(Utils::inRange(addr, 0x06010000, 0x06017FFF)){
+            if(Utils::inRange<>(addr, 0x06010000, 0x06017FFF)){
                 if(bytes == 1){
                     return;
                 }
@@ -136,13 +137,13 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
 
         if(bytes == 1){
             if(3 <= io.getDCNT_MODE() && io.getDCNT_MODE() <= 5){
-                if(Utils::inRange(addr, 0x06000000, 0x06013FFF)){
+                if(Utils::inRange<>(addr, 0x06000000, 0x06013FFF)){
                     newAddr &= 0xFFFFFFFE;
                     newVal = (val << 8) | val;
                     newBytes = 2;
                 }
             }else{
-                if(Utils::inRange(addr, 0x06000000, 0x0600FFFF)){
+                if(Utils::inRange<>(addr, 0x06000000, 0x0600FFFF)){
                     if(bytes == 1){
                         newAddr &= 0xFFFFFFFE;
                         newVal = (val << 8) | val;
@@ -153,11 +154,11 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
         }
         
         vram.store(newAddr, newVal, newBytes);
-    }else if(Utils::inRange(addr, EWRAM_OFFSET_START, EWRAM_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, EWRAM_OFFSET_START, EWRAM_MIRROR_OFFSET_END)){
         ewram.store((addr & EWRAM_OFFSET_END) - EWRAM_OFFSET_START, val, bytes);
-    }else if(Utils::inRange(addr, IWRAM_OFFSET_START, IWRAM_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, IWRAM_OFFSET_START, IWRAM_MIRROR_OFFSET_END)){
         iwram.store((addr & IWRAM_OFFSET_END) - IWRAM_OFFSET_START, val, bytes);
-    }else if(Utils::inRange(addr, PALETTE_RAM_OFFSET_START, PALETTE_RAM_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, PALETTE_RAM_OFFSET_START, PALETTE_RAM_MIRROR_OFFSET_END)){
         uint32_t newAddr = addr;
         uint32_t newVal = val;
         uint32_t newBytes = bytes;
@@ -167,20 +168,20 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
             newBytes = 2;
         }
         paletteRam.store((newAddr & PALETTE_RAM_OFFSET_END) - PALETTE_RAM_OFFSET_START, newVal, newBytes);
-    }else if(Utils::inRange(addr, IO_REGISTERS_OFFSET_START, IO_REGISTERS_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, IO_REGISTERS_OFFSET_START, IO_REGISTERS_OFFSET_END)){
         io.storeWrapper(addr - IO_REGISTERS_OFFSET_START, val, bytes);
-    }else if(Utils::inRange(addr, GAMEPAK_SRAM_OFFSET_START, GAMEPAK_SRAM_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, GAMEPAK_SRAM_OFFSET_START, GAMEPAK_SRAM_MIRROR_OFFSET_END)){
         sram.store((addr & GAMEPAK_SRAM_OFFSET_END) - GAMEPAK_SRAM_OFFSET_START, val, bytes);
-    }else if(Utils::inRange(addr, OAM_OBJ_OFFSET_START, OAM_OBJ_MIRROR_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, OAM_OBJ_OFFSET_START, OAM_OBJ_MIRROR_OFFSET_END)){
         // TODO redundant
-        if(Utils::inRange(addr, OAM_OBJ_OFFSET_START, OAM_OBJ_MIRROR_OFFSET_END)){
+        if(Utils::inRange<>(addr, OAM_OBJ_OFFSET_START, OAM_OBJ_MIRROR_OFFSET_END)){
             if(bytes == 1){
                 return;
             }
         }
         oam.store((addr & OAM_OBJ_OFFSET_END) - OAM_OBJ_OFFSET_START, val, bytes);
-    }else if(Utils::inRange(addr, UNUSED_MEMORY_1_OFFSET_START, UNUSED_MEMORY_1_OFFSET_END) ||
-             Utils::inRange(addr, UNUSED_MEMORY_2_OFFSET_START, UNUSED_MEMORY_2_OFFSET_END)){
+    }else if(Utils::inRange<>(addr, UNUSED_MEMORY_1_OFFSET_START, UNUSED_MEMORY_1_OFFSET_END) ||
+             Utils::inRange<>(addr, UNUSED_MEMORY_2_OFFSET_START, UNUSED_MEMORY_2_OFFSET_END)){
         std::cout << "TODO: Openbus write" << std::endl;
 
     }else if(addr == INTERNAL_MEMORY_CONTROL_OFFSET_START){

@@ -7,45 +7,80 @@ IOregisters::IOregisters() : mustHaltCpu(false) {
     }
 }
 
-uint16_t IOregisters::writeToIf(uint16_t val){
-    uint16_t regIf = read(REG_ADDR::IF - MemoryManager::IO_REGISTERS_OFFSET_START, 2);
-    uint16_t newVal = (~val) & regIf;
-    return newVal;
+/*
+    4000208h - IME - Interrupt Master Enable Register (R/W)
+    Bit   Expl.
+    0     Disable all interrupts         (0=Disable All, 1=See IE register)
+    1-31  Not used
+*/
+void IOregisters::writeCallbackIME(){
+    uint32_t newVal = read(REG_ADDR::IME - MemoryManager::IO_REGISTERS_OFFSET_START, REG_SIZE::IME);
+    newVal &= 0b00000000000000000000000000000001;
+    store(REG_ADDR::IME - MemoryManager::IO_REGISTERS_OFFSET_START, newVal, REG_SIZE::IME);
 }
 
+void IOregisters::writeCallbackIF(){
+    static uint32_t oldVal = 0;
+
+    uint16_t val = read(REG_ADDR::IF - MemoryManager::IO_REGISTERS_OFFSET_START, REG_SIZE::IF);
+    uint16_t newVal = (~val) & oldVal;
+    store(REG_ADDR::IF - MemoryManager::IO_REGISTERS_OFFSET_START, newVal, REG_SIZE::IF);
+
+    // Update oldVal for next update
+    oldVal = newVal;
+}
+
+void IOregisters::writeCallbackIE(){
+    static uint32_t oldVal = 0;
+
+    uint16_t val = read(REG_ADDR::IE - MemoryManager::IO_REGISTERS_OFFSET_START, REG_SIZE::IE);
+    uint16_t newVal = (val & 0b0000000011111111);
+    store(REG_ADDR::IE - MemoryManager::IO_REGISTERS_OFFSET_START, newVal, REG_SIZE::IE);
+
+    // Update oldVal for next update
+    oldVal = newVal;
+}
+
+void IOregisters::writeCallbackHALTCNT(){
+    setMustHaltCpu();
+}
+
+// TODO refactor and check all possibilities
 void IOregisters::storeWrapper(uint32_t addr, uint32_t val, uint8_t bytes){
-    uint32_t newVal = val;
-    if(addr == (REG_ADDR::IME - MemoryManager::IO_REGISTERS_OFFSET_START)){
-        /*
-        4000208h - IME - Interrupt Master Enable Register (R/W)
-        Bit   Expl.
-        0     Disable all interrupts         (0=Disable All, 1=See IE register)
-        1-31  Not used
-        */
-        newVal &= 0b00000000000000000000000000000001;
-    }else if(addr == (REG_ADDR::IF - MemoryManager::IO_REGISTERS_OFFSET_START)){
-        if(bytes != 2){
-            throw std::runtime_error("TODO storeWrapper");
-        }
-        newVal = writeToIf(val);
-    }
-    if(addr == (REG_ADDR::IE - MemoryManager::IO_REGISTERS_OFFSET_START)){
-        if(bytes == 1){
-            throw std::runtime_error("TODO storeWrapper");
-        }else if(bytes == 2){
-            // Do nothing
-        }else if(bytes == 4){
-            uint16_t newRegIf = writeToIf(val >> 16);
-            newVal = (newVal & 0b0000000011111111) | (newRegIf << 16);
-        }
-    }else if(Utils::inRange(addr, REG_ADDR::HALTCNT - MemoryManager::IO_REGISTERS_OFFSET_START, REG_ADDR::HALTCNT + bytes - MemoryManager::IO_REGISTERS_OFFSET_START)){
-        if(bytes == 1){
-            setMustHaltCpu();
-        }else{
-            throw std::runtime_error("HALTCNT write bigger than 1 byte");
+    store(addr, val, bytes);
+
+    bool writtenIE = false;
+    bool writtenIF = false;
+    bool writtenIME = false;
+    bool writtenHALTCNT = false;
+
+    // Determine, depending on addr and size, what mmio registers were written to
+    for(uint32_t checkAddr = addr; checkAddr < addr + bytes; checkAddr++){
+        if(!writtenIE && Utils::inRange<true, false>(checkAddr, REG_ADDR::IE - MemoryManager::IO_REGISTERS_OFFSET_START, REG_ADDR_END::IE - MemoryManager::IO_REGISTERS_OFFSET_START)){
+            writtenIE = true;
+        }else if(!writtenIF && Utils::inRange<true, false>(checkAddr, REG_ADDR::IF - MemoryManager::IO_REGISTERS_OFFSET_START, REG_ADDR_END::IF - MemoryManager::IO_REGISTERS_OFFSET_START)){
+            writtenIF = true;
+        }else if(!writtenIME && Utils::inRange<true, false>(checkAddr, REG_ADDR::IME - MemoryManager::IO_REGISTERS_OFFSET_START, REG_ADDR_END::IME - MemoryManager::IO_REGISTERS_OFFSET_START)){
+            writtenIME = true;
+        }else if(!writtenHALTCNT && Utils::inRange<true, false>(checkAddr, REG_ADDR::HALTCNT - MemoryManager::IO_REGISTERS_OFFSET_START, REG_ADDR_END::HALTCNT - MemoryManager::IO_REGISTERS_OFFSET_START)){
+            writtenHALTCNT = true;
         }
     }
-    store(addr, newVal, bytes);
+
+    // Call each mmio register's function to update accordingly
+    if(writtenIE){
+        writeCallbackIE();
+    }
+    if(writtenIF){
+        writeCallbackIF();
+    }
+    if(writtenIME){
+        writeCallbackIME();
+    }
+    if(writtenHALTCNT){
+        writeCallbackHALTCNT();
+    }
+
 }
 
 uint32_t IOregisters::getDISPCNT(){

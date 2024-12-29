@@ -16,7 +16,18 @@ public:
     static int32_t twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint32_t toBits);
     static std::string toHexString(uint32_t val, uint32_t paddingNum = 0);
     
-    static bool inRange(uint32_t val, uint32_t from, uint32_t to);
+    template <bool inclusiveMin = true, bool inclusiveMax = true>
+    static bool inRange(uint32_t val, uint32_t from, uint32_t to){
+        if (inclusiveMin && inclusiveMax){ 
+            return (val >= from) && (val <= to); 
+        }else if (inclusiveMin && !inclusiveMax){
+            return (val >= from) && (val < to); 
+        }else if (!inclusiveMin && inclusiveMax){ 
+            return (val > from) && (val <= to); 
+        }else{
+            return (val > from) && (val < to); 
+        }
+    }
 };
 
 #endif
