@@ -414,7 +414,7 @@ void DataProcessing::doExecute(){
         When Rd is R15 and the S flag is set the result of the operation is placed in R15 and
         the SPSR corresponding to the current mode is moved to the CPSR
     */
-    if(rd == 15 && (s==1 || OPCODE_CMP_VAL)){
+    if(rd == 15 && (s==1 || dataOpCode == OPCODE_CMP_VAL)){
         PSR::Mode mode = cpu.getCPSR().getMode();
         if(mode != PSR::Mode::User && mode != PSR::Mode::System){
             cpu.setCPSR(cpu.getSPSR().getValue());
