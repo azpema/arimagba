@@ -8,138 +8,6 @@
 #include "../memory/memory_manager.hpp"
 #include "renderer.hpp"
 
-// ***************** DISPCNT ***************** 
-    /*
-        Bit   Name             Expl.
-        0-2	  DCNT_MODEx.      Sets video mode. 0, 1, 2 are tiled modes; 3, 4, 5 are bitmap modes.
-              DCNT_MODE#	   
-        3     DCNT_GB	       Is set if cartridge is a GBC game. Read-only.
-        4	  DCNT_PAGE	       Page select. Modes 4 and 5 can use page flipping for smoother animation.
-                                This bit selects the displayed page (and allowing the other one to be drawn on without artifacts).
-        5	  DCNT_OAM_HBL	   Allows access to OAM in an HBlank. OAM is normally locked in VDraw.
-                                Will reduce the amount of sprite pixels rendered per line.
-        6	  DCNT_OBJ_1D	   Object mapping mode. Tile memory can be seen as a 32x32 matrix of tiles.
-                                When sprites are composed of multiple tiles high, this bit tells whether the next row of tiles lies beneath the previous,
-                                in correspondence with the matrix structure (2D mapping, OM=0), or right next to it, so that memory is arranged as an array of sprites (1D mapping OM=1).
-        7	  DCNT_BLANK	   Force a screen blank.
-        8-B	  DCNT_BGx,        Enables rendering of the corresponding background and sprites.
-              DCNT_OBJ.
-              DCNT_LAYER#	
-        D-F	  DCNT_WINx,       Enables the use of windows 0, 1 and Object window, respectively.
-              DCNT_WINOBJ      Windows can be used to mask out certain areas (like the lamp did in Zelda:LTTP).
-                	
-    */
-
-namespace REG_DISPCNT {
-    const static uint16_t DCNT_MODE_MASK        = 0b0000000000000111;
-    const static uint16_t DCNT_MODE_SHIFT       = 0;
-
-    const static uint16_t DCNT_GB_MASK          = 0b0000000000001000;
-    const static uint16_t DCNT_GB_SHIFT         = 3;
-
-    const static uint16_t DCNT_PAGE_MASK        = 0b0000000000010000;
-    const static uint16_t DCNT_PAGE_SHIFT       = 4;
-
-    const static uint16_t DCNT_OAM_HBL_MASK     = 0b0000000000100000;
-    const static uint16_t DCNT_OAM_HBL_SHIFT    = 5;
-
-    const static uint16_t DCNT_OBJ_1D_MASK      = 0b0000000001000000;
-    const static uint16_t DCNT_OBJ_1D_SHIFT     = 6;
-
-    const static uint16_t DCNT_BLANK_MASK       = 0b0000000010000000;
-    const static uint16_t DCNT_BLANK_SHIFT      = 7;
-
-    const static uint16_t DCNT_BG0_MASK         = 0b0000000100000000;
-    const static uint16_t DCNT_BG0_SHIFT        = 8;
-
-    const static uint16_t DCNT_BG1_MASK         = 0b0000001000000000;
-    const static uint16_t DCNT_BG1_SHIFT        = 9;
-
-    const static uint16_t DCNT_BG2_MASK         = 0b0000010000000000;
-    const static uint16_t DCNT_BG2_SHIFT        = 0xA;
-
-    const static uint16_t DCNT_BG3_MASK         = 0b0000100000000000;
-    const static uint16_t DCNT_BG3_SHIFT        = 0xB;
-
-    const static uint16_t DCNT_OBJ_MASK         = 0b0001000000000000;
-    const static uint16_t DCNT_OBJ_SHIFT        = 0xC;
-
-    const static uint16_t DCNT_WIN0_MASK        = 0b0010000000000000;
-    const static uint16_t DCNT_WIN0_SHIFT       = 0xD;
-
-    const static uint16_t DCNT_WIN1_MASK        = 0b0100000000000000;
-    const static uint16_t DCNT_WIN1_SHIFT       = 0xE;
-
-    const static uint16_t DCNT_WINOBJ_MASK      = 0b1000000000000000;
-    const static uint16_t DCNT_WINOBJ_SHIFT     = 0xF;
-}
-
-// ***************** DISPSTAT ***************** 
-    /*
-        Bit   Name              Expl.
-        0     DSTAT_IN_VBL      V-Blank flag   (Read only) (1=VBlank) (set in line 160..226; not 227)
-        1     DSTAT_IN_HBL      H-Blank flag   (Read only) (1=HBlank) (toggled in all lines, 0..227)
-        2     DSTAT_IN_VCT      V-Counter flag (Read only) (1=Match)  (set in selected line)     (R)
-        3     DSTAT_VBL_IRQ     V-Blank IRQ Enable         (1=Enable)                          (R/W)
-        4     DSTAT_HBL_IRQ     H-Blank IRQ Enable         (1=Enable)                          (R/W)
-        5     DSTAT_VCT_IRQ     V-Counter IRQ Enable       (1=Enable)                          (R/W)
-        6                       Not used (0) / DSi: LCD Initialization Ready (0=Busy, 1=Ready)   (R)
-        7                       Not used (0) / NDS: MSB of V-Vcount Setting (LYC.Bit8) (0..262)(R/W)
-        8-15  DSTAT_VCT#        V-Count Setting (LYC)      (0..227)                            (R/W)
-    */
-namespace REG_DISPSTAT {
-    // VBlank status
-    const static uint16_t DSTAT_IN_VBL_MASK = 0b0000000000000001;
-    const static uint16_t DSTAT_IN_VBL_SHIFT = 0;
-
-    // HBlank status
-    const static uint16_t DSTAT_IN_HBL_MASK = 0b0000000000000010;
-    const static uint16_t DSTAT_IN_HBL_SHIFT = 1;
-
-    // Vcount trigger status
-    const static uint16_t DSTAT_IN_VCT_MASK = 0b0000000000000100;
-    const static uint16_t DSTAT_IN_VCT_SHIFT = 2;
-
-    // VBlank Interrupt request
-    const static uint16_t DSTAT_VBL_IRQ_MASK = 0b0000000000001000;
-    const static uint16_t DSTAT_VBL_IRQ_SHIFT = 3;
-
-    // HBlank Interrupt request
-    const static uint16_t DSTAT_HBL_IRQ_MASK = 0b0000000000010000;
-    const static uint16_t DSTAT_HBL_IRQ_SHIFT = 4;
-
-    // VCount Interrupt request
-    const static uint16_t DSTAT_VCT_IRQ_MASK = 0b0000000000100000;
-    const static uint16_t DSTAT_VCT_IRQ_SHIFT = 5;
-
-    // VCount trigger value
-    const static uint16_t DSTAT_VCT_NUM_MASK = 0b1111111100000000;
-    const static uint16_t DSTAT_VCT_NUM_SHIFT = 8;
-}
-
-namespace REG_BGxCNT {
-    const static uint16_t BG_PRIO_NUM_MASK      = 0b0000000000000011;
-    const static uint16_t BG_PRIO_NUM_SHIFT     = 0;
-
-    const static uint16_t BG_CBB_NUM_MASK       = 0b0000000000001100;
-    const static uint16_t BG_CBB_NUM_SHIFT      = 2;
-
-    const static uint16_t BG_MOSAIC_MASK        = 0b0000000001000000;
-    const static uint16_t BG_MOSAIC_SHIFT       = 6;
-
-    const static uint16_t BG_8BPP_MASK          = 0b0000000010000000;
-    const static uint16_t BG_8BPP_SHIFT         = 7;
-
-    const static uint16_t BG_SBB_NUM_MASK       = 0b0001111100000000;
-    const static uint16_t BG_SBB_NUM_SHIFT      = 8;
-
-    const static uint16_t BG_WRAP_MASK          = 0b0010000000000000;
-    const static uint16_t BG_WRAP_SHIFT         = 0xD;
-
-    const static uint16_t BG_SIZE_NUM_MASK      = 0b1100000000000000;
-    const static uint16_t BG_SIZE_NUM_SHIFT     = 0xE;
-}
-
 class Renderer;
 
 class PPU {
@@ -217,6 +85,137 @@ class PPU {
 
         bool getObj1DMapping() const;
 
+        // ***************** DISPCNT ***************** 
+        /*
+            Bit   Name             Expl.
+            0-2	  DCNT_MODEx.      Sets video mode. 0, 1, 2 are tiled modes; 3, 4, 5 are bitmap modes.
+                DCNT_MODE#	   
+            3     DCNT_GB	       Is set if cartridge is a GBC game. Read-only.
+            4	  DCNT_PAGE	       Page select. Modes 4 and 5 can use page flipping for smoother animation.
+                                    This bit selects the displayed page (and allowing the other one to be drawn on without artifacts).
+            5	  DCNT_OAM_HBL	   Allows access to OAM in an HBlank. OAM is normally locked in VDraw.
+                                    Will reduce the amount of sprite pixels rendered per line.
+            6	  DCNT_OBJ_1D	   Object mapping mode. Tile memory can be seen as a 32x32 matrix of tiles.
+                                    When sprites are composed of multiple tiles high, this bit tells whether the next row of tiles lies beneath the previous,
+                                    in correspondence with the matrix structure (2D mapping, OM=0), or right next to it, so that memory is arranged as an array of sprites (1D mapping OM=1).
+            7	  DCNT_BLANK	   Force a screen blank.
+            8-B	  DCNT_BGx,        Enables rendering of the corresponding background and sprites.
+                DCNT_OBJ.
+                DCNT_LAYER#	
+            D-F	  DCNT_WINx,       Enables the use of windows 0, 1 and Object window, respectively.
+                DCNT_WINOBJ      Windows can be used to mask out certain areas (like the lamp did in Zelda:LTTP).
+                        
+        */
+
+        struct REG_DISPCNT {
+            const static uint16_t DCNT_MODE_MASK        = 0b0000000000000111;
+            const static uint16_t DCNT_MODE_SHIFT       = 0;
+
+            const static uint16_t DCNT_GB_MASK          = 0b0000000000001000;
+            const static uint16_t DCNT_GB_SHIFT         = 3;
+
+            const static uint16_t DCNT_PAGE_MASK        = 0b0000000000010000;
+            const static uint16_t DCNT_PAGE_SHIFT       = 4;
+
+            const static uint16_t DCNT_OAM_HBL_MASK     = 0b0000000000100000;
+            const static uint16_t DCNT_OAM_HBL_SHIFT    = 5;
+
+            const static uint16_t DCNT_OBJ_1D_MASK      = 0b0000000001000000;
+            const static uint16_t DCNT_OBJ_1D_SHIFT     = 6;
+
+            const static uint16_t DCNT_BLANK_MASK       = 0b0000000010000000;
+            const static uint16_t DCNT_BLANK_SHIFT      = 7;
+
+            const static uint16_t DCNT_BG0_MASK         = 0b0000000100000000;
+            const static uint16_t DCNT_BG0_SHIFT        = 8;
+
+            const static uint16_t DCNT_BG1_MASK         = 0b0000001000000000;
+            const static uint16_t DCNT_BG1_SHIFT        = 9;
+
+            const static uint16_t DCNT_BG2_MASK         = 0b0000010000000000;
+            const static uint16_t DCNT_BG2_SHIFT        = 0xA;
+
+            const static uint16_t DCNT_BG3_MASK         = 0b0000100000000000;
+            const static uint16_t DCNT_BG3_SHIFT        = 0xB;
+
+            const static uint16_t DCNT_OBJ_MASK         = 0b0001000000000000;
+            const static uint16_t DCNT_OBJ_SHIFT        = 0xC;
+
+            const static uint16_t DCNT_WIN0_MASK        = 0b0010000000000000;
+            const static uint16_t DCNT_WIN0_SHIFT       = 0xD;
+
+            const static uint16_t DCNT_WIN1_MASK        = 0b0100000000000000;
+            const static uint16_t DCNT_WIN1_SHIFT       = 0xE;
+
+            const static uint16_t DCNT_WINOBJ_MASK      = 0b1000000000000000;
+            const static uint16_t DCNT_WINOBJ_SHIFT     = 0xF;
+        };
+
+        // ***************** DISPSTAT ***************** 
+        /*
+            Bit   Name              Expl.
+            0     DSTAT_IN_VBL      V-Blank flag   (Read only) (1=VBlank) (set in line 160..226; not 227)
+            1     DSTAT_IN_HBL      H-Blank flag   (Read only) (1=HBlank) (toggled in all lines, 0..227)
+            2     DSTAT_IN_VCT      V-Counter flag (Read only) (1=Match)  (set in selected line)     (R)
+            3     DSTAT_VBL_IRQ     V-Blank IRQ Enable         (1=Enable)                          (R/W)
+            4     DSTAT_HBL_IRQ     H-Blank IRQ Enable         (1=Enable)                          (R/W)
+            5     DSTAT_VCT_IRQ     V-Counter IRQ Enable       (1=Enable)                          (R/W)
+            6                       Not used (0) / DSi: LCD Initialization Ready (0=Busy, 1=Ready)   (R)
+            7                       Not used (0) / NDS: MSB of V-Vcount Setting (LYC.Bit8) (0..262)(R/W)
+            8-15  DSTAT_VCT#        V-Count Setting (LYC)      (0..227)                            (R/W)
+        */
+        struct REG_DISPSTAT {
+            // VBlank status
+            const static uint16_t DSTAT_IN_VBL_MASK = 0b0000000000000001;
+            const static uint16_t DSTAT_IN_VBL_SHIFT = 0;
+
+            // HBlank status
+            const static uint16_t DSTAT_IN_HBL_MASK = 0b0000000000000010;
+            const static uint16_t DSTAT_IN_HBL_SHIFT = 1;
+
+            // Vcount trigger status
+            const static uint16_t DSTAT_IN_VCT_MASK = 0b0000000000000100;
+            const static uint16_t DSTAT_IN_VCT_SHIFT = 2;
+
+            // VBlank Interrupt request
+            const static uint16_t DSTAT_VBL_IRQ_MASK = 0b0000000000001000;
+            const static uint16_t DSTAT_VBL_IRQ_SHIFT = 3;
+
+            // HBlank Interrupt request
+            const static uint16_t DSTAT_HBL_IRQ_MASK = 0b0000000000010000;
+            const static uint16_t DSTAT_HBL_IRQ_SHIFT = 4;
+
+            // VCount Interrupt request
+            const static uint16_t DSTAT_VCT_IRQ_MASK = 0b0000000000100000;
+            const static uint16_t DSTAT_VCT_IRQ_SHIFT = 5;
+
+            // VCount trigger value
+            const static uint16_t DSTAT_VCT_NUM_MASK = 0b1111111100000000;
+            const static uint16_t DSTAT_VCT_NUM_SHIFT = 8;
+        };
+
+        struct REG_BGxCNT {
+            const static uint16_t BG_PRIO_NUM_MASK      = 0b0000000000000011;
+            const static uint16_t BG_PRIO_NUM_SHIFT     = 0;
+
+            const static uint16_t BG_CBB_NUM_MASK       = 0b0000000000001100;
+            const static uint16_t BG_CBB_NUM_SHIFT      = 2;
+
+            const static uint16_t BG_MOSAIC_MASK        = 0b0000000001000000;
+            const static uint16_t BG_MOSAIC_SHIFT       = 6;
+
+            const static uint16_t BG_8BPP_MASK          = 0b0000000010000000;
+            const static uint16_t BG_8BPP_SHIFT         = 7;
+
+            const static uint16_t BG_SBB_NUM_MASK       = 0b0001111100000000;
+            const static uint16_t BG_SBB_NUM_SHIFT      = 8;
+
+            const static uint16_t BG_WRAP_MASK          = 0b0010000000000000;
+            const static uint16_t BG_WRAP_SHIFT         = 0xD;
+
+            const static uint16_t BG_SIZE_NUM_MASK      = 0b1100000000000000;
+            const static uint16_t BG_SIZE_NUM_SHIFT     = 0xE;
+        };
 
         /*
         4000000h  2    R/W  DISPCNT   LCD Control
