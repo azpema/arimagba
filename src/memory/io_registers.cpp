@@ -19,26 +19,16 @@ void IOregisters::writeCallbackIME(){
     store(REG_ADDR::IME - MemoryManager::IO_REGISTERS_OFFSET_START, newVal, REG_SIZE::IME);
 }
 
-void IOregisters::writeCallbackIF(){
-    static uint32_t oldVal = 0;
-
+void IOregisters::writeCallbackIF(const uint16_t prevVal){
     uint16_t val = read(REG_ADDR::IF - MemoryManager::IO_REGISTERS_OFFSET_START, REG_SIZE::IF);
-    uint16_t newVal = (~val) & oldVal;
+    uint16_t newVal = (~val) & prevVal;
     store(REG_ADDR::IF - MemoryManager::IO_REGISTERS_OFFSET_START, newVal, REG_SIZE::IF);
-
-    // Update oldVal for next update
-    oldVal = newVal;
 }
 
 void IOregisters::writeCallbackIE(){
-    static uint32_t oldVal = 0;
-
     uint16_t val = read(REG_ADDR::IE - MemoryManager::IO_REGISTERS_OFFSET_START, REG_SIZE::IE);
     uint16_t newVal = (val & 0b0000000011111111);
     store(REG_ADDR::IE - MemoryManager::IO_REGISTERS_OFFSET_START, newVal, REG_SIZE::IE);
-
-    // Update oldVal for next update
-    oldVal = newVal;
 }
 
 void IOregisters::writeCallbackHALTCNT(){
@@ -47,6 +37,7 @@ void IOregisters::writeCallbackHALTCNT(){
 
 // TODO refactor and check all possibilities
 void IOregisters::storeWrapper(uint32_t addr, uint32_t val, uint8_t bytes){
+    uint32_t prevVal = read(addr, bytes);
     store(addr, val, bytes);
 
     bool writtenIE = false;
@@ -72,7 +63,7 @@ void IOregisters::storeWrapper(uint32_t addr, uint32_t val, uint8_t bytes){
         writeCallbackIE();
     }
     if(writtenIF){
-        writeCallbackIF();
+        writeCallbackIF(prevVal);
     }
     if(writtenIME){
         writeCallbackIME();

@@ -68,7 +68,7 @@ class IOregisters : public GenericMemory<IOREGISTERS_SIZE>{
     private:
         void writeCallbackIME();
         void writeCallbackIE();
-        void writeCallbackIF();
+        void writeCallbackIF(const uint16_t prevVal);
         void writeCallbackHALTCNT();
 
         uint16_t writeToIf(uint16_t val);
