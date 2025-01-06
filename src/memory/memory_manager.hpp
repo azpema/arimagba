@@ -70,6 +70,7 @@ class MemoryManager {
         uint16_t readByte(uint32_t addr);
         uint32_t read(uint32_t addr, uint8_t bytes);
         void store(uint32_t addr, uint32_t val, uint8_t bytes);
+        void blockTransfer(uint32_t dst, uint32_t src, uint32_t bytes);
 
         uint8_t* getRawVRAM();
         uint8_t* getPaletteRAM();

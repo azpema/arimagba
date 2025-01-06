@@ -35,6 +35,11 @@ namespace REG_ADDR{
     const static uint32_t IME           = 0x04000208;
 
     const static uint32_t HALTCNT       = 0x04000301;
+
+    const static uint32_t DMAxSAD[4] = { 0x040000B0, 0x040000BC, 0x040000C8, 0x040000D4 };
+    const static uint32_t DMAxDAD[4] = { 0x040000B4, 0x040000C0, 0x040000CC, 0x040000D8 };
+    const static uint32_t DMAxCNT_L[4] = { 0x040000B8, 0x040000C4, 0x040000D0, 0x040000DC };
+    const static uint32_t DMAxCNT_H[4] = { 0x040000BA, 0x040000C6, 0x040000D2, 0x040000DE };
 }
 
 namespace REG_SIZE{

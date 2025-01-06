@@ -2,6 +2,7 @@
 #include "cpu/arm7tdmi.hpp"
 #include "utils/utils.hpp"
 #include "graphics/ppu.hpp"
+#include "memory/dma.hpp"
 #include "memory/keys.hpp"
 #include <bitset>
 #include <filesystem>
@@ -32,6 +33,11 @@ int main(int argc, char** argv)
 	Keys keys(&mem);
 	ARM7TDMI cpu(&mem);
 	PPU ppu("GBA", cpu, &mem);
+	DMA<0> dma0(mem);
+	DMA<1> dma1(mem);
+	DMA<2> dma2(mem);
+	DMA<3> dma3(mem);
+
 	cpu.setPC(0x08000000);
 	
 	bool run = true;
@@ -78,6 +84,11 @@ int main(int argc, char** argv)
 			cpuCycles = 0;
 		}
 
+		// DMA
+		dma0.runCycle();
+		dma1.runCycle();
+		dma2.runCycle();
+		dma3.runCycle();
 	}
 
 	SDL_Quit();

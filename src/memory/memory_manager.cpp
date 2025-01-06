@@ -191,6 +191,14 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
     }
 }
 
+void MemoryManager::blockTransfer(uint32_t dst, uint32_t src, uint32_t bytes){
+    // TODO Use something like memcpy, but you must deal with memory mirrors...
+    for(size_t i = 0; i < bytes; i+= 2){
+        uint16_t val = readHalfWord(src + i);
+        store(dst + i, val, 2);
+    }
+}
+
 uint8_t* MemoryManager::getRawVRAM(){
     return vram.getRawMemory();
 }

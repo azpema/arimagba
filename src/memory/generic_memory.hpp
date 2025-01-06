@@ -5,7 +5,7 @@
 
 const static uint32_t BIOS_SIZE = 0x4000;
 const static uint32_t EWRAM_SIZE = 0x40000;
-const static uint32_t IOREGISTERS_SIZE = 0x3FF;
+const static uint32_t IOREGISTERS_SIZE = 0x800;
 const static uint32_t IWRAM_SIZE = 0x8000;
 const static uint32_t OAM_SIZE = 0x400;
 const static uint32_t PALETTERAM_SIZE = 0x400;
