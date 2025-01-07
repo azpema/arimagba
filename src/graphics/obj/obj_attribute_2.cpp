@@ -3,7 +3,7 @@
 
 ObjAttribute2::ObjAttribute2(uint16_t rawVal) : rawVal(rawVal) {}
 
-uint8_t ObjAttribute2::getTileIndex() const{
+uint16_t ObjAttribute2::getTileIndex() const{
     return Utils::getRegBits(rawVal, TILE_INDEX_MASK, TILE_INDEX_SHIFT);
 }
 

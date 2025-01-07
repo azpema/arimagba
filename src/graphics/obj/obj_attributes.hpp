@@ -26,7 +26,7 @@ class ObjAttributes {
         bool getVerticalFlip() const;
         uint8_t getSpriteSize() const;
 
-        uint8_t getTileIndex() const;
+        uint16_t getTileIndex() const;
         uint8_t getPriority() const;
         uint8_t getPaletteBank() const;
 

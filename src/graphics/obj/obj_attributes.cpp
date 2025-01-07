@@ -51,7 +51,7 @@ uint8_t ObjAttributes::getSpriteSize() const{
     return objAttr1.getSpriteSize();
 }
 
-uint8_t ObjAttributes::getTileIndex() const{
+uint16_t ObjAttributes::getTileIndex() const{
     return objAttr2.getTileIndex();
 }
 

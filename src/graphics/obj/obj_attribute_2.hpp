@@ -8,7 +8,7 @@ class ObjAttribute2 {
         ObjAttribute2(uint16_t rawVal);
         ~ObjAttribute2() = default;
 
-        uint8_t getTileIndex() const;
+        uint16_t getTileIndex() const;
         uint8_t getPriority() const;
         uint8_t getPaletteBank() const;
         
