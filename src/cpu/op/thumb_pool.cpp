@@ -42,6 +42,7 @@ ThumbPool::ThumbPool(ARM7TDMI &cpu){
     thumbPool.insert({ThumbOpCode::OpCodeEnum::MOVE_SHIFTED_REGISTER, std::make_unique<MoveShiftedRegister>(cpu)});
     thumbPool.insert({ThumbOpCode::OpCodeEnum::MOVE_COMP_ADD_SUB_IMM, std::make_unique<MoveCompAddSubImm>(cpu)});
     thumbPool.insert({ThumbOpCode::OpCodeEnum::LOAD_STORE_IMM_OFFSET, std::make_unique<LoadStoreImmOffset>(cpu)});
+    thumbPool.insert({ThumbOpCode::OpCodeEnum::UNKNOWN, nullptr});
 }
 
 ThumbOpCode* ThumbPool::getThumbInstance(ThumbOpCode::OpCodeEnum key) const{

@@ -56,10 +56,6 @@ void ARM7TDMI::generateArmDecodingLookup(){
 	for(size_t i=0; i<4096; i++){
 		// We look at bits 4-7 and 20-27 for decoding
 
-		if(i == 288){
-			std::cout << "a";
-		}
-
 		uint32_t op = ((i & 0b111111110000) << (20 - 4)) | ((i & 0b1111) << 4);
 
 		bool valid = true;
@@ -152,13 +148,9 @@ void ARM7TDMI::generateThumbDecodingLookup(){
 			thumbEnum = ThumbOpCode::OpCodeEnum::LOAD_STORE_IMM_OFFSET;
 		}else{
 			thumbEnum = ThumbOpCode::OpCodeEnum::UNKNOWN;
-			valid = false;
-			//throw std::runtime_error("ERROR: Unrecognized instruction in generateThumbDecodingLookup");
 		}
 
-		if(valid){
-			thumbOpcodeInstance[i] = thumbPool.getThumbInstance(thumbEnum);
-		}
+		thumbOpcodeInstance[i] = thumbPool.getThumbInstance(thumbEnum);
 	}
 }
 
