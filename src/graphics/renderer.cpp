@@ -157,6 +157,10 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
             auto objRelativeX = screenPixelX - spriteX;
             auto objRelativeY = screenPixelY - spriteY;
 
+            if(obj.getHorizontalFlip()){
+                objRelativeX = obj.getWidth() - 1 - objRelativeX;
+            }
+
             auto pixelOffset = obj.getPaletteIndex(objRelativeX, objRelativeY, ppu.getObjMapping1D());
             auto tile = *(ovram + pixelOffset);
 
