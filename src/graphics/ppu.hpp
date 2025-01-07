@@ -46,6 +46,8 @@ class PPU {
         const static uint32_t SCREEN_HEIGHT = 160;
         const static uint32_t PAGE_FLIP_SECOND_OFFSET = 0xA000;
         const static uint32_t TILE_WIDTH_HEIGHT = 8;
+
+        const static uint8_t PALETTE_BANK_SIZE = 0x20;
         
     private:
         //void renderScanlineMode0();

@@ -146,7 +146,7 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
     
     uint8_t screenPixelY = ppu.getVcount();
     auto ovram = ppu.getOVRAM();
-    uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getObjPaletteRAM());
+    uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getObjPaletteRAM() + obj.getPaletteBank() * PPU::PALETTE_BANK_SIZE);
     // Sprite should be drawn in this scanline
     for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
         uint8_t screenPixelX = i;
