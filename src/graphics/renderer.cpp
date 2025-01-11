@@ -43,8 +43,11 @@ Renderer::~Renderer(){
 
 void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
     const uint8_t BG_NUM = bg;
-    if(ppu.getBgColorMode(BG_NUM) != 0){
-        throw std::runtime_error("Unimplemented 256 color mode");
+
+    uint8_t tileSize = 0x20;
+    bool colorMode256 = ppu.getBgColorMode(BG_NUM) == 1;
+    if(colorMode256){
+        tileSize = 0x40;
     }
 
     uint8_t screenPixelX = 0;
@@ -80,14 +83,14 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
         //std::cout << "seOffset" << Utils::toHexString(seOffset) << std::endl;
         //std::cout << "tileSetRaw" << Utils::toHexString(tileSetStartOffset + screenEntry.getTileIndex() * 0x20) << std::endl;
         uint16_t tileIndex = screenEntry.getTileIndex();
-        uint32_t debug1 = tileSetStartOffset + tileIndex * 0x20;
+        uint32_t debug1 = tileSetStartOffset + tileIndex * tileSize;
 
         uint8_t debugTileData[32];
         uint8_t* tileSetRaw = reinterpret_cast<uint8_t *>(ppu.getVRAM() + debug1);
         std::memcpy(debugTileData, reinterpret_cast<const uint8_t*>(ppu.getVRAM() + debug1), 32);
 
         // check BG_8BPP to determine palette
-        uint32_t paletteOffset = 0x20 * screenEntry.getPaletteBank();
+        uint32_t paletteOffset = colorMode256 ? 0 : tileSize * screenEntry.getPaletteBank();
         uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getBgPaletteRAM() + paletteOffset);
         
         uint8_t pixelsLeftInTile = PPU::TILE_WIDTH_HEIGHT;
@@ -101,14 +104,24 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
 
         for(uint8_t i=tileStartOffset; i < tileStartOffset + pixelsLeftInTile; i++){
             // Take the pixel from the given palette!!!!
-            uint32_t tileOffset = ((ppu.getVcount() + pixelScrollY) % PPU::TILE_WIDTH_HEIGHT)*4 + i/2;
+            uint8_t pixelIndex = i;
+            uint32_t tileOffset = ((ppu.getVcount() + pixelScrollY) % PPU::TILE_WIDTH_HEIGHT);
+            if(colorMode256){
+                tileOffset = tileOffset * 8 + pixelIndex;
+            }else{
+                tileOffset = tileOffset * 4 + pixelIndex/2;
+            }
             uint8_t tile = *(tileSetRaw + tileOffset);
 
             uint8_t paletteIndex;
-            if(i % 2 == 0){
-                paletteIndex = tile & 0b1111;
+            if(colorMode256){
+                paletteIndex = tile;
             }else{
-                paletteIndex = (tile & 0b11110000) >> 4;
+                if(pixelIndex % 2 == 0){
+                    paletteIndex = tile & 0b1111;
+                }else{
+                    paletteIndex = (tile & 0b11110000) >> 4;
+                }
             }
 
             if(paletteIndex != 0){
