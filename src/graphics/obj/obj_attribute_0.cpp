@@ -20,7 +20,7 @@ bool ObjAttribute0::getMosaicEnabled() const{
 }
 
 uint8_t ObjAttribute0::getColorMode() const{
-    return Utils::getRegBits(rawVal, COLOR_MODE_SHIFT, COLOR_MODE_MASK);
+    return Utils::getRegBits(rawVal, COLOR_MODE_MASK, COLOR_MODE_SHIFT);
 }
 
 uint8_t ObjAttribute0::getSpriteShape() const{
