@@ -133,7 +133,6 @@ class MemoryManager {
         const static uint32_t UNUSED_MEMORY_2_OFFSET_END = 0xFFFFFFFF;
 
     private:
-        
         BIOS &bios;
         GamePak &gamepak;
         VRAM &vram;
@@ -143,6 +142,24 @@ class MemoryManager {
         OAM &oam;
         PaletteRAM &paletteRam;
         IOregisters &io;
+
+        enum class Region {
+            BIOS                    = 0x0,
+            EWRAM                   = 0x2,
+            IWRAM                   = 0x3,
+            IO                      = 0x4,
+            PALETTE_RAM             = 0x5,
+            VRAM                    = 0x6,
+            OAM                     = 0x7,
+            GAMEPAK_WAIT_0_REGION_1 = 0x8,
+            GAMEPAK_WAIT_0_REGION_2 = 0x9,
+            GAMEPAK_WAIT_1_REGION_1 = 0xA,
+            GAMEPAK_WAIT_1_REGION_2 = 0xB,
+            GAMEPAK_WAIT_2_REGION_1 = 0xC,
+            GAMEPAK_WAIT_2_REGION_2 = 0xD,
+            SRAM                    = 0xE,
+            SRAM_MIRROR             = 0xF
+        };
 };
 
 #endif

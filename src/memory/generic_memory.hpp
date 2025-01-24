@@ -29,6 +29,10 @@ class GenericMemory {
 
     public:
         uint32_t read(uint32_t addr, uint8_t bytes){
+            if(addr + bytes > n){
+                // Out of bounds, return Openbus val?
+                return 0;
+            }
             uint32_t val=0;
             if(bytes == 1){
                 val = mem[addr];
@@ -56,6 +60,10 @@ class GenericMemory {
         }
 
         void store(uint32_t addr, uint32_t val, uint8_t bytes){
+            if(addr + bytes > n){
+                // Out of bounds, do nothing
+                return;
+            }
             if(bytes == 1){
                 mem[addr] = val;
                 /*if(addr % 2 == 0){
