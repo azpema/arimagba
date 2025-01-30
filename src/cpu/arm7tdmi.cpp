@@ -55,10 +55,8 @@ static OpCode* armOpcodeInstance[4096];
 void ARM7TDMI::generateArmDecodingLookup(){
 	for(size_t i=0; i<4096; i++){
 		// We look at bits 4-7 and 20-27 for decoding
-
 		uint32_t op = ((i & 0b111111110000) << (20 - 4)) | ((i & 0b1111) << 4);
 
-		bool valid = true;
 		ArmOpcode::OpCodeEnum armEnum;
 		if(ArmOpcode::isBranchAndExchange(op)){
 			armEnum = ArmOpcode::OpCodeEnum::BRANCH_AND_EXCHANGE;
@@ -90,13 +88,9 @@ void ARM7TDMI::generateArmDecodingLookup(){
 			armEnum = ArmOpcode::OpCodeEnum::DATA_PROCESSING;
 		}else{
 			armEnum = ArmOpcode::OpCodeEnum::UNKNOWN;
-			valid = false;
-			//throw std::runtime_error("ERROR: Unrecognized instruction in generateArmDecodingLookup");
 		}
 
-		if(valid){
-			armOpcodeInstance[i] = armPool.getArmInstance(armEnum);
-		}
+		armOpcodeInstance[i] = armPool.getArmInstance(armEnum);
 	}
 }
 
@@ -106,7 +100,6 @@ void ARM7TDMI::generateThumbDecodingLookup(){
 	for(size_t i=0; i<256; i++){
 		uint16_t op = i << 8;
 
-		bool valid = true;
 		ThumbOpCode::OpCodeEnum thumbEnum;
 		if(ThumbOpCode::isSoftwareInterrupt(op)){
 			thumbEnum = ThumbOpCode::OpCodeEnum::SOFTWARE_INTERRUPT;
@@ -380,7 +373,7 @@ void ARM7TDMI::setMustFlushPipeline(bool val){
     mustFlushPipeline = val;
 }
 
-uint32_t ARM7TDMI::getPC(){
+uint32_t ARM7TDMI::getPC() const{
 	return reg[15];
 }
 
@@ -533,6 +526,13 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
+		// Force BIOS read for openbus
+		if((fetchPC == BIOS::OPENBUS_ADDR::SOFTRESET_EXIT + 4) || 
+		   (fetchPC == BIOS::OPENBUS_ADDR::IRQ_ENTRY + 4) || 
+		   (fetchPC == BIOS::OPENBUS_ADDR::IRQ_EXIT + 4) || 
+		   (fetchPC == BIOS::OPENBUS_ADDR::SWI_EXIT + 4)){
+			mem->readWord(fetchPC + 4);
+		}
 
 		insFetchSet = true;
 		insDecode = insFetch;
@@ -546,4 +546,8 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 
 ArmPool& ARM7TDMI::getArmPool(){
 	return armPool;
+}
+
+bool ARM7TDMI::isPcInBios() const{
+	return getPC() <= MemoryManager::BIOS_OFFSET_END;
 }

@@ -34,6 +34,7 @@ ArmPool::ArmPool(ARM7TDMI &cpu){
     armPool.insert({ArmOpcode::OpCodeEnum::PSR_TRANSFER_MRS, std::make_unique<PSRTransferMRS>(cpu)});
     armPool.insert({ArmOpcode::OpCodeEnum::PSR_TRANSFER_MSR, std::make_unique<PSRTransferMSR>(cpu)});
     armPool.insert({ArmOpcode::OpCodeEnum::DATA_PROCESSING, std::make_unique<DataProcessing>(cpu)});
+    armPool.insert({ArmOpcode::OpCodeEnum::UNKNOWN, nullptr});
 }
 ArmOpcode* ArmPool::getArmInstance(ArmOpcode::OpCodeEnum key) const{
     return armPool.at(key).get();

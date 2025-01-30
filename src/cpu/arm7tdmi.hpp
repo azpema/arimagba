@@ -50,7 +50,7 @@ class ARM7TDMI {
 		uint32_t getReg(uint16_t n, bool userBank = false);
 		void setReg(uint16_t n, uint32_t val, bool userBank = false);
 
-		uint32_t getPC();
+		uint32_t getPC() const;
 		void setPC(uint32_t pc);
 		void setLR(uint32_t lr);
 
@@ -61,6 +61,8 @@ class ARM7TDMI {
 		const static uint32_t CPU_CYCLES_PER_I_CYCLE = 1;
 
 		ArmPool& getArmPool();
+
+		bool isPcInBios() const;
 
 	private:
 		void generateArmDecodingLookup();

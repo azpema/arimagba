@@ -13,6 +13,7 @@
 #include "oam.hpp"
 #include "palette_ram.hpp"
 #include "io_registers.hpp"
+#include "../cpu/arm7tdmi.hpp"
 
 /*
   General Internal Memory
@@ -67,7 +68,7 @@ class MemoryManager {
         MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, SRAM &sram, OAM &oam, PaletteRAM &paletteRam, IOregisters &io);
         uint32_t readWord(uint32_t addr);
         uint16_t readHalfWord(uint32_t addr);
-        uint16_t readByte(uint32_t addr);
+        uint8_t readByte(uint32_t addr);
         uint32_t read(uint32_t addr, uint8_t bytes);
         void store(uint32_t addr, uint32_t val, uint8_t bytes);
         void blockTransfer(uint32_t dst, uint32_t src, uint32_t bytes);
@@ -76,6 +77,8 @@ class MemoryManager {
         uint8_t* getPaletteRAM();
         uint8_t* getIOregisters();
         uint8_t* getOAM();
+
+        void addCpu(ARM7TDMI *cpu);
 
         // General Internal Memory
         const static uint32_t BIOS_OFFSET_START = 0x00000000;
@@ -142,6 +145,8 @@ class MemoryManager {
         OAM &oam;
         PaletteRAM &paletteRam;
         IOregisters &io;
+
+        ARM7TDMI *cpu;
 
         enum class Region {
             BIOS                    = 0x0,

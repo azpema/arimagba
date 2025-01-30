@@ -12,7 +12,7 @@ uint16_t MemoryManager::readHalfWord(uint32_t addr) {
     return read(addr, 2);
 }
 
-uint16_t MemoryManager::readByte(uint32_t addr) {
+uint8_t MemoryManager::readByte(uint32_t addr) {
     return read(addr, 1);
 }
 
@@ -21,7 +21,7 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
     auto region = static_cast<Region>(addr >> 24);
     switch(region){
         case Region::BIOS:
-            val = bios.read(addr, bytes);
+            val = bios.readWrapper(addr, bytes, cpu->isPcInBios());
             break;
         case Region::EWRAM:
             val = ewram.read((addr & EWRAM_OFFSET_END) - EWRAM_OFFSET_START, bytes);
@@ -233,4 +233,8 @@ uint8_t* MemoryManager::getIOregisters(){
 
 uint8_t* MemoryManager::getOAM(){
     return oam.getRawMemory();
+}
+
+void MemoryManager::addCpu(ARM7TDMI *cpu){
+    this->cpu = cpu;
 }
