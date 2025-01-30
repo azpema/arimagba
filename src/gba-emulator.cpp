@@ -32,6 +32,7 @@ int main(int argc, char** argv)
 
 	Keys keys(&mem);
 	ARM7TDMI cpu(&mem);
+	mem.addCpu(&cpu);
 	PPU ppu("GBA", cpu, &mem);
 	DMA<0> dma0(mem);
 	DMA<1> dma1(mem);
