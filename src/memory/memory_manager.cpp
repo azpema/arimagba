@@ -4,24 +4,34 @@
 MemoryManager::MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, SRAM &sram, OAM &oam, PaletteRAM &paletteRam, IOregisters &io)
  : bios(bios), gamepak(gamepak), vram(vram), ewram(ewram), iwram(iwram), sram(sram), oam(oam), paletteRam(paletteRam), io(io) {}
 
-uint32_t MemoryManager::readWord(uint32_t addr) {
-    return read(addr, 4);
+uint32_t MemoryManager::readWord(uint32_t addr, bool opPreFetch) {
+    return read(addr, 4, opPreFetch);
 }
 
-uint16_t MemoryManager::readHalfWord(uint32_t addr) {
-    return read(addr, 2);
+uint16_t MemoryManager::readHalfWord(uint32_t addr, bool opPreFetch) {
+    return read(addr, 2, opPreFetch);
 }
 
 uint8_t MemoryManager::readByte(uint32_t addr) {
     return read(addr, 1);
 }
 
-uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
+uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes, bool opPreFetch) {
     uint32_t val = 0;
     auto region = static_cast<Region>(addr >> 24);
+    bool validRead = true;
     switch(region){
         case Region::BIOS:
-            val = bios.readWrapper(addr, bytes, cpu->isPcInBios());
+            if(addr <= 0x3FFF){
+                val = bios.readWrapper(addr, bytes, cpu->isPcInBios());
+            }else{
+                validRead = false;
+                std::cout << "BIOS OOB" << "\n";
+                val = openBusVal;
+                if((addr & 0x3) != 0){
+                    val = Utils::rotateRight(val, (addr & 0x3)*8);
+                }
+            }            
             break;
         case Region::EWRAM:
             val = ewram.read((addr & EWRAM_OFFSET_END) - EWRAM_OFFSET_START, bytes);
@@ -81,8 +91,16 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes) {
             val = sram.read((addr & GAMEPAK_SRAM_OFFSET_END) - GAMEPAK_SRAM_OFFSET_START, bytes);
             break;
         default:
-            // Out of bounds, return OpenBus value?
+            validRead = false;
+            val = openBusVal;
+            if((addr & 0x3) != 0){
+                val = Utils::rotateRight(val, (addr & 0x3)*8);
+            }
             break;
+    }
+
+    if(validRead && opPreFetch){
+        openBusVal = val;
     }
     
     return val;

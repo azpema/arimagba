@@ -460,10 +460,10 @@ uint32_t ARM7TDMI::fetchNextInstruction(){
 	uint32_t pc = getPC();
 	uint32_t ins;
 	if(cpsr.isThumbMode()){
-		ins = mem->readHalfWord(pc);
+		ins = mem->readHalfWord(pc, true);
 		setPC(getPC() + 2);
 	}else{
-		ins = mem->readWord(pc);
+		ins = mem->readWord(pc, true);
 		setPC(getPC() + 4);
 	}
 	
@@ -526,12 +526,11 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 		fetchPC = getPC();
 		insFetch = fetchNextInstruction();
 
-		// Force BIOS read for openbus
-		if((fetchPC == BIOS::OPENBUS_ADDR::SOFTRESET_EXIT + 4) || 
-		   (fetchPC == BIOS::OPENBUS_ADDR::IRQ_ENTRY + 4) || 
-		   (fetchPC == BIOS::OPENBUS_ADDR::IRQ_EXIT + 4) || 
-		   (fetchPC == BIOS::OPENBUS_ADDR::SWI_EXIT + 4)){
-			mem->readWord(fetchPC + 4);
+		// Force extra read for OpenBus values
+		if(cpsr.isThumbMode()){
+			uint32_t ins = mem->readHalfWord(fetchPC + 4, true);
+		}else{
+			uint32_t ins = mem->readWord(fetchPC + 4, true);
 		}
 
 		insFetchSet = true;

@@ -66,10 +66,10 @@ class IOregisters;
 class MemoryManager {
     public:
         MemoryManager(BIOS &bios, GamePak &gamepak, VRAM &vram, EWRAM &ewram, IWRAM &iwram, SRAM &sram, OAM &oam, PaletteRAM &paletteRam, IOregisters &io);
-        uint32_t readWord(uint32_t addr);
-        uint16_t readHalfWord(uint32_t addr);
+        uint32_t readWord(uint32_t addr, bool opPreFetch = false);
+        uint16_t readHalfWord(uint32_t addr, bool opPreFetch = false);
         uint8_t readByte(uint32_t addr);
-        uint32_t read(uint32_t addr, uint8_t bytes);
+        uint32_t read(uint32_t addr, uint8_t bytes, bool opPreFetch = false);
         void store(uint32_t addr, uint32_t val, uint8_t bytes);
         void blockTransfer(uint32_t dst, uint32_t src, uint32_t bytes);
 
@@ -147,6 +147,7 @@ class MemoryManager {
         IOregisters &io;
 
         ARM7TDMI *cpu;
+        uint32_t openBusVal = 0;
 
         enum class Region {
             BIOS                    = 0x0,
