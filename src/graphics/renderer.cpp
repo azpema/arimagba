@@ -133,8 +133,7 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
                 
                 toPaint[toPaintIndex++] = pixel;
             }else{
-                // Transparency
-                toPaint[toPaintIndex++] = -1;
+                toPaint[toPaintIndex++] = TRANSPARENT_PIXEL;
             }
 
         }
@@ -152,7 +151,7 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
         case ObjMode::NORMAL:
             break;
         default:
-        throw std::runtime_error("Unimplemented OBJ Mode");
+            throw std::runtime_error("Unimplemented OBJ Mode");
     }
 
     auto height = obj.getHeight();
@@ -201,17 +200,7 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
                 uint16_t pixel = paletteRAM[paletteIndex];
                 
                 toPaint[i] = pixel;
-            }else{
-                if(toPaint[i] == -2){
-                    toPaint[i] = -1;
-                }
-                
             }
-        }else{
-            if(toPaint[i] == -2){
-                toPaint[i] = -1;
-            }
-                
         }
     }
     return true;
@@ -232,13 +221,12 @@ void Renderer::renderScanlineMode0(){
         for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
             for(auto it = bgBlendOrder.begin(); it != bgBlendOrder.end(); ++it){
                 const auto &bgNum = *it;
-                // -1 corresponds to transparency
-                if(toPaint[bgNum][i] != -1){
+                if(toPaint[bgNum][i] != TRANSPARENT_PIXEL){
                     toPaintEnd[i] = static_cast<uint16_t>(toPaint[bgNum][i]);
                     break;
                 }
                 
-                // If I am looking at the last bg and this pixel was -1, set backdrop color
+                // If I am looking at the last bg and this pixel was TRANSPARENT_PIXEL, set backdrop color
                 if(std::next(it) == bgBlendOrder.end()){
                     toPaintEnd[i] = backdropPixel;
                 }
@@ -249,20 +237,21 @@ void Renderer::renderScanlineMode0(){
     }
 
     // For now just draw the sprites over the backgrounds...
-    int32_t toPaintSprites[PPU::SCREEN_WIDTH];
-    std::fill(std::begin(toPaintSprites), std::end(toPaintSprites)+10, -2);
+    if(ppu.getObjEnabled()){
+        int32_t toPaintSprites[PPU::SCREEN_WIDTH];
+        std::fill(std::begin(toPaintSprites), std::end(toPaintSprites), TRANSPARENT_PIXEL);
 
-    for(size_t i=0; i<128; i++){
-        bool ret = getObjScanline(i, toPaintSprites);
-        if(!ret){
-            break;
+        for(size_t i=0; i<128; i++){
+            bool ret = getObjScanline(i, toPaintSprites);
+            if(!ret){
+                break;
+            }
         }
-    }
-    
-
-    for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
-        if(toPaintSprites[i] != -1){
-            toPaintEnd[i] = static_cast<uint16_t>(toPaintSprites[i]);
+        
+        for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
+            if(toPaintSprites[i] != TRANSPARENT_PIXEL){
+                toPaintEnd[i] = static_cast<uint16_t>(toPaintSprites[i]);
+            }
         }
     }
 
