@@ -180,22 +180,18 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
             auto pixelOffset = obj.getPaletteIndex(objRelativeX, objRelativeY, ppu.getObjMapping1D());
             auto tile = *(ovram + pixelOffset);
 
-            uint8_t paletteIndex;
-            if(i % 2 == 0){
-                if(spriteX % 2 == 0){
-                    paletteIndex = tile & 0b1111;
-                }else{
-                    paletteIndex = tile >> 4;
-                }
-            }else{
-                if(spriteX % 2 == 0){
-                    paletteIndex = tile >> 4;
-                }else{
-                    paletteIndex = tile & 0b1111;
-                }
+            bool reverseTile = false;
+            if(obj.getHorizontalFlip()){
+                reverseTile = !reverseTile;
+            }
+            if(spriteX % 2 != 0){
+                reverseTile = !reverseTile;
+            }
+            if(i % 2 != 0){
+                reverseTile = !reverseTile;
             }
 
-
+            uint8_t paletteIndex = reverseTile ? (tile >> 4) : (tile & 0b1111);
             if(paletteIndex != 0){
                 uint16_t pixel = paletteRAM[paletteIndex];
                 
