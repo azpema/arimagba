@@ -11,19 +11,19 @@ PPU::PPU(const std::string &title, ARM7TDMI &cpu, MemoryManager *memManager): cp
     DISPSTAT = reinterpret_cast<uint16_t*>(io + (REG_ADDR::DISPSTAT - MemoryManager::IO_REGISTERS_OFFSET_START));
     VCOUNT = reinterpret_cast<uint16_t*>(io + (REG_ADDR::VCOUNT - MemoryManager::IO_REGISTERS_OFFSET_START));
 
-    BGxCNT[0] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG0CNT - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxCNT[0] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BGxCNT[0] - MemoryManager::IO_REGISTERS_OFFSET_START));
     BGxHOFS[0] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG0HOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
     BGxVOFS[0] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG0VOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
 
-    BGxCNT[1] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG1CNT - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxCNT[1] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BGxCNT[1] - MemoryManager::IO_REGISTERS_OFFSET_START));
     BGxHOFS[1] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG1HOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
     BGxVOFS[1] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG1VOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
 
-    BGxCNT[2] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG2CNT - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxCNT[2] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BGxCNT[2] - MemoryManager::IO_REGISTERS_OFFSET_START));
     BGxHOFS[2] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG2HOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
     BGxVOFS[2] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG2VOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
 
-    BGxCNT[3] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG3CNT - MemoryManager::IO_REGISTERS_OFFSET_START));
+    BGxCNT[3] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BGxCNT[3] - MemoryManager::IO_REGISTERS_OFFSET_START));
     BGxHOFS[3] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG3HOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
     BGxVOFS[3] = reinterpret_cast<uint16_t*>(io + (REG_ADDR::BG3VOFS - MemoryManager::IO_REGISTERS_OFFSET_START));
 
