@@ -37,9 +37,7 @@ class Renderer {
         uint16_t pixelsFrame[160][240] = {{0}};
         const PPU &ppu;
         
-        const static uint32_t SCREENBLOCK_SIZE = 0x0800;
-        const static uint32_t PAGE_FLIP_SECOND_OFFSET = 0xA000;
-        const static int32_t  TRANSPARENT_PIXEL = -1;
+        constexpr static int32_t  TRANSPARENT_PIXEL = -1;
 };
 
 #endif
