@@ -7,9 +7,9 @@
 
 class HalfwordDataTransfer : public ArmOpcode {
     public:
-        virtual std::string toString() = 0;
-        virtual void doExecute() = 0;
-        virtual void doDecode() = 0;
+        std::string toString() override = 0;
+        void doExecute() override = 0;
+        void doDecode() override = 0;
     protected:
         HalfwordDataTransfer(uint32_t op, ARM7TDMI &cpu);
         HalfwordDataTransfer(ARM7TDMI &cpu);

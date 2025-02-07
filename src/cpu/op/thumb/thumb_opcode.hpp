@@ -8,11 +8,11 @@ class ARM7TDMI;
 
 class ThumbOpCode : public OpCode {
 	public:
-		virtual std::string toString() = 0;
+		std::string toString() override = 0;
 		virtual void init(uint32_t op) override;
 		bool execute() override;
 		void decode() override;
-		virtual uint32_t cyclesUsed() const = 0;
+		uint32_t cyclesUsed() const override = 0;
 
 		static bool isSoftwareInterrupt(uint16_t op);
 		static bool isAddOffsetToSP(uint16_t op);

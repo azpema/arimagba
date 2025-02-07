@@ -10,11 +10,11 @@ class ArmOpcode : public OpCode {
 	public:
 		virtual ~ArmOpcode() {};
 		virtual void init(uint32_t op) override;
-		virtual std::string toString() = 0;
+		std::string toString() override = 0 ;
 		std::string toHexString();
 		bool execute() override;
 		void decode() override;
-		virtual uint32_t cyclesUsed() const = 0;
+		uint32_t cyclesUsed() const override = 0;
 
 		static bool isBranchAndExchange(uint32_t op);
 		static bool isBlockDataTransfer(uint32_t op);

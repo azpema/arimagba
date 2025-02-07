@@ -10,7 +10,7 @@ class Rm : public Operand {
         void init(uint16_t val);
         std::string toString();
         uint16_t getRmVal();
-        bool getC();
+        bool getC() override;
         uint32_t getOperandVal(ARM7TDMI &cpu) override;
 
     private:
