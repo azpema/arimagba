@@ -83,7 +83,16 @@ void PPU::renderScanline(){
         uint8_t dcntMode = getDCNT_MODE();
         switch(dcntMode){
             case 0:
+                // BG0 regular - BG1 regular - BG2 regular - BG3 regular 
                 rend->renderScanlineMode0();
+                break;
+            case 1:
+                // BG0 regular - BG1 regular - BG2 affine - BG3 disabled
+                throw std::runtime_error("ERROR: Unsupported PPU Mode: 1");
+                break;
+            case 2:
+                // BG0 disabled - BG1 disabled - BG2 affine - BG3 affine 
+                throw std::runtime_error("ERROR: Unsupported PPU Mode: 2");
                 break;
             case 3:
                 rend->renderScanlineMode3();
@@ -92,7 +101,7 @@ void PPU::renderScanline(){
                 rend->renderScanlineMode4();
                 break;
             case 7:
-                rend->renderScanlineMode3();
+                throw std::runtime_error("ERROR: Unsupported PPU Mode: 7");
                 break;
             default:
                 //renderScanlineMode3();
