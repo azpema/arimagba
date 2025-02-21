@@ -22,6 +22,8 @@ class PPU {
         uint8_t *getOVRAM() const;
         uint8_t *getOAM() const;
         const static uint8_t BG_NUM = 4;
+        const static uint8_t MAX_SPRITE_NUM = 128;
+        const static uint8_t TILE_SIZE = 0x20;
 
         uint32_t getPageFlipOffset() const;
         uint8_t getBgCharacterBaseBlock(const uint8_t bgNum) const;
@@ -50,10 +52,6 @@ class PPU {
         const static uint8_t PALETTE_BANK_SIZE = 0x20;
         
     private:
-        //void renderScanlineMode0();
-        //void renderScanlineMode3();
-        //void renderScanlineMode4();
-
         ARM7TDMI &cpu;
         MemoryManager *mem;
         std::unique_ptr<Renderer> rend;

@@ -150,8 +150,15 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
             return false;
         case ObjMode::NORMAL:
             break;
+        case ObjMode::AFFINE:
+            throw std::runtime_error("Unimplemented OBJ Mode AFFINE");
+            break;
+        case ObjMode::AFFINE_DOUBLE:
+            throw std::runtime_error("Unimplemented OBJ Mode AFFINE_DOUBLE");
+            break;
         default:
-            throw std::runtime_error("Unimplemented OBJ Mode");
+            throw std::runtime_error("Unrecognized OBJ Mode");
+            break;
     }
 
     auto height = obj.getHeight();
@@ -159,15 +166,20 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
 
     auto spriteX = obj.getXCoord();
     auto spriteY = obj.getYCoord();
-    
+
     uint8_t screenPixelY = ppu.getVcount();
-    auto ovram = ppu.getOVRAM();
-    uint16_t* paletteRAM = reinterpret_cast<uint16_t *>(ppu.getObjPaletteRAM() + obj.getPaletteBank() * PPU::PALETTE_BANK_SIZE);
+    bool colorMode256 = obj.getColorMode();
+
+    const uint16_t* paletteRAM = reinterpret_cast<const uint16_t*>(
+        ppu.getObjPaletteRAM() + (colorMode256 ? 0 : obj.getPaletteBank() * PPU::PALETTE_BANK_SIZE)
+    );
+
     // Sprite should be drawn in this scanline
     for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
         uint8_t screenPixelX = i;
         if(spriteY <= screenPixelY && screenPixelY < spriteY + height && 
            spriteX <= screenPixelX && screenPixelX < spriteX + width ){
+
             // Determine tile
             // Check REG_DISPCNT mapping: 2d or 1d
             auto objRelativeX = screenPixelX - spriteX;
@@ -178,7 +190,7 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
             }
 
             auto pixelOffset = obj.getPaletteIndex(objRelativeX, objRelativeY, ppu.getObjMapping1D());
-            auto tile = *(ovram + pixelOffset);
+            auto tile = *(ppu.getOVRAM() + pixelOffset);
 
             bool reverseTile = false;
             if(obj.getHorizontalFlip()){
@@ -191,7 +203,13 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
                 reverseTile = !reverseTile;
             }
 
-            uint8_t paletteIndex = reverseTile ? (tile >> 4) : (tile & 0b1111);
+            uint8_t paletteIndex;
+            if(colorMode256){
+                paletteIndex = tile;
+            }else{
+                paletteIndex = reverseTile ? (tile >> 4) : (tile & 0b1111);
+            }
+            
             if(paletteIndex != 0){
                 uint16_t pixel = paletteRAM[paletteIndex];
                 
@@ -203,11 +221,20 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
 }
 
 void Renderer::renderScanlineMode0(){
+    static bool bgxEnabled[4] = {true, true, true, true};
+    static bool removeBg0 = false;
+
     int32_t toPaint[PPU::BG_NUM][PPU::SCREEN_WIDTH * 1];
     // Get enabled backgrounds' data
     auto bgBlendOrder = ppu.getBgBlendOrder();
+
+    if(removeBg0){
+        bgBlendOrder.erase(std::remove(bgBlendOrder.begin(), bgBlendOrder.end(), 0), bgBlendOrder.end());
+    }
     for(const auto &bgNum : bgBlendOrder){
-        getBackgroundScanline(bgNum, toPaint[bgNum]);
+        if(bgxEnabled[bgNum]){
+            getBackgroundScanline(bgNum, toPaint[bgNum]);
+        }
     }
 
     uint16_t *toPaintEnd = pixelsFrame[ppu.getVcount()];
@@ -237,7 +264,7 @@ void Renderer::renderScanlineMode0(){
         int32_t toPaintSprites[PPU::SCREEN_WIDTH];
         std::fill(std::begin(toPaintSprites), std::end(toPaintSprites), TRANSPARENT_PIXEL);
 
-        for(size_t i=0; i<128; i++){
+        for(size_t i=0; i<PPU::MAX_SPRITE_NUM; i++){
             bool ret = getObjScanline(i, toPaintSprites);
             if(!ret){
                 break;

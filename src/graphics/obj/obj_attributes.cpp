@@ -72,17 +72,24 @@ uint8_t ObjAttributes::getHeight() const{
 }
 
 uint32_t ObjAttributes::getPaletteIndex(const uint8_t coordX, const uint8_t coordY, const bool mapping1D) const{
-    // Also check if sprites are globally enabled, and if specific sprite is also enabled
-    const uint8_t MULTIPLIER = mapping1D ? (getWidth() / PPU::TILE_WIDTH_HEIGHT) : (0x400 / 0x20);
+    const bool colorMode256 = getColorMode();
+    const uint8_t tileMultiplier = mapping1D ? (getWidth() / PPU::TILE_WIDTH_HEIGHT) : (0x400 / PPU::TILE_SIZE);
 
-    auto tileBlockY = (coordY / PPU::TILE_WIDTH_HEIGHT) * MULTIPLIER;
+    auto tileBlockY = (coordY / PPU::TILE_WIDTH_HEIGHT) * tileMultiplier;
     auto tileBlockX = (coordX / PPU::TILE_WIDTH_HEIGHT);
 
-    auto tileIndex = getTileIndex() + tileBlockY + tileBlockX;
+    uint32_t tileIndex = getTileIndex() + (colorMode256 ? 2 : 1) * (tileBlockY + tileBlockX);
+
     auto tileRelativeX = (coordX % PPU::TILE_WIDTH_HEIGHT);
     auto tileRelativeY = (coordY % PPU::TILE_WIDTH_HEIGHT);
 
-    uint32_t pixelOffset = (tileIndex * 0x20) + tileRelativeX/2 + (tileRelativeY * PPU::TILE_WIDTH_HEIGHT)/2;
+    uint32_t pixelOffset;
+    
+    if(colorMode256){
+        pixelOffset = (tileIndex * PPU::TILE_SIZE) + tileRelativeX + (tileRelativeY * PPU::TILE_WIDTH_HEIGHT);
+    }else{
+        pixelOffset = (tileIndex * PPU::TILE_SIZE) + tileRelativeX/2 + (tileRelativeY * PPU::TILE_WIDTH_HEIGHT)/2;
+    }
     
     return pixelOffset;
 }
