@@ -3,9 +3,6 @@
 
 IOregisters::IOregisters() : mustHaltCpu(false) {
     std::cerr << "TODO Set proper initial values at IOregisters" << std::endl;
-    for(size_t i=0; i<IOREGISTERS_SIZE; i++){
-        mem[i] = 0x00;
-    }
 
     DMAxSAD[0] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxSAD[0] - MemoryManager::IO_REGISTERS_OFFSET_START));
     DMAxSAD[1] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxSAD[1] - MemoryManager::IO_REGISTERS_OFFSET_START));

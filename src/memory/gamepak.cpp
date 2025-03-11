@@ -16,9 +16,7 @@ GamePak::GamePak(const std::string &filePath) {
         throw std::runtime_error("ERROR: GamePak Failed to open the file.");
     }else {
         fileStream.read(reinterpret_cast<char *>(mem.get()), fileSize);
-        if (fileStream) {
-            std::cout << "DEBUG: BIOS READ OK" << std::endl;
-        } else{
+        if (!fileStream) {
             throw std::runtime_error("ERROR: GamePak reading");
         }
     }

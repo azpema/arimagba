@@ -3,11 +3,6 @@
 #include <fstream>
 
 BIOS::BIOS(const std::string &filePath) {
-    std::cerr << "TODO Set proper initial values at EWRAM" << std::endl;
-    for(size_t i=0; i<BIOS_SIZE; i++){
-        mem[i] = 0x00;
-    }
-
     std::ifstream fileStream = std::ifstream(filePath, std::ios::binary | std::ifstream::ate);
     if (!fileStream) {
         throw std::runtime_error("ERROR: BIOS Failed to open the file.");
@@ -20,9 +15,7 @@ BIOS::BIOS(const std::string &filePath) {
         throw std::runtime_error("ERROR: BIOS Failed to open the file.");
     }else {
         fileStream.read(reinterpret_cast<char *>(mem.get()), fileSize);
-        if (fileStream) {
-            std::cout << "DEBUG: BIOS READ OK" << std::endl;
-        } else{
+        if (!fileStream){
             throw std::runtime_error("ERROR: GamePak reading");
         }
     }
