@@ -120,7 +120,9 @@ class ARM7TDMI {
 		MemoryManager *mem;
 		std::unique_ptr<BarrelShifter> barrelShifter;
 		std::unique_ptr<ExceptionHandler> exceptionHandler;
-		const uint16_t REG_PC = 15;
+		const static int REG_SP = 13;
+		const static int REG_LR = 14;
+		const static int REG_PC = 15;
 
 		// Pipeline
 		uint32_t insFetch, insDecode;

@@ -25,8 +25,8 @@ ARM7TDMI::ARM7TDMI(MemoryManager *memManager) : armPool(*this), thumbPool(*this)
 
 	// ???
 	reg[0] = 0x00000CA5;
-	reg[13] = 0x03007F00;
-	reg[14] = 0x08000000;
+	reg[REG_SP] = 0x03007F00;
+	reg[REG_LR] = 0x08000000;
 	r13_irq[0] = 0x03007FA0;
 	r13_svc[0] = 0x03007FE0;
 
@@ -252,8 +252,8 @@ uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
 		return 0;
 	}
 	
-	if(n == 15){
-		return reg[15];
+	if(n == REG_PC){
+		return reg[REG_PC];
 	}
 		
 
@@ -314,7 +314,7 @@ void ARM7TDMI::setReg(uint16_t n, uint32_t val, bool userBank){
 	}
 
 	if(!userBank){
-		if(n == 15){
+		if(n == REG_PC){
 			reg[n] = val & 0xFFFFFFFE;
 		}else{
 			switch (cpsr.getMode())
@@ -374,15 +374,15 @@ void ARM7TDMI::setMustFlushPipeline(bool val){
 }
 
 uint32_t ARM7TDMI::getPC() const{
-	return reg[15];
+	return reg[REG_PC];
 }
 
 void ARM7TDMI::setPC(uint32_t pc){
-	setReg(15, pc);
+	setReg(REG_PC, pc);
 }
 
 void ARM7TDMI::setLR(uint32_t lr){
-	setReg(14, lr);
+	setReg(REG_LR, lr);
 }
 
 void ARM7TDMI::printStatus(){
