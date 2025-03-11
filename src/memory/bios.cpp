@@ -19,7 +19,7 @@ BIOS::BIOS(const std::string &filePath) {
     if (!fileStream.is_open()) {
         throw std::runtime_error("ERROR: BIOS Failed to open the file.");
     }else {
-        fileStream.read(reinterpret_cast<char *>(mem), fileSize);
+        fileStream.read(reinterpret_cast<char *>(mem.get()), fileSize);
         if (fileStream) {
             std::cout << "DEBUG: BIOS READ OK" << std::endl;
         } else{

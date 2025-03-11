@@ -1,190 +1,57 @@
 #include "gamepak.hpp"
+#include "../utils/utils.hpp"
 #include <iostream>
+#include <cstring>
 
 GamePak::GamePak(const std::string &filePath) {
-    fileStream = std::ifstream(filePath, std::ios::binary | std::ifstream::ate);
+    std::ifstream fileStream = std::ifstream(filePath, std::ios::binary | std::ifstream::ate);
     if (!fileStream) {
         throw std::runtime_error("ERROR: GamePak Failed to open the file.");
     }
 
-    fileSize = fileStream.tellg();
+    uint32_t fileSize = fileStream.tellg();
     fileStream.seekg(0, std::ios::beg);
-    gameMem = std::make_unique<uint16_t[]>(fileSize / sizeof(uint16_t));
 
     if (!fileStream.is_open()) {
         throw std::runtime_error("ERROR: GamePak Failed to open the file.");
     }else {
-        this->fileStream.read(reinterpret_cast<char *>(gameMem.get()), fileSize);
-        if (this->fileStream) {
-            std::cout << "DEBUG: GamePak READ OK" << std::endl;
+        fileStream.read(reinterpret_cast<char *>(mem.get()), fileSize);
+        if (fileStream) {
+            std::cout << "DEBUG: BIOS READ OK" << std::endl;
         } else{
             throw std::runtime_error("ERROR: GamePak reading");
         }
     }
-}
 
-GamePak::~GamePak(){
-}
-
-
-uint32_t GamePak::read(uint32_t addr, uint8_t bytes) {
-    uint32_t val=0;
-
-    if(addr > fileSize)
-        val = 0;
-    else{
-        if(bytes == 1){
-            if(addr % 2 == 0){
-                val = gameMem[addr >> 1] & 0xFF;
-            }else{
-                val = (gameMem[addr >> 1] & 0xFF00) >> 8; 
-            }
-        }else if(bytes == 2){
-            val = gameMem[addr >> 1];
-        }else if(bytes == 4){
-            val = gameMem[addr >> 1];
-            val |= gameMem[(addr >> 1) + 1] << 16;
-        }
+    /* Precalculate Out-of-bounds ROM reads */
+    for(size_t addr = fileSize; addr < ROM_SIZE; addr += 2){
+        mem[addr]     = addr >> 1;          // lower nibble
+        mem[addr + 1] = addr >> (8 + 1);    // upper nibble
     }
 
-    return val;
-}
+    entryPoint = Utils::readUint32(&mem[GamePak::ENTRY_POINT_OFF]);
+    std::memcpy(nintendoLogo, &mem[GamePak::NINTENDO_LOGO_OFF], GamePak::NINTENDO_LOGO_SIZE);
+    std::memcpy(gameTitle, &mem[GamePak::GAME_TITLE_OFF], GamePak::GAME_TITLE_SIZE);
+    std::memcpy(gameCode, &mem[GamePak::GAME_CODE_OFF], GamePak::GAME_CODE_SIZE);
 
-int GamePak::readEntryPoint() {
-    this->fileStream.seekg(GamePak::ENTRY_POINT_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(&this->entryPoint), GamePak::ENTRY_POINT_SIZE);
-    if (this->fileStream)
-        return 0;
-    else
-        return -1;
-}
+    std::memcpy(makerCode, &mem[GamePak::MAKER_CODE_OFF], GamePak::MAKER_CODE_SIZE);
 
-int GamePak::readNintendoLogo() {
-    this->fileStream.seekg(GamePak::NINTENDO_LOGO_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(this->nintendoLogo), GamePak::NINTENDO_LOGO_SIZE);
-    if (this->fileStream)
-        return 0;
-    else
-        return -1;
-}
+    fixedValue = mem[GamePak::FIXED_VALUE_OFF];
+    mainUnitCode = mem[GamePak::MAIN_UNIT_CODE_OFF];
+    deviceType = mem[GamePak::DEVICE_TYPE_OFF];
 
-int GamePak::readGameTitle() {
-    this->fileStream.seekg(GamePak::GAME_TITLE_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char *>(this->gameTitle), GamePak::GAME_TITLE_SIZE);
-    if (this->fileStream) {
-        // Null terminator
-        this->gameTitle[GamePak::GAME_TITLE_SIZE] = 0;
-        return 0;
-    }
-    else
-        return -1;
-}
+    std::memcpy(reservedArea1, &mem[GamePak::RESERVED_AREA_1_OFF], GamePak::RESERVED_AREA_1_SIZE);
+    softwareVersion = mem[GamePak::SOFTWARE_VERSION_OFF];
+    complementCheck = mem[GamePak::COMPLEMENT_CHECK_OFF];
+    std::memcpy(reservedArea2, &mem[GamePak::RESERVED_AREA_2_OFF], GamePak::RESERVED_AREA_2_SIZE);
 
-int GamePak::readGameCode() {
-    this->fileStream.seekg(GamePak::GAME_CODE_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(this->gameCode), GamePak::GAME_CODE_SIZE);
-    if (this->fileStream) {
-        this->gameCode[GamePak::GAME_CODE_SIZE] = 0;
-        return 0;
-    }
-    else
-        return -1;
-}
-
-int GamePak::readMakerCode() {
-    this->fileStream.seekg(GamePak::MAKER_CODE_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(this->makerCode), GamePak::MAKER_CODE_SIZE);
-    if (this->fileStream) {
-        this->makerCode[GamePak::MAKER_CODE_SIZE] = 0;
-        return 0;
-    }
-    else
-        return -1;
-}
-
-int GamePak::readFixedValue() {
-    this->fileStream.seekg(GamePak::FIXED_VALUE_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(&this->fixedValue), GamePak::FIXED_VALUE_SIZE);
-    if (this->fileStream) {
-        return 0;
-    }
-    else {
-        return -1;
-    }
-}
-
-int GamePak::readMainUnitCode() {
-    this->fileStream.seekg(GamePak::MAIN_UNIT_CODE_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(&this->mainUnitCode), GamePak::MAIN_UNIT_CODE_SIZE);
-    if (this->fileStream) {
-        return 0;
-    }
-    else {
-        return -1;
-    }
-}
-
-int GamePak::readDeviceType() {
-    this->fileStream.seekg(GamePak::DEVICE_TYPE_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(&this->deviceType), GamePak::DEVICE_TYPE_SIZE);
-    if (this->fileStream) {
-        return 0;
-    }
-    else {
-        return -1;
-    }
-}
-
-int GamePak::readReservedArea1() {
-    this->fileStream.seekg(GamePak::RESERVED_AREA_1_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(this->reservedArea1), GamePak::RESERVED_AREA_1_SIZE);
-    if (this->fileStream) {
-        return 0;
-    }
-    else {
-        return -1;
-    }
-}
-
-int GamePak::readSoftwareVersion() {
-    this->fileStream.seekg(GamePak::SOFTWARE_VERSION_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(&this->softwareVersion), GamePak::SOFTWARE_VERSION_SIZE);
-    if (this->fileStream) {
-        return 0;
-    }
-    else {
-        return -1;
-    }
-}
-
-int GamePak::readComplementCheck() {
-    this->fileStream.seekg(GamePak::COMPLEMENT_CHECK_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(&this->complementCheck), GamePak::COMPLEMENT_CHECK_SIZE);
-    if (this->fileStream) {
-        return 0;
-    }
-    else {
-        return -1;
-    }
-}
-
-int GamePak::readReservedArea2() {
-    this->fileStream.seekg(GamePak::RESERVED_AREA_2_OFF, std::ios::beg);
-    this->fileStream.read(reinterpret_cast<char*>(this->reservedArea2), GamePak::RESERVED_AREA_2_SIZE);
-    if (this->fileStream) {
-        return 0;
-    }
-    else {
-        return -1;
-    }
 }
 
 int GamePak::calcComplementCheck() {
     int chk = 0;
     for (int i = 0x0A0; i < 0x0BC; i++) {
         int val;
-        this->fileStream.seekg(i, std::ios::beg);
-        this->fileStream.read(reinterpret_cast<char*>(&val), 1);
+        val = mem[i];
         chk = chk - val;
     }
     
@@ -192,37 +59,20 @@ int GamePak::calcComplementCheck() {
     return chk;
 }
 
-int GamePak::readHeader() {
-    readEntryPoint();
-    readNintendoLogo();
-    readGameTitle();
-    readGameCode();
-    readMakerCode();
-    readFixedValue();
-    readMainUnitCode();
-    readDeviceType();
-    readReservedArea1();
-    readSoftwareVersion();
-    readComplementCheck();
-    readReservedArea2();
-
-    return 0;
-}
-
 void GamePak::printHeader() {
     std::cout << "Entry point: 0x" << std::hex << this->entryPoint << std::dec << std::endl;
     //std::cout << "Nintendo Logo: " << this->nintendoLogo << std::endl;
-    std::cout << "Game Title: " << this->gameTitle << std::endl;
-    std::cout << "Game Code: " << this->gameCode << std::endl;
-    std::cout << "Maker Code: " << this->makerCode << std::endl;
-    std::cout << "Fixed Value: 0x" << std::hex << static_cast<int>(this->fixedValue) << std::dec << std::endl;
-    std::cout << "Main Unit Code: 0x" << std::hex << static_cast<int>(this->mainUnitCode) << std::dec << std::endl;
-    std::cout << "Device Type: 0x" << std::hex << static_cast<int>(this->deviceType) << std::dec << std::endl;
-    std::cout << "Reserved Area 1: 0x" << static_cast<int>(this->reservedArea1[0]) << std::dec << std::endl;
-    std::cout << "Software Version: 0x" << std::hex << static_cast<int>(this->softwareVersion) << std::dec << std::endl;
-    std::cout << "Complement Check: 0x" << std::hex << static_cast<int>(this->complementCheck) << std::dec << " ";
-    int chk = this->calcComplementCheck();
-    if (chk == this->complementCheck)
+    std::cout << "Game Title: " << gameTitle << std::endl;
+    std::cout << "Game Code: " << gameCode << std::endl;
+    std::cout << "Maker Code: " << makerCode << std::endl;
+    std::cout << "Fixed Value: 0x" << std::hex << static_cast<int>(fixedValue) << std::dec << std::endl;
+    std::cout << "Main Unit Code: 0x" << std::hex << static_cast<int>(mainUnitCode) << std::dec << std::endl;
+    std::cout << "Device Type: 0x" << std::hex << static_cast<int>(deviceType) << std::dec << std::endl;
+    std::cout << "Reserved Area 1: 0x" << static_cast<int>(reservedArea1[0]) << std::dec << std::endl;
+    std::cout << "Software Version: 0x" << std::hex << static_cast<int>(softwareVersion) << std::dec << std::endl;
+    std::cout << "Complement Check: 0x" << std::hex << static_cast<int>(complementCheck) << std::dec << " ";
+    int chk = calcComplementCheck();
+    if (chk == complementCheck)
         std::cout << "(CORRECT)" << std::endl;
     else
         std::cout << "(INCORRECT)" << std::endl;

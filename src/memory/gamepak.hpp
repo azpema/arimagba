@@ -5,36 +5,17 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include "generic_memory.hpp"
 
-class GamePak {
+class GamePak : public GenericMemory<ROM_SIZE> {
 	public:
 		GamePak(const std::string &filePath);
-		~GamePak();
-		uint32_t read(uint32_t addr, uint8_t bytes);
+		~GamePak() = default;
 
-		int readHeader();
-		int readEntryPoint();
-		int readNintendoLogo();
-		int readGameTitle();
-		int readGameCode();
-		int readMakerCode();
-		int readFixedValue();
-		int readMainUnitCode();
-		int readDeviceType();
-		int readReservedArea1();
-		int readSoftwareVersion();
-		int readComplementCheck();
-		int readReservedArea2();
 		int calcComplementCheck();
-
 		void printHeader();
 
 	private:
-		uint32_t fileSize;
-		std::ifstream fileStream;
-
-		std::unique_ptr<uint16_t[]> gameMem;
-
 		const static int ENTRY_POINT_OFF = 0x000;
 		const static int ENTRY_POINT_SIZE = 4;
 		const static int NINTENDO_LOGO_OFF = 0x004;

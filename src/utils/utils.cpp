@@ -1,4 +1,7 @@
 #include "utils.hpp"
+#include <iostream>
+#include <cstring>
+#include <bit>
 
 uint32_t Utils::clearRegBits(uint32_t &reg, const uint32_t mask){
     reg &= ~mask;
@@ -53,4 +56,10 @@ int32_t Utils::twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint3
         uint32_t mask = ((1u << (toBits - fromBits)) - 1) << fromBits;
         return val | mask;
     }
+}
+
+uint32_t Utils::readUint32(uint8_t* data){
+    uint32_t val;
+    std::memcpy(&val, data, sizeof(uint32_t));
+    return std::endian::native == std::endian::little ? val : std::byteswap(val);
 }

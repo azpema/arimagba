@@ -2,9 +2,11 @@
 #define _GENERIC_MEMORY_ 
 
 #include <iostream>
+#include <memory>
 
 const static uint32_t BIOS_SIZE = 0x4000;
 const static uint32_t EWRAM_SIZE = 0x40000;
+const static uint32_t ROM_SIZE = 0x2000000;
 const static uint32_t IOREGISTERS_SIZE = 0x800;
 const static uint32_t IWRAM_SIZE = 0x8000;
 const static uint32_t OAM_SIZE = 0x400;
@@ -15,19 +17,10 @@ const static uint32_t VRAM_SIZE = 0x18000;
 template <std::uint32_t n>
 class GenericMemory {
     public:
-        //GenericMemory();
-        //virtual ~GenericMemory();
-        //uint32_t read(uint32_t addr, uint8_t bytes);
-        //void store(uint32_t addr, uint32_t val, uint8_t bytes);
+        GenericMemory(){
+            mem = std::make_unique<uint8_t[]>(n);
+        }
 
-        //uint16_t* getRawMemory();
-        
-        
-    protected:
-        // 8 bit access
-        uint8_t mem[n];
-
-    public:
         uint32_t read(uint32_t addr, uint8_t bytes){
             if(addr + bytes > n){
                 // Out of bounds, return Openbus val?
@@ -66,12 +59,6 @@ class GenericMemory {
             }
             if(bytes == 1){
                 mem[addr] = val;
-                /*if(addr % 2 == 0){
-                    mem[addr / 2] = (mem[addr/2] & 0xFF00) | val;
-                }else if(addr % 2 == 1){
-                    mem[addr / 2] = (mem[addr/2] & 0x00FF) | (val << 8);
-                }*/
-                
             }else if(bytes == 2){
                 if(addr % 2 != 0){
                     throw std::runtime_error("TODO: Unaligned memory access in GenericMemory::store bytes==2");
@@ -92,9 +79,11 @@ class GenericMemory {
         }
 
         uint8_t* getRawMemory(){
-            return mem;
+            return mem.get();
         }
         
+    protected:
+        std::unique_ptr<uint8_t[]> mem;
 };
 
 #endif
