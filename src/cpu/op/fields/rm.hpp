@@ -16,8 +16,8 @@ class Rm : public Operand {
     private:
         bool c;
         uint16_t rmVal;
-        const uint16_t RM_MASK = 000000001111;
-        const uint16_t RM_SHIFT = 0;
+        const static uint16_t RM_MASK = 000000001111;
+        const static uint16_t RM_SHIFT = 0;
 
 };
 
