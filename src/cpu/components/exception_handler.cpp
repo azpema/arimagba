@@ -100,44 +100,16 @@ void ExceptionHandler::handleException(){
 }
 
 bool ExceptionHandler::isMasterInterruptEnabled(){
-    uint16_t nose = *IME;
-    return (nose & 0x1) == 0x1;
+    return (*IME & 0x1) == 0x1;
 }
 
 bool ExceptionHandler::isSpecificInterruptEnabled(Interrupt inter){
-    switch (inter)
-    {
-        case Interrupt::VBLANK:
-            return (*IE & 0b1) == 0x1;
-
-        case Interrupt::HBLANK:
-            return ((*IE & 0b10) >> 1) == 0x1;
-
-        case Interrupt::VCOUNT:
-            return ((*IE & 0b100) >> 2) == 0x1;
-
-    default:
-        throw std::runtime_error("TODO isSpecificInterruptEnabled");
-        break;
-    }
+    return ((*IE & interrupt2IfMask.at(inter)) >> interrupt2IfShift.at(inter)) == 0x1;
 }
 
 void ExceptionHandler::setInterruptIF(Interrupt inter, bool raise){
     uint32_t newVal = *IF;
-    switch(inter){
-        case Interrupt::VBLANK:
-            newVal = Utils::setRegBits(newVal, 0b0000000000000001, (raise ? 1 : 0));
-            break;
-        case Interrupt::HBLANK:
-            newVal = Utils::setRegBits(newVal, 0b0000000000000010, (raise ? 1 : 0) << 1);
-            break;
-        case Interrupt::VCOUNT:
-            newVal = Utils::setRegBits(newVal, 0b0000000000000100, (raise ? 1 : 0) << 2);
-            break;
-        default:
-            throw std::runtime_error("TODO setInterruptIF");
-            break;
-    }
+    newVal = Utils::setRegBits(newVal, interrupt2IfMask.at(inter), (raise ? 1 : 0) << interrupt2IfShift.at(inter));
     *IF = newVal;
 }
 
