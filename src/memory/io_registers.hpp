@@ -5,6 +5,9 @@
 #include "generic_memory.hpp"
 #include "../cpu/components/exception_handler.hpp"
 
+constexpr static int DMA_CNT = 4;
+constexpr static int BG_CNT = 4;
+
 namespace REG_ADDR{
     const static uint32_t DISPCNT       = 0x04000000;
     const static uint32_t GREEN_SWAP    = 0x04000002;
@@ -12,19 +15,9 @@ namespace REG_ADDR{
     const static uint32_t VCOUNT        = 0x04000006;
 
     // Background control
-    constexpr static uint32_t BGxCNT[4]    = { 0x04000008, 0x0400000A, 0x0400000C, 0x0400000E };
-
-    const static uint32_t BG0HOFS       = 0x04000010;
-    const static uint32_t BG0VOFS       = 0x04000012;
-
-    const static uint32_t BG1HOFS       = 0x04000014;
-    const static uint32_t BG1VOFS       = 0x04000016;
-
-    const static uint32_t BG2HOFS       = 0x04000018;
-    const static uint32_t BG2VOFS       = 0x0400001A;
-
-    const static uint32_t BG3HOFS       = 0x0400001C;
-    const static uint32_t BG3VOFS       = 0x0400001E;
+    constexpr static uint32_t BGxCNT[BG_CNT]    = { 0x04000008, 0x0400000A, 0x0400000C, 0x0400000E };
+    constexpr static uint32_t BGxHOFS[BG_CNT]   = { 0x04000010, 0x04000014, 0x04000018, 0x0400001C };
+    constexpr static uint32_t BGxVOFS[BG_CNT]   = { 0x04000012, 0x04000016, 0x0400001A, 0x0400001E};
 
     const static uint32_t IE            = 0x04000200;
     const static uint32_t IF            = 0x04000202;
@@ -33,10 +26,10 @@ namespace REG_ADDR{
 
     const static uint32_t HALTCNT       = 0x04000301;
 
-    constexpr static uint32_t DMAxSAD[4]    = { 0x040000B0, 0x040000BC, 0x040000C8, 0x040000D4 };
-    constexpr static uint32_t DMAxDAD[4]    = { 0x040000B4, 0x040000C0, 0x040000CC, 0x040000D8 };
-    constexpr static uint32_t DMAxCNT_L[4]  = { 0x040000B8, 0x040000C4, 0x040000D0, 0x040000DC };
-    constexpr static uint32_t DMAxCNT_H[4]  = { 0x040000BA, 0x040000C6, 0x040000D2, 0x040000DE };
+    constexpr static uint32_t DMAxSAD[DMA_CNT]    = { 0x040000B0, 0x040000BC, 0x040000C8, 0x040000D4 };
+    constexpr static uint32_t DMAxDAD[DMA_CNT]    = { 0x040000B4, 0x040000C0, 0x040000CC, 0x040000D8 };
+    constexpr static uint32_t DMAxCNT_L[DMA_CNT]  = { 0x040000B8, 0x040000C4, 0x040000D0, 0x040000DC };
+    constexpr static uint32_t DMAxCNT_H[DMA_CNT]  = { 0x040000BA, 0x040000C6, 0x040000D2, 0x040000DE };
 
     const static uint32_t KEYINPUT      = 0x04000130;
 }
@@ -65,32 +58,35 @@ namespace REG_ADDR_END{
     constexpr static uint32_t DISPSTAT  = REG_ADDR::DISPSTAT + REG_SIZE::DISPSTAT;
     constexpr static uint32_t VCOUNT    = REG_ADDR::VCOUNT + REG_SIZE::VCOUNT;
 
-    constexpr static uint32_t BG0CNT    = REG_ADDR::BGxCNT[0] + REG_SIZE::BGxCNT;
-    constexpr static uint32_t BG1CNT    = REG_ADDR::BGxCNT[1] + REG_SIZE::BGxCNT;
+    constexpr static uint32_t BGxCNT[BG_CNT]      = { REG_ADDR::BGxCNT[0] + REG_SIZE::BGxCNT,
+                                                      REG_ADDR::BGxCNT[1] + REG_SIZE::BGxCNT,
+                                                      REG_ADDR::BGxCNT[2] + REG_SIZE::BGxCNT,
+                                                      REG_ADDR::BGxCNT[3] + REG_SIZE::BGxCNT,
+                                                    };
 
-    constexpr static uint32_t DMAxSAD[4]    = { REG_ADDR::DMAxSAD[0] + REG_SIZE::DMAxSAD,
-                                                REG_ADDR::DMAxSAD[1] + REG_SIZE::DMAxSAD,
-                                                REG_ADDR::DMAxSAD[2] + REG_SIZE::DMAxSAD,
-                                                REG_ADDR::DMAxSAD[3] + REG_SIZE::DMAxSAD,
-                                              };
+    constexpr static uint32_t DMAxSAD[DMA_CNT]    = { REG_ADDR::DMAxSAD[0] + REG_SIZE::DMAxSAD,
+                                                      REG_ADDR::DMAxSAD[1] + REG_SIZE::DMAxSAD,
+                                                      REG_ADDR::DMAxSAD[2] + REG_SIZE::DMAxSAD,
+                                                      REG_ADDR::DMAxSAD[3] + REG_SIZE::DMAxSAD,
+                                                    };
 
-    constexpr static uint32_t DMAxDAD[4]    = { REG_ADDR::DMAxDAD[0] + REG_SIZE::DMAxDAD,
-                                                REG_ADDR::DMAxDAD[1] + REG_SIZE::DMAxDAD,
-                                                REG_ADDR::DMAxDAD[2] + REG_SIZE::DMAxDAD,
-                                                REG_ADDR::DMAxDAD[3] + REG_SIZE::DMAxDAD,
-                                              };
+    constexpr static uint32_t DMAxDAD[DMA_CNT]    = { REG_ADDR::DMAxDAD[0] + REG_SIZE::DMAxDAD,
+                                                      REG_ADDR::DMAxDAD[1] + REG_SIZE::DMAxDAD,
+                                                      REG_ADDR::DMAxDAD[2] + REG_SIZE::DMAxDAD,
+                                                      REG_ADDR::DMAxDAD[3] + REG_SIZE::DMAxDAD,
+                                                    };
 
-    constexpr static uint32_t DMAxCNT_L[4]  = { REG_ADDR::DMAxCNT_L[0] + REG_SIZE::DMAxCNT_L,
-                                                REG_ADDR::DMAxCNT_L[1] + REG_SIZE::DMAxCNT_L,
-                                                REG_ADDR::DMAxCNT_L[2] + REG_SIZE::DMAxCNT_L,
-                                                REG_ADDR::DMAxCNT_L[3] + REG_SIZE::DMAxCNT_L,
-                                              };
+    constexpr static uint32_t DMAxCNT_L[DMA_CNT]  = { REG_ADDR::DMAxCNT_L[0] + REG_SIZE::DMAxCNT_L,
+                                                      REG_ADDR::DMAxCNT_L[1] + REG_SIZE::DMAxCNT_L,
+                                                      REG_ADDR::DMAxCNT_L[2] + REG_SIZE::DMAxCNT_L,
+                                                      REG_ADDR::DMAxCNT_L[3] + REG_SIZE::DMAxCNT_L,
+                                                    };
 
-    constexpr static uint32_t DMAxCNT_H[4]  = { REG_ADDR::DMAxCNT_H[0] + REG_SIZE::DMAxCNT_H,
-                                                REG_ADDR::DMAxCNT_H[1] + REG_SIZE::DMAxCNT_H,
-                                                REG_ADDR::DMAxCNT_H[2] + REG_SIZE::DMAxCNT_H,
-                                                REG_ADDR::DMAxCNT_H[3] + REG_SIZE::DMAxCNT_H,
-                                              };
+    constexpr static uint32_t DMAxCNT_H[DMA_CNT]  = { REG_ADDR::DMAxCNT_H[0] + REG_SIZE::DMAxCNT_H,
+                                                      REG_ADDR::DMAxCNT_H[1] + REG_SIZE::DMAxCNT_H,
+                                                      REG_ADDR::DMAxCNT_H[2] + REG_SIZE::DMAxCNT_H,
+                                                      REG_ADDR::DMAxCNT_H[3] + REG_SIZE::DMAxCNT_H,
+                                                    };
 
     constexpr static uint32_t IE        = REG_ADDR::IE + REG_SIZE::IE;
     constexpr static uint32_t IF        = REG_ADDR::IF + REG_SIZE::IF;
@@ -147,12 +143,12 @@ class IOregisters : public GenericMemory<IOREGISTERS_SIZE>{
 
         bool mustHaltCpu;
 
-        uint32_t* DMAxSAD[4];
-        uint32_t* DMAxDAD[4];
-        uint16_t* DMAxCNT_L[4];
-        uint16_t* DMAxCNT_H[4];
+        uint32_t* DMAxSAD[DMA_CNT];
+        uint32_t* DMAxDAD[DMA_CNT];
+        uint16_t* DMAxCNT_L[DMA_CNT];
+        uint16_t* DMAxCNT_H[DMA_CNT];
 
-        uint16_t* BGxCNT[4];
+        uint16_t* BGxCNT[BG_CNT];
 
         uint16_t* DISPSTAT;
 

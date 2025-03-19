@@ -4,30 +4,16 @@
 IOregisters::IOregisters() : mustHaltCpu(false) {
     std::cerr << "TODO Set proper initial values at IOregisters" << std::endl;
 
-    DMAxSAD[0] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxSAD[0] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxSAD[1] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxSAD[1] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxSAD[2] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxSAD[2] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxSAD[3] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxSAD[3] - MemoryManager::IO_REGISTERS_OFFSET_START));
+    for(size_t n = 0; n < DMA_CNT; n++){
+        DMAxSAD[n] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxSAD[n] - MemoryManager::IO_REGISTERS_OFFSET_START));
+        DMAxDAD[n] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxDAD[n] - MemoryManager::IO_REGISTERS_OFFSET_START));
+        DMAxCNT_L[n] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::DMAxCNT_L[n] - MemoryManager::IO_REGISTERS_OFFSET_START));
+        DMAxCNT_H[n] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::DMAxCNT_H[n] - MemoryManager::IO_REGISTERS_OFFSET_START));
+    }
 
-    DMAxDAD[0] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxDAD[0] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxDAD[1] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxDAD[1] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxDAD[2] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxDAD[2] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxDAD[3] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxDAD[3] - MemoryManager::IO_REGISTERS_OFFSET_START));                
-
-    DMAxCNT_L[0] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::DMAxCNT_L[0] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxCNT_L[1] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::DMAxCNT_L[1] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxCNT_L[2] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::DMAxCNT_L[2] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxCNT_L[3] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::DMAxCNT_L[3] - MemoryManager::IO_REGISTERS_OFFSET_START));
-
-    DMAxCNT_H[0] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::DMAxCNT_H[0] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxCNT_H[1] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::DMAxCNT_H[0] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxCNT_H[2] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::DMAxCNT_H[0] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    DMAxCNT_H[3] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::DMAxCNT_H[0] - MemoryManager::IO_REGISTERS_OFFSET_START));
-
-    BGxCNT[0] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::BGxCNT[0] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    BGxCNT[1] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::BGxCNT[1] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    BGxCNT[2] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::BGxCNT[2] - MemoryManager::IO_REGISTERS_OFFSET_START));
-    BGxCNT[3] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::BGxCNT[3] - MemoryManager::IO_REGISTERS_OFFSET_START));
+    for(size_t n = 0; n < BG_CNT; n++){
+        BGxCNT[n] = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::BGxCNT[n] - MemoryManager::IO_REGISTERS_OFFSET_START));
+    }
 
     DISPSTAT = reinterpret_cast<uint16_t*>(mem.get() + (REG_ADDR::DISPSTAT - MemoryManager::IO_REGISTERS_OFFSET_START));
 
