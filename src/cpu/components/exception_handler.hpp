@@ -57,26 +57,26 @@ class ExceptionHandler {
         uint16_t* IME;
 
         struct REG_IF {
-            const static uint32_t VBLANK_MASK = 0b0000000000000001;
-            const static uint32_t VBLANK_SHIFT = 0x0;
+            constexpr static uint32_t VBLANK_MASK = 0b0000000000000001;
+            constexpr static uint32_t VBLANK_SHIFT = 0x0;
 
-            const static uint32_t HBLANK_MASK = 0b0000000000000010;
-            const static uint32_t HBLANK_SHIFT = 0x1;
+            constexpr static uint32_t HBLANK_MASK = 0b0000000000000010;
+            constexpr static uint32_t HBLANK_SHIFT = 0x1;
 
-            const static uint32_t VCOUNT_MASK = 0b0000000000000100;
-            const static uint32_t VCOUNT_SHIFT = 0x2;
+            constexpr static uint32_t VCOUNT_MASK = 0b0000000000000100;
+            constexpr static uint32_t VCOUNT_SHIFT = 0x2;
 
-            const static uint32_t DMA0_MASK = 0b0000000100000000;
-            const static uint32_t DMA0_SHIFT = 0x8;
+            constexpr static uint32_t DMA0_MASK = 0b0000000100000000;
+            constexpr static uint32_t DMA0_SHIFT = 0x8;
 
-            const static uint32_t DMA1_MASK = 0b0000001000000000;
-            const static uint32_t DMA1_SHIFT = 0x9;
+            constexpr static uint32_t DMA1_MASK = 0b0000001000000000;
+            constexpr static uint32_t DMA1_SHIFT = 0x9;
 
-            const static uint32_t DMA2_MASK = 0b0000010000000000;
-            const static uint32_t DMA2_SHIFT = 0xA;
+            constexpr static uint32_t DMA2_MASK = 0b0000010000000000;
+            constexpr static uint32_t DMA2_SHIFT = 0xA;
 
-            const static uint32_t DMA3_MASK = 0b0000100000000000;
-            const static uint32_t DMA3_SHIFT = 0xB;
+            constexpr static uint32_t DMA3_MASK = 0b0000100000000000;
+            constexpr static uint32_t DMA3_SHIFT = 0xB;
         };
 
         std::unordered_map<Interrupt, uint32_t> interrupt2IfMask = {
