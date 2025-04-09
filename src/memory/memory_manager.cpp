@@ -141,10 +141,8 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
 
             // Writing 8bit Data to Video Memory
             // Video Memory (BG, OBJ, OAM, Palette) can be written to in 16bit and 32bit units only. Attempts to write 8bit data (by STRB opcode) won’t work:
-
             // Writes to OBJ (6010000h-6017FFFh) (or 6014000h-6017FFFh in Bitmap mode) and to OAM (7000000h-70003FFh) are ignored, the memory content remains 
             // unchanged.
-
             // Writes to BG (6000000h-600FFFFh) (or 6000000h-6013FFFh in Bitmap mode) and to Palette (5000000h-50003FFh) are writing the new 8bit value to 
             // BOTH upper and lower 8bits of the addressed halfword, ie. “[addr AND NOT 1]=data*101h”.
             // https://rust-console.github.io/gbatek-gbaonly/#writing-8bit-data-to-video-memory
@@ -161,6 +159,7 @@ void MemoryManager::store(uint32_t addr, uint32_t val,  uint8_t bytes) {
                     }
                 }
             }else{
+                // 
                 if(Utils::inRange<>(addr, 0x06010000, 0x06017FFF)){
                     if(bytes == 1){
                         return;

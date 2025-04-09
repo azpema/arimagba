@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "../cpu/arm7tdmi.hpp"
 #include "../memory/memory_manager.hpp"
@@ -14,7 +15,7 @@ class PPU {
     public:
         PPU(const std::string &title, ARM7TDMI &cpu, MemoryManager *memManager);
         ~PPU();
-        void renderScanline();
+        void renderScanline(bool &vblankNow, bool &hblankNow);
 
         uint8_t *getBgPaletteRAM() const;
         uint8_t *getObjPaletteRAM() const;

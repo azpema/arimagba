@@ -34,10 +34,10 @@ int main(int argc, char** argv)
 	ARM7TDMI cpu(&mem);
 	mem.addCpu(&cpu);
 	PPU ppu("GBA", cpu, &mem);
-	DMA<0> dma0(mem);
-	DMA<1> dma1(mem);
-	DMA<2> dma2(mem);
-	DMA<3> dma3(mem);
+	DMA<0> dma0(cpu, mem);
+	DMA<1> dma1(cpu, mem);
+	DMA<2> dma2(cpu, mem);
+	DMA<3> dma3(cpu, mem);
 
 	cpu.setPC(0x08000000);
 	
@@ -45,6 +45,11 @@ int main(int argc, char** argv)
 
 	uint32_t cpuCycles = 0;
 	uint64_t totalCpuCycles = 0;
+
+	bool vblankNow = false;
+	bool hblankNow = false;
+
+	gamepak.printHeader();
 
 	while(run){
 		// Handle events
@@ -66,7 +71,7 @@ int main(int argc, char** argv)
 				}
 			}
 		}
-		uint32_t lastCpuCycles;
+		uint32_t lastCpuCycles = 0;
 		if(io.getMustHaltCpu()){
 			if(io.getIE() & io.getIF()){
 				io.clearMustHaltCpu();
@@ -81,15 +86,15 @@ int main(int argc, char** argv)
 		totalCpuCycles += lastCpuCycles;
 		// Render scanline if necessary cycles have been consumed
 		if(cpuCycles >= 300){ // 1006?
-			ppu.renderScanline();
+			ppu.renderScanline(vblankNow, hblankNow);
 			cpuCycles = 0;
 		}
 
 		// DMA
-		dma0.runCycle();
-		dma1.runCycle();
-		dma2.runCycle();
-		dma3.runCycle();
+		dma0.runCycle(vblankNow, hblankNow);
+		dma1.runCycle(vblankNow, hblankNow);
+		dma2.runCycle(vblankNow, hblankNow);
+		dma3.runCycle(vblankNow, hblankNow);
 	}
 
 	SDL_Quit();

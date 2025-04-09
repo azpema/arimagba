@@ -45,7 +45,7 @@ uint8_t *PPU::getOVRAM() const{
     return mem->getRawVRAM() + VRAM::OBJECT_VRAM_OFFSET;
 }
 
-void PPU::renderScanline(){
+void PPU::renderScanline(bool &vblankNow, bool &hblankNow){
     if(vCountIrqEnabled() && getVcountTrigger() == *VCOUNT){
         setVcountFlag(true);
         cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::IRQ, ExceptionHandler::Interrupt::VCOUNT);
@@ -57,11 +57,13 @@ void PPU::renderScanline(){
     *VCOUNT += 1;
     if(*VCOUNT == VCOUNT_START_VBLANK){
         setVBlankFlag(true);
+        vblankNow = true;
         if(vBlankIrqEnabled()){
             cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::IRQ, ExceptionHandler::Interrupt::VBLANK);
         }
     }else if(*VCOUNT == VCOUNT_END_VBLANK){
         setVBlankFlag(false);
+        vblankNow = false;
     }
     else if(*VCOUNT == 228){
         *VCOUNT = 0;
@@ -101,11 +103,13 @@ void PPU::renderScanline(){
         
     if(*VCOUNT % 2 == 0){
         setHBlankFlag(true);
+        hblankNow = true;
         if(hBlankIrqEnabled()){
             cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::IRQ, ExceptionHandler::Interrupt::HBLANK);
         }
     }else{
         setHBlankFlag(false);
+        hblankNow = false;
     }
 }
 
