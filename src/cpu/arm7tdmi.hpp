@@ -5,6 +5,7 @@ class ArmPool;
 class OpCode;
 class BarrelShifter;
 class ExceptionHandler;
+class MemoryManager;
 
 #include <iostream>
 #include <memory>
@@ -17,8 +18,6 @@ class ExceptionHandler;
 #include "op/arm_pool.hpp"
 #include "op/thumb_pool.hpp"
 #include "../memory/memory_manager.hpp"
-
-class MemoryManager;
 
 class ARM7TDMI {
 	public:
@@ -54,19 +53,24 @@ class ARM7TDMI {
 		void setPC(uint32_t pc);
 		void setLR(uint32_t lr);
 
+		ArmPool& getArmPool();
+		bool isPcInBios() const;
+
 		// Cycle counting. INACCURATE
 		// "if you want to, you can count each one of S/N/I cycles as 1 cycle too"
 		const static uint32_t CPU_CYCLES_PER_S_CYCLE = 1;
 		const static uint32_t CPU_CYCLES_PER_N_CYCLE = 1;
 		const static uint32_t CPU_CYCLES_PER_I_CYCLE = 1;
 
-		ArmPool& getArmPool();
-
-		bool isPcInBios() const;
-
 	private:
 		void generateArmDecodingLookup();
 		void generateThumbDecodingLookup();
+		PSR& getCorrespondingSPSR();
+		uint32_t getSPSRval();
+
+		OpCode* decodeInstructionARM(uint32_t op);
+		OpCode* decodeInstructionThumb(uint16_t op);
+
 		ArmPool armPool;
 		ThumbPool thumbPool;
 		/*
@@ -100,7 +104,10 @@ class ARM7TDMI {
 		By convention, r13 is used as the Stack Pointer (SP).
 		*/
 		constexpr static int REG_CNT = 16;
-		uint32_t reg[16];
+		constexpr static int REG_SP = 13;
+		constexpr static int REG_LR = 14;
+		constexpr static int REG_PC = 15;
+		uint32_t reg[REG_CNT];
 		uint32_t r8_fiq[7];
 		uint32_t r13_svc[2];
 		uint32_t r13_abt[2]; 
@@ -120,9 +127,6 @@ class ARM7TDMI {
 		MemoryManager *mem;
 		std::unique_ptr<BarrelShifter> barrelShifter;
 		std::unique_ptr<ExceptionHandler> exceptionHandler;
-		const static int REG_SP = 13;
-		const static int REG_LR = 14;
-		const static int REG_PC = 15;
 
 		// Pipeline
 		uint32_t insFetch, insDecode;
@@ -130,15 +134,8 @@ class ARM7TDMI {
 		bool insFetchSet = false;
 		bool insDecodeSet = false;
 		bool insExecuteSet = false;
-		uint32_t fetchPC;
 		bool mustFlushPipeline = false;
-
-		PSR& getCorrespondingSPSR();
-		uint32_t getSPSRval();
-
-		OpCode* decodeInstructionARM(uint32_t op);
-		OpCode* decodeInstructionThumb(uint16_t op);
-
+		uint32_t fetchPC;
 		
 };	
 
