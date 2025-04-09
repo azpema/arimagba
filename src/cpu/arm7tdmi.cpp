@@ -386,44 +386,29 @@ void ARM7TDMI::setLR(uint32_t lr){
 }
 
 void ARM7TDMI::printStatus(){
-	std::string n = "-";
-	if(cpsr.getNFlag()) n="N";  
-
-	std::string z = "-";
-	if(cpsr.getZFlag()) z="Z";
-
-	std::string c = "-";
-	if(cpsr.getCFlag()) c="C";
-
-	std::string v = "-";
-	if(cpsr.getVFlag()) v="V";
-
-	std::string i = "-";
-	if(cpsr.getIFlag()) i="I";
-
-	std::string f = "-";
-	if(cpsr.getFFlag()) f="F";
-
-	std::string t = "-";
-	if(cpsr.getTFlag()) t="T";
+	const std::string offStr = "-";
+	std::string n = cpsr.getNFlag() ? "N" : offStr;
+	std::string z = cpsr.getZFlag() ? "Z" : offStr;
+	std::string c = cpsr.getCFlag() ? "C" : offStr;
+	std::string v = cpsr.getVFlag() ? "V" : offStr;
+	std::string i = cpsr.getIFlag() ? "I" : offStr;
+	std::string f = cpsr.getFFlag() ? "F" : offStr;
+	std::string t = cpsr.getTFlag() ? "T" : offStr;
+	std::string insMode = cpsr.getTFlag() ? "THUMB" : "ARM";
 
 	// TODO: take thumb mode into account
 	// PC is reduced by 8 to account for pipeline parallelism
 	//std::cout << "pc:   " << Utils::toHexString(getPC(), 8) << std::endl;
-	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << "\t" << "[" << n << z << c << v << i << f << t << "]" << "\t";
-	if(cpsr.getTFlag() == 0)
-		std::cout << "ARM" << "\t";
-	else
-		std::cout << "THUMB" << "\t";
+	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << "\t" << "[" << n << z << c << v << i << f << t << "]" << "\t" << insMode << "\t";
 
 	std::cout << cpsr.getModeString() << std::endl;
 	
 	std::cout << "spsr: " << Utils::toHexString(getSPSRval(), 8) << std::endl;
 
-	for(int i=0; i<16; i++){
+	for(size_t it = 0; it < 16; it++){
 		std::cout << std::setw(3);
-		std::cout << "r" + std::to_string(i) << ": " << Utils::toHexString(getReg(i), 8) << " ";
-		if(i !=0 && (i+1) % 4 == 0)
+		std::cout << "r" + std::to_string(it) << ": " << Utils::toHexString(getReg(it), 8) << " ";
+		if(it !=0 && (it+1) % 4 == 0)
 			std::cout << std::endl;
 	}
 	std::cout << std::endl;
