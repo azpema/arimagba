@@ -99,7 +99,7 @@ class ARM7TDMI {
 
 		By convention, r13 is used as the Stack Pointer (SP).
 		*/
-		
+		constexpr static int REG_CNT = 16;
 		uint32_t reg[16];
 		uint32_t r8_fiq[7];
 		uint32_t r13_svc[2];

@@ -8,7 +8,7 @@
 ARM7TDMI::ARM7TDMI(MemoryManager *memManager) : armPool(*this), thumbPool(*this){
 	mem = memManager;
 	//cpsr = PSR();
-	for(size_t i=0; i<16; i++){
+	for(size_t i = 0; i < REG_CNT; i++){
 		reg[i] = 0;
 	}
 
@@ -247,7 +247,7 @@ int64_t ARM7TDMI::fetchInstructionArm(uint32_t offset){
 }
 
 uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
-	if(n > 15){
+	if(n > REG_CNT - 1){
 		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
 		return 0;
 	}
@@ -308,7 +308,7 @@ uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
 }
 
 void ARM7TDMI::setReg(uint16_t n, uint32_t val, bool userBank){
-	if(n > 15){
+	if(n > REG_CNT - 1){
 		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
 		return;
 	}
@@ -405,7 +405,7 @@ void ARM7TDMI::printStatus(){
 	
 	std::cout << "spsr: " << Utils::toHexString(getSPSRval(), 8) << std::endl;
 
-	for(size_t it = 0; it < 16; it++){
+	for(size_t it = 0; it < REG_CNT; it++){
 		std::cout << std::setw(3);
 		std::cout << "r" + std::to_string(it) << ": " << Utils::toHexString(getReg(it), 8) << " ";
 		if(it !=0 && (it+1) % 4 == 0)
@@ -415,7 +415,7 @@ void ARM7TDMI::printStatus(){
 }
 
 void ARM7TDMI::printRegisterValues(){
-	for(int i=0; i<16; i++){
+	for(size_t i = 0; i < REG_CNT; i++){
 		std::cout << std::uppercase << std::setfill('0') << std::setw(8) << std::hex << getReg(i) << " ";
 	}
 }
