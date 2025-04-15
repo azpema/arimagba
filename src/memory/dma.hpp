@@ -191,8 +191,7 @@ void DMA<N>::runCycle(const bool vblankNow, const bool hblankNow) const {
                         iterWriteAddr -= transferSizeBytes;
                         break;
                     case DstAdj::DMA_DST_FIXED:
-                        writeAddr += transferSizeBytes;
-                        iterWriteAddr += transferSizeBytes;
+                        // Useful for Direct Sound FIFO
                         break;
                     case DstAdj::DMA_DST_RELOAD:
                         writeAddr += transferSizeBytes;
@@ -213,8 +212,6 @@ void DMA<N>::runCycle(const bool vblankNow, const bool hblankNow) const {
                         iterReadAddr -= transferSizeBytes;
                         break;
                     case SrcAdj::DMA_SRC_FIXED:
-                        readAddr += transferSizeBytes;
-                        iterReadAddr += transferSizeBytes;
                         break;
                     case SrcAdj::DMA_SRC_RELOAD:
                         readAddr += transferSizeBytes;
