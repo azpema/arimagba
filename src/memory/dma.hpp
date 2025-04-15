@@ -100,6 +100,10 @@ void DMA<N>::runCycle(const bool vblankNow, const bool hblankNow) const {
             readAddr = *DMAxSAD;
             writeAddr = *DMAxDAD;
             numTransfers = getNumTransfers();
+
+            if(MemoryManager::isAddrInRom(readAddr)){
+                sourceAdjustment = SrcAdj::DMA_SRC_INC;
+            }
         }
 
         if(isRepeatEnabled()){
@@ -142,7 +146,7 @@ void DMA<N>::runCycle(const bool vblankNow, const bool hblankNow) const {
 
         if(doTransferNow){
             
-            if(dmaNum != 3 && *DMAxDAD >= 0x08000000){
+            if(dmaNum != 3 && MemoryManager::isAddrInRom(*DMAxDAD)){
                 throw std::runtime_error("DMA dest address must not be in ROM address space");
             }
             

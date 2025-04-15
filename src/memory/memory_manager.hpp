@@ -80,6 +80,8 @@ class MemoryManager {
 
         void addCpu(ARM7TDMI *cpu);
 
+        static bool isAddrInRom(uint32_t addr);
+
         // General Internal Memory
         const static uint32_t BIOS_OFFSET_START = 0x00000000;
         const static uint32_t BIOS_OFFSET_END = 0x00003FFF;

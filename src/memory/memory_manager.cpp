@@ -255,3 +255,7 @@ uint8_t* MemoryManager::getOAM(){
 void MemoryManager::addCpu(ARM7TDMI *cpu){
     this->cpu = cpu;
 }
+
+bool MemoryManager::isAddrInRom(uint32_t addr){
+    return addr >= GAMEPAK_WAIT_0_OFFSET_START && addr <= GAMEPAK_WAIT_2_OFFSET_END;
+}
