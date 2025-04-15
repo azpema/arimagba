@@ -8,16 +8,16 @@ ExceptionHandler::ExceptionHandler(ARM7TDMI &cpu) : cpu(cpu),
                                                     IME(reinterpret_cast<uint16_t*>(io + (REG_ADDR::IME - MemoryManager::IO_REGISTERS_OFFSET_START)))
                                                     {}
 
-void ExceptionHandler::raiseException(Exception ex, Interrupt inter){
-    this->ex = ex;
+void ExceptionHandler::raiseException(Exception excep, Interrupt inter){
+    this->ex = excep;
     //this->mustHandleException = true;
     //this->inter = inter;
 
-    if(ex == Exception::IRQ){
+    if(excep == Exception::IRQ){
         //if(isMasterInterruptEnabled() && isSpecificInterruptEnabled(inter)){
             setInterruptIF(inter, true);
         //}
-    }else if(ex == Exception::SWI){
+    }else if(excep == Exception::SWI){
         doHandleException();
     }else{
         throw std::runtime_error("Unimplemented raiseException exception type");
