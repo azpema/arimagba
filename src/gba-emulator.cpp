@@ -1,5 +1,4 @@
-﻿#include "gba-emulator.h"
-#include "cpu/arm7tdmi.hpp"
+﻿#include "cpu/arm7tdmi.hpp"
 #include "utils/utils.hpp"
 #include "graphics/ppu.hpp"
 #include "memory/dma.hpp"

@@ -14,11 +14,11 @@ cmake ..
 make
 ```
 
-This will generate the main executable `gba-emulator`.
+This will generate the main executable `arimagba`.
 ## Running
 Run your chosen ROM file easily with:
 ```bash
-./gba-emulator <rom_file>
+./arimagba <rom_file>
 ```
 
 The following table lists the key bindings used in the emulator:
