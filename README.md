@@ -104,3 +104,7 @@ https://densinh.github.io/DenSinH/emulation/2021/02/01/gba-eeprom.html
     https://github.com/fleroviux/openbuster/releases/download/0.1/openbuster.gba
     https://discord.com/channels/465585922579103744/465586361731121162/921932070366883961
     https://discord.com/channels/465585922579103744/465586361731121162/871655745169526844
+
+* #### Sound
+
+    http://belogic.com/gba/directsound.shtml
