@@ -8,7 +8,7 @@
 // Make it static so it is shared among all DMA channels
 static uint32_t lastValidVal = 0;
 
-template <uint8_t N>
+template <int N>
 class DMA {
     public:
         DMA(ARM7TDMI &cpu, MemoryManager &mem);
@@ -39,7 +39,7 @@ class DMA {
 
         ARM7TDMI &cpu;
         MemoryManager &mem;
-        uint8_t dmaNum;
+        int dmaNum;
         uint8_t* io;
         uint32_t* DMAxSAD;
         uint32_t* DMAxDAD;
@@ -74,7 +74,7 @@ class DMA {
 
 };
 
-template <uint8_t N> 
+template <int N> 
 DMA<N>::DMA(ARM7TDMI &cpu, MemoryManager &mem) : cpu(cpu), mem(mem), dmaNum(N), io(mem.getIOregisters()),
                                                  DMAxSAD(reinterpret_cast<uint32_t*>(io + (REG_ADDR::DMAxSAD[N] - MemoryManager::IO_REGISTERS_OFFSET_START))),
                                                  DMAxDAD(reinterpret_cast<uint32_t*>(io + (REG_ADDR::DMAxDAD[N] - MemoryManager::IO_REGISTERS_OFFSET_START))),
@@ -83,7 +83,7 @@ DMA<N>::DMA(ARM7TDMI &cpu, MemoryManager &mem) : cpu(cpu), mem(mem), dmaNum(N), 
 {
 }
 
-template <uint8_t N> 
+template <int N> 
 void DMA<N>::runCycle(const bool vblankNow, const bool hblankNow) const {
     static bool prevDmaEnabled = false;
 
@@ -94,6 +94,7 @@ void DMA<N>::runCycle(const bool vblankNow, const bool hblankNow) const {
 
         SrcAdj sourceAdjustment = getSourceAdjustment();
         DstAdj destAdjustment = getDestAdjustment();
+        TimingMode timingMode = getTimingMode();
 
         auto transferSizeBytes = getTransferSizeBytes();
         if(!prevDmaEnabled){
@@ -117,7 +118,6 @@ void DMA<N>::runCycle(const bool vblankNow, const bool hblankNow) const {
         std::cout << "DMA" << std::to_string(dmaNum) << " bytes " << bytes << std::endl;
         std::cout << "src: " << Utils::toHexString(readAddr) << " dst: " << Utils::toHexString(writeAddr) << " " << Utils::toHexString(*DMAxCNT_H) << ":" << Utils::toHexString(*DMAxCNT_L) << "\n"; 
 
-        TimingMode timingMode = getTimingMode();
         bool doTransferNow = false;
         switch(timingMode){
             case TimingMode::DMA_NOW:
@@ -149,8 +149,6 @@ void DMA<N>::runCycle(const bool vblankNow, const bool hblankNow) const {
             if(dmaNum != 3 && MemoryManager::isAddrInRom(*DMAxDAD)){
                 throw std::runtime_error("DMA dest address must not be in ROM address space");
             }
-            
-
             
             uint32_t iterReadAddr = readAddr;
             uint32_t iterWriteAddr = writeAddr;
@@ -253,41 +251,41 @@ void DMA<N>::runCycle(const bool vblankNow, const bool hblankNow) const {
     }
 }
 
-template <uint8_t N> 
+template <int N> 
 bool DMA<N>::isDmaEnabled() const {
     return Utils::getRegBits(*DMAxCNT_H, REG_DMAxCNT::DMA_ENABLE_MASK, REG_DMAxCNT::DMA_ENABLE_SHIFT);
 }
 
-template <uint8_t N> 
+template <int N> 
 bool DMA<N>::isRepeatEnabled() const {
     return Utils::getRegBits(*DMAxCNT_H, REG_DMAxCNT::REPEAT_MASK, REG_DMAxCNT::REPEAT_SHIFT);
 }
 
-template <uint8_t N> 
+template <int N> 
 typename DMA<N>::DstAdj DMA<N>::getDestAdjustment() const {
     uint8_t destAdj = Utils::getRegBits(*DMAxCNT_H, REG_DMAxCNT::DA_MASK, REG_DMAxCNT::DA_SHIFT);
     return static_cast<DstAdj>(destAdj);
 }
 
-template <uint8_t N> 
+template <int N> 
 typename DMA<N>::SrcAdj DMA<N>::getSourceAdjustment() const {
     uint8_t srcAdj = Utils::getRegBits(*DMAxCNT_H, REG_DMAxCNT::SRC_ADJ_MASK, REG_DMAxCNT::SRC_ADJ_SHIFT);
     return static_cast<SrcAdj>(srcAdj);
 }
 
-template <uint8_t N>
+template <int N>
 typename DMA<N>::ChunkSize DMA<N>::getChunkSize() const {
     uint8_t chunkSize = Utils::getRegBits(*DMAxCNT_H, REG_DMAxCNT::CHUNK_SIZE_MASK, REG_DMAxCNT::CHUNK_SIZE_SHIFT);
     return static_cast<ChunkSize>(chunkSize);
 }
 
-template <uint8_t N>
+template <int N>
 typename DMA<N>::TimingMode DMA<N>::getTimingMode() const {
     uint8_t timingMode = Utils::getRegBits(*DMAxCNT_H, REG_DMAxCNT::START_TIMING_MASK, REG_DMAxCNT::START_TIMING_SHIFT);
     return static_cast<TimingMode>(timingMode);
 }
 
-template <uint8_t N>
+template <int N>
 bool DMA<N>::isIrqEnabled() const {
     return Utils::getRegBits(*DMAxCNT_H, REG_DMAxCNT::IRQ_ENABLE_MASK, REG_DMAxCNT::IRQ_ENABLE_SHIFT);
 }
@@ -298,7 +296,7 @@ DMAxCNT_L
 Specifies the number of data units to be transferred, each unit is 16bit or 32bit depending on the transfer type,
  a value of zero is treated as max length (ie. 4000h, or 10000h for DMA3).
 */
-template <uint8_t N>
+template <int N>
 uint32_t DMA<N>::getNumTransfers() const {
     if(*DMAxCNT_L == 0){
         if(N == 3){
@@ -310,18 +308,18 @@ uint32_t DMA<N>::getNumTransfers() const {
     return *DMAxCNT_L;
 }
 
-template <uint8_t N>
+template <int N>
 uint8_t DMA<N>::getTransferSizeBytes() const {
     const static uint8_t transferSizeBytes[2] = {2, 4};
     return transferSizeBytes[static_cast<uint8_t>(getChunkSize())];
 }
 
-template <uint8_t N>
+template <int N>
 void DMA<N>::disableDma() const {
     *DMAxCNT_H &= ~REG_DMAxCNT::DMA_ENABLE_MASK;
 }
 
-template <uint8_t N>
+template <int N>
 bool DMA<N>::isSourceAddrValid(int dma, uint32_t sourceAddr){
 	if(dma == 0 && sourceAddr >= MemoryManager::GAMEPAK_WAIT_0_OFFSET_START && sourceAddr < MemoryManager::GAMEPAK_SRAM_OFFSET_START){
 		return false;
@@ -329,7 +327,7 @@ bool DMA<N>::isSourceAddrValid(int dma, uint32_t sourceAddr){
 	return sourceAddr >= MemoryManager::EWRAM_OFFSET_START;
 }
 
-template <uint8_t N>
+template <int N>
 bool DMA<N>::isDestAddrValid(int dma, uint32_t address) {
 	return dma == 3 || address < MemoryManager::GAMEPAK_WAIT_0_OFFSET_START;
 }
