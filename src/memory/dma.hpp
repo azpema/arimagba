@@ -105,6 +105,21 @@ void DMA<N>::runCycle(const bool vblankNow, const bool hblankNow) const {
             if(MemoryManager::isAddrInRom(readAddr)){
                 sourceAdjustment = SrcAdj::DMA_SRC_INC;
             }
+
+            /*
+                DMA_AT_REFRESH: For DMA1 and DMA2 it'll refill the FIFO when it has been emptied. 
+                Count and size are forced to 1 and 32bit, respectively. 
+                For DMA3 it will start the copy at the start of each rendering line, but with a 2 scanline delay.
+            */ 
+            if(timingMode == TimingMode::DMA_AT_REFRESH){
+                if(dmaNum == 1 || dmaNum == 2){
+                    destAdjustment = DstAdj::DMA_DST_FIXED;
+                    numTransfers = 1;
+                    transferSizeBytes = 4;
+                }else{
+                    throw std::runtime_error("ERROR: Unimplemented DMA_AT_REFRESH timing from DMA " + std::to_string(dmaNum));
+                }
+            }
         }
 
         if(isRepeatEnabled()){
