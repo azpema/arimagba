@@ -58,8 +58,15 @@ int32_t Utils::twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint3
     }
 }
 
+constexpr uint32_t Utils::byteSwap32(uint32_t val) {
+    return ((val >> 24) & 0x000000FF) |
+           ((val >> 8)  & 0x0000FF00) |
+           ((val << 8)  & 0x00FF0000) |
+           ((val << 24) & 0xFF000000);
+}
+
 uint32_t Utils::readUint32(uint8_t* data){
     uint32_t val;
     std::memcpy(&val, data, sizeof(uint32_t));
-    return std::endian::native == std::endian::little ? val : std::byteswap(val);
+    return std::endian::native == std::endian::little ? val : byteSwap32(val);
 }

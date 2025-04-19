@@ -16,7 +16,9 @@ public:
     static int32_t twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint32_t toBits);
     static std::string toHexString(uint32_t val, uint32_t paddingNum = 0);
 
+    static constexpr uint32_t byteSwap32(uint32_t val);
     static uint32_t readUint32(uint8_t* data);
+
     
     template <bool inclusiveMin = true, bool inclusiveMax = true>
     static bool inRange(uint32_t val, uint32_t from, uint32_t to){
