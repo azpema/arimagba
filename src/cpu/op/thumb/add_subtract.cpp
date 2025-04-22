@@ -38,7 +38,7 @@ std::string AddSubtract::toString(){
 
         }
     }else{
-        std::cerr << "ERROR: Thumb Add/subtract invalid opcode field" << '\n';
+        throw std::runtime_error("ERROR: Thumb Add/subtract invalid opcode field");
     }
 
     return mnemonic;

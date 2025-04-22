@@ -143,7 +143,7 @@ uint32_t ShiftRm::getOperandVal(ARM7TDMI &cpu){
                 return res;
                 break;
             default:
-                std::cerr << "ERROR: Invalid _shiftType value!" << '\n';
+                throw std::runtime_error("ERROR: Invalid _shiftType value! type: " + std::to_string(type) + " shiftAmount: " + std::to_string(shiftAmount));
                 break;
         }
     }
@@ -173,7 +173,7 @@ uint32_t ShiftRm::getOperandVal(ARM7TDMI &cpu){
                     c = Utils::getRegSingleBit(rmVal, 31);
                     return rmVal;
                 default:
-                    std::cerr << "ERROR: Invalid _shiftType value!" << '\n';
+                    throw std::runtime_error("ERROR: Invalid _shiftType value! type: " + std::to_string(type) + " shiftAmount: " + std::to_string(shiftAmount));
                     break;
             }
         }else if (shiftAmount > 32){
@@ -197,7 +197,7 @@ uint32_t ShiftRm::getOperandVal(ARM7TDMI &cpu){
                     c = cpu.getBarrelShifter().getC();
                     return res;
                 default:
-                    std::cerr << "ERROR: Invalid _shiftType value!" << '\n';
+                    throw std::runtime_error("ERROR: Invalid _shiftType value! type: " + std::to_string(type) + " shiftAmount: " + std::to_string(shiftAmount));
                     break;
             }
         }
@@ -219,7 +219,7 @@ uint32_t ShiftRm::getOperandVal(ARM7TDMI &cpu){
         res = cpu.getBarrelShifter().ror(cpu, rmVal, shiftAmount);
         break;
     default:
-        std::cerr << "ERROR: Invalid _shiftType value!" << '\n';
+        throw std::runtime_error("ERROR: Invalid _shiftType value! type: " + std::to_string(type) + " shiftAmount: " + std::to_string(shiftAmount));
         break;
     }
 
