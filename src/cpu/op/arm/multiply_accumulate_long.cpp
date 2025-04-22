@@ -103,6 +103,6 @@ void MultiplyAccumulateLong::doExecute(){
 // MULL             1S+(m+1)I
 // MLAL             1S+(m+2)I
 uint32_t MultiplyAccumulateLong::cyclesUsed() const {
-    std::cerr << "TODO: MultiplyAccumulateLong::cyclesUsed" << std::endl;
+    // std::cerr << "TODO: MultiplyAccumulateLong::cyclesUsed" << '\n';
     return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + (0 + 1) * ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
 }

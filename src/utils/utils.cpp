@@ -45,8 +45,7 @@ std::string Utils::toHexString(uint32_t val, uint32_t paddingNum){
 
 int32_t Utils::twosComplementExtendSignTo(uint32_t val, uint32_t fromBits, uint32_t toBits) {
     if(fromBits >= toBits){
-        std::cout << "ERROR: extend sign" << std::endl;
-        return val;
+        throw std::runtime_error("ERROR: extend sign");
     }
 
     uint32_t sign = (val >> (fromBits - 1)) & 0x1;

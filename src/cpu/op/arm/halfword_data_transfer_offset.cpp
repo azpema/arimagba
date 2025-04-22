@@ -49,7 +49,7 @@ std::string HalfwordDataTransferOffset::toString(){
         if(showOffset) 
             address += "," + getUFlagMnemonic() + Utils::toHexString(getOffsetVal());
     }else{
-        std::cerr << "ERROR: Invalid p flag value HalfwordDataTransferOffset" << std::endl;
+        throw std::runtime_error("ERROR: Invalid p flag value HalfwordDataTransferOffset");
     }
 
     return base + address;
@@ -57,7 +57,7 @@ std::string HalfwordDataTransferOffset::toString(){
 
 // Depends on load or store
 uint32_t HalfwordDataTransferOffset::cyclesUsed() const {
-    //std::cerr << "TODO: HalfwordDataTransferOffset::cyclesUsed" << std::endl;
+    //std::cerr << "TODO: HalfwordDataTransferOffset::cyclesUsed" << '\n';
     return 1;
 }
 

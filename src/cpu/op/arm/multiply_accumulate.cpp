@@ -57,7 +57,7 @@ void MultiplyAccumulate::doDecode(){
 void MultiplyAccumulate::doExecute(){
     if(rd == rm){
         //throw std::runtime_error("MultiplyAccumulate::doExecute: The destination register Rd must not be the same as the operand register Rm");
-        std::cout << "MultiplyAccumulate::doExecute: The destination register Rd must not be the same as the operand register Rm" << std::endl;
+        std::cout << "MultiplyAccumulate::doExecute: The destination register Rd must not be the same as the operand register Rm" << '\n';
     }
     if(rd==15 || rn==15 || rs==15 || rm==15){
         throw std::runtime_error("MultiplyAccumulate::doExecute: R15 must not be used as an operand or as the destination register");
@@ -81,6 +81,6 @@ void MultiplyAccumulate::doExecute(){
 // MUL              1S+ml
 // MLA              1S+(m+1)I
 uint32_t MultiplyAccumulate::cyclesUsed() const {
-    //std::cerr << "TODO: MultiplyAccumulate::cyclesUsed" << std::endl;
+    //std::cerr << "TODO: MultiplyAccumulate::cyclesUsed" << '\n';
     return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + (0 + 1) * ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
 }

@@ -2,7 +2,7 @@
 #include "dma.hpp"
 
 IOregisters::IOregisters() : mustHaltCpu(false) {
-    std::cerr << "TODO Set proper initial values at IOregisters" << std::endl;
+    std::cerr << "TODO Set proper initial values at IOregisters" << '\n';
 
     for(size_t n = 0; n < DMA_CNT; n++){
         DMAxSAD[n] = reinterpret_cast<uint32_t*>(mem.get() + (REG_ADDR::DMAxSAD[n] - MemoryManager::IO_REGISTERS_OFFSET_START));

@@ -19,7 +19,7 @@ void ThumbOpCode::init(uint32_t op){
 // Thumb instructions have no conditions; they are always executed
 bool ThumbOpCode::execute() {
     doExecute();
-    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << '\n';
     //opArm.doExecute();
     return true;
 }

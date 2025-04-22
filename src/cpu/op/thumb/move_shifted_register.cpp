@@ -48,7 +48,7 @@ void MoveShiftedRegister::doExecute(){
     uint32_t rawVal = shiftRm.getRawVal();
     DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 1, 0, rd, rawVal, cpu);
     opArm.doExecute();
-    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << '\n';
 }
 
 uint32_t MoveShiftedRegister::cyclesUsed() const {

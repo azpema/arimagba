@@ -32,7 +32,7 @@ void PSRTransferMSR::init(uint32_t op){
         rotateImmOp2.init(Utils::getRegBits(op, SOURCE_OPERAND_MASK, SOURCE_OPERAND_SHIFT));
         sourceOperand = &rotateImmOp2;
     }else{
-        std::cerr << "ERROR: Invalid I field value" << std::endl;
+        throw std::runtime_error("ERROR: Invalid I field value");
     }
 }
 
@@ -66,7 +66,7 @@ std::string PSRTransferMSR::toString() {
         RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand);
         srcOper = "#" + Utils::toHexString(rotImm->getMnemonicVal());
     }else{
-        std::cerr << "ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " << sourceOperand->_type << std::endl;
+        throw std::runtime_error("ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " + sourceOperand->_type);
     }
     
     std::string cMnemonic = "";

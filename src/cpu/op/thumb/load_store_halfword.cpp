@@ -36,7 +36,7 @@ void LoadStoreHalfword::doDecode(){
 void LoadStoreHalfword::doExecute(){
     HalfwordDataTransferOffset opArm = HalfwordDataTransferOffset(1, 1, 0, l, rb, rd, 0, 1, (offsetVal & 0xF0) >> 4 , offsetVal & 0xF, cpu);
     opArm.doExecute();
-    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << '\n';
 }
 
 uint32_t LoadStoreHalfword::cyclesUsed() const {

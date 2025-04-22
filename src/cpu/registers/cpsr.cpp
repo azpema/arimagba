@@ -17,7 +17,7 @@ void PSR::reset(){
     this->setTFlag(false);
     this->setFFlag(true);
     this->setIFlag(true);
-    std::cout << "TODO: Set proper initial CPU mode" << std::endl;
+    std::cout << "TODO: Set proper initial CPU mode" << '\n';
     this->setMode(System);
 }
 
@@ -53,7 +53,7 @@ void PSR::setCPSRFlags(PSR::Flag flag, bool val){
         break;
     
     default:
-        std::cout << "ERROR: invalid CPSR flag" << std::endl;
+        std::cout << "ERROR: invalid CPSR flag" << '\n';
         break;
     }
 }

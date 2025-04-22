@@ -109,7 +109,7 @@ bool ArmOpcode::execute(){
         doExecute();
         return true;
     }else {
-        //std::cout << "DEBUG: Instructions skipped; condition not met" << std::endl;
+        //std::cout << "DEBUG: Instructions skipped; condition not met" << '\n';
         return false;
     }
 

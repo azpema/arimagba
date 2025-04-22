@@ -38,7 +38,7 @@ void MoveCompAddSubImm::doExecute(){
 
     DataProcessing opArm = DataProcessing(1, opDataProcessing[opField], 1, rd, rd, offset8, cpu);
     opArm.doExecute();
-    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << '\n';
 
 
 

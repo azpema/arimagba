@@ -52,7 +52,7 @@ void MultipleLoadStore::doExecute(){
     BlockDataTransfer *opArm = static_cast<BlockDataTransfer*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BLOCK_DATA_TRANSFER));
     opArm->init(p, u, 0, 1, l, rb, rList);
     opArm->doExecute();
-    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << '\n';
 }
 
 uint32_t MultipleLoadStore::cyclesUsed() const {

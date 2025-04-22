@@ -134,7 +134,7 @@ std::string SingleDataTransfer::toString(){
             address += "[" + OpCode::getRegMnemonic(Rn) + "," + getUFlagMnemonic() + OpCode::getRegMnemonic(shiftRm->getRm()) + "," + \
                        shiftRm->getShiftTypeMnemonic() + " #" + Utils::toHexString(shiftRm->getShiftAmount()) + "]" + writeBack;
         }else{
-            std::cerr << "ERROR: SingleDataTransfer P=1" << std::endl;
+            throw std::runtime_error("ERROR: SingleDataTransfer P=1");
         }
         
         
@@ -147,7 +147,7 @@ std::string SingleDataTransfer::toString(){
             address += getUFlagMnemonic() + OpCode::getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + \
                        Utils::toHexString(shiftRm->getShiftAmount());
         }else{
-            std::cerr << "ERROR: SingleDataTransfer P=0" << std::endl;
+            throw std::runtime_error("ERROR: SingleDataTransfer P=0");
         }
     }
 

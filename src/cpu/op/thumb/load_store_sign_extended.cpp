@@ -42,19 +42,19 @@ void LoadStoreSignExtended::doExecute(){
     if(h == 0 && s == 0){
         HalfwordDataTransferRegister opArm = HalfwordDataTransferRegister(1, 1, 0, 0, rb, rd, 0, 1, ro, cpu);
         opArm.doExecute();
-        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << '\n';
     }else if(h == 1 && s == 0){
         HalfwordDataTransferRegister opArm = HalfwordDataTransferRegister(1, 1, 0, 1, rb, rd, 0, 1, ro, cpu);
         opArm.doExecute();
-        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << '\n';
     }else if(h == 0 && s == 1){
         HalfwordDataTransferRegister opArm = HalfwordDataTransferRegister(1, 1, 0, 1, rb, rd, s, h, ro, cpu);
         opArm.doExecute();
-        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << '\n';
     }else if(s == 1 && h == 1){
         HalfwordDataTransferRegister opArm = HalfwordDataTransferRegister(1, 1, 0, 1, rb, rd, s, h, ro, cpu);
         opArm.doExecute();
-        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << '\n';
     }else{
         throw std::runtime_error("TODO");
     }

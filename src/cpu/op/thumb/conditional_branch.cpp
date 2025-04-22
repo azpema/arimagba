@@ -94,7 +94,7 @@ bool ArmOpcode::execute(){
         doExecute();
         return true;
     }else {
-        //std::cout << "DEBUG: Instructions skipped; condition not met" << std::endl;
+        //std::cout << "DEBUG: Instructions skipped; condition not met" << '\n';
         return false;
     }
 
@@ -159,9 +159,9 @@ void ConditionalBranch::doExecute(){
         ARM::Branch *opArm = static_cast<ARM::Branch*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BRANCH));
         opArm->init(sOffset8, offsetVal, cond);
         opArm->doExecute();
-        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << '\n';
     }else{
-        //std::cout << "Condition not met; skipping instruction" << std::endl;
+        //std::cout << "Condition not met; skipping instruction" << '\n';
     }
 }
 

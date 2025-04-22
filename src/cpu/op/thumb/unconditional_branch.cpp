@@ -34,7 +34,7 @@ void UnconditionalBranch::doExecute(){
     ARM::Branch *opArm = static_cast<ARM::Branch*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BRANCH));
     opArm->init(offset11, offsetVal, 0);
     opArm->doExecute();
-    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << '\n';
 }
 
 uint32_t UnconditionalBranch::cyclesUsed() const {

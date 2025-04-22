@@ -248,8 +248,7 @@ int64_t ARM7TDMI::fetchInstructionArm(uint32_t offset){
 
 uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
 	if(n > REG_CNT - 1){
-		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
-		return 0;
+		throw std::runtime_error("ERROR: Invalid reg number in getReg: " + std::to_string(n));
 	}
 	
 	if(n == REG_PC){
@@ -295,7 +294,7 @@ uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
 				return r13_und[n - 13];
 			break;
 		default:
-			std::cerr << "ERROR: Unknown CPSR Mode in CPU getReg" << std::endl;
+			throw std::runtime_error("ERROR: Unknown CPSR Mode in CPU getReg");
 			return 0;
 			break;
 		}
@@ -309,8 +308,7 @@ uint32_t ARM7TDMI::getReg(uint16_t n, bool userBank){
 
 void ARM7TDMI::setReg(uint16_t n, uint32_t val, bool userBank){
 	if(n > REG_CNT - 1){
-		std::cerr << "ERROR: Invalid reg num: " << n << std::endl;
-		return;
+		throw std::runtime_error("ERROR: Invalid reg number in setReg: " + std::to_string(n));
 	}
 
 	if(!userBank){
@@ -398,20 +396,19 @@ void ARM7TDMI::printStatus(){
 
 	// TODO: take thumb mode into account
 	// PC is reduced by 8 to account for pipeline parallelism
-	//std::cout << "pc:   " << Utils::toHexString(getPC(), 8) << std::endl;
 	std::cout << "cpsr: " << Utils::toHexString(cpsr.getValue(), 8) << "\t" << "[" << n << z << c << v << i << f << t << "]" << "\t" << insMode << "\t";
 
-	std::cout << cpsr.getModeString() << std::endl;
+	std::cout << cpsr.getModeString() << '\n';
 	
-	std::cout << "spsr: " << Utils::toHexString(getSPSRval(), 8) << std::endl;
+	std::cout << "spsr: " << Utils::toHexString(getSPSRval(), 8) << '\n';
 
 	for(size_t it = 0; it < REG_CNT; it++){
 		std::cout << std::setw(3);
 		std::cout << "r" + std::to_string(it) << ": " << Utils::toHexString(getReg(it), 8) << " ";
 		if(it !=0 && (it+1) % 4 == 0)
-			std::cout << std::endl;
+			std::cout << '\n';
 	}
-	std::cout << std::endl;
+	std::cout << '\n';
 }
 
 void ARM7TDMI::printRegisterValues(){
@@ -470,16 +467,16 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 			std::string opString;
 			if(printDebug){
 				opString = opExecute->toString();
-				//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << std::endl;
+				//std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << '\n';
 			}
 			insExecuteSet = opExecute->execute();
 			cpuCycles = opExecute->cyclesUsed();
 			if(printDebug){
 				//printStatus();
-				//std::cout << "<<<" << std::endl;
+				//std::cout << "<<<" << '\n';
 				printRegisterValues();
 				std::cout << "cpsr: " << std::uppercase << std::setfill('0') << std::setw(8) << std::hex << cpsr.getValue();
-				std::cout << " | " << opString << std::endl;
+				std::cout << " | " << opString << '\n';
 			}
 
 			// flush pipeline if needed

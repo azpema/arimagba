@@ -43,7 +43,7 @@ void AddOffsetSP::doExecute(){
     DataProcessing *opArm = static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));
     opArm->init(1, operation, 0, 13, 13, imm.getRawVal());
     opArm->doExecute();
-    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << '\n';
 }
 
 uint32_t AddOffsetSP::cyclesUsed() const {

@@ -32,7 +32,7 @@ std::string HalfwordDataTransferRegister::toString(){
     }else if(p == 0){
         address += "]," + getUFlagMnemonic() + OpCode::getRegMnemonic(rm);
     }else{
-        std::cerr << "ERROR: Invalid p flag value HalfwordDataTransferRegister" << std::endl;
+        throw std::runtime_error("ERROR: Invalid p flag value HalfwordDataTransferRegister");
     }
 
     return base + address;
@@ -40,7 +40,7 @@ std::string HalfwordDataTransferRegister::toString(){
 
 // Depends on load or store
 uint32_t HalfwordDataTransferRegister::cyclesUsed() const {
-    //std::cerr << "TODO: HalfwordDataTransferRegister::cyclesUsed" << std::endl;
+    //std::cerr << "TODO: HalfwordDataTransferRegister::cyclesUsed" << '\n';
     return 1;
 }
 

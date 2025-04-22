@@ -66,8 +66,8 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
 
         uint32_t bgRelativeTileX = getBgRelativeTileX(BG_NUM, (bgPixelX) / PPU::TILE_WIDTH_HEIGHT);
         uint32_t bgRelativeTileY = getBgRelativeTileY(BG_NUM, (bgPixelY) / PPU::TILE_WIDTH_HEIGHT);
-        //std::cout << "bgRelativeTileX" << Utils::toHexString(bgRelativeTileX) << std::endl;
-        //std::cout << "bgRelativeTileY" << Utils::toHexString(bgRelativeTileY) << std::endl;
+        //std::cout << "bgRelativeTileX" << Utils::toHexString(bgRelativeTileX) << '\n';
+        //std::cout << "bgRelativeTileY" << Utils::toHexString(bgRelativeTileY) << '\n';
 
         uint32_t seIndex = ((bgRelativeTileY % 32)*32 + (bgRelativeTileX % 32)) * 2;
         uint32_t sbcOffset = getSbcOffset(BG_NUM, bgRelativeTileX*8, bgRelativeTileY*8);
@@ -80,8 +80,8 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
 
         //Search the given tile with the tile Index:
         // 0x20: each tile takes 8*8*4bpp = 32 = 0x20 bytes
-        //std::cout << "seOffset" << Utils::toHexString(seOffset) << std::endl;
-        //std::cout << "tileSetRaw" << Utils::toHexString(tileSetStartOffset + screenEntry.getTileIndex() * 0x20) << std::endl;
+        //std::cout << "seOffset" << Utils::toHexString(seOffset) << '\n;
+        //std::cout << "tileSetRaw" << Utils::toHexString(tileSetStartOffset + screenEntry.getTileIndex() * 0x20) << '\n';
         uint16_t tileIndex = screenEntry.getTileIndex();
         uint32_t debug1 = tileSetStartOffset + tileIndex * tileSize;
 

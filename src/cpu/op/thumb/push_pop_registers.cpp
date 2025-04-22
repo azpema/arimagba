@@ -63,27 +63,27 @@ void PushPopRegisters::doExecute(){
         BlockDataTransfer *opArm = static_cast<BlockDataTransfer*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BLOCK_DATA_TRANSFER));
         opArm->init(1, 0, 0, 1, 0, 13, rList);
         opArm->doExecute();
-        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << '\n';
     }else if (l == 1 && r == 0){
         //BlockDataTransfer opArm = BlockDataTransfer(0, 1, 0, 1, 1, 13, rList, cpu);
         BlockDataTransfer *opArm = static_cast<BlockDataTransfer*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BLOCK_DATA_TRANSFER));
         opArm->init(0, 1, 0, 1, 1, 13, rList);
         opArm->doExecute();
-        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << '\n';
     }else if (l == 0 && r == 1){
         uint16_t rListWithLr = rList | (0x1 << 14);
         //BlockDataTransfer opArm = BlockDataTransfer(1, 0, 0, 1, 0, 13, rListWithLr, cpu);
         BlockDataTransfer *opArm = static_cast<BlockDataTransfer*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BLOCK_DATA_TRANSFER));
         opArm->init(1, 0, 0, 1, 0, 13, rListWithLr);
         opArm->doExecute();
-        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << '\n';
     }else if (l == 1 && r == 1){
         uint16_t rListWithPc = rList | (0x1 << 15);
         //BlockDataTransfer opArm = BlockDataTransfer(0, 1, 0, 1, 1, 13, rListWithPc, cpu);
         BlockDataTransfer *opArm = static_cast<BlockDataTransfer*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BLOCK_DATA_TRANSFER));
         opArm->init(0, 1, 0, 1, 1, 13, rListWithPc);
         opArm->doExecute();
-        //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+        //std::cout << "<< ARM >> " << opArm.toString() << '\n';
     }else{
         throw std::runtime_error("Error: Unimplemented instruction: PushPopRegisters");
     }

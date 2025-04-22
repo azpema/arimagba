@@ -40,7 +40,7 @@ void SPLoadStore::doExecute(){
     uint8_t b = 0;
     uint8_t w = 0;
     SingleDataTransfer opArm = SingleDataTransfer(i, p, u, b, w, l, 13, rd, offsetVal, cpu);
-    //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+    //std::cout << "<< ARM >> " << opArm.toString() << '\n';
     opArm.doExecute();  
 
 }

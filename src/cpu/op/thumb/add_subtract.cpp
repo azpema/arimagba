@@ -38,7 +38,7 @@ std::string AddSubtract::toString(){
 
         }
     }else{
-        std::cerr << "ERROR: Thumb Add/subtract invalid opcode field" << std::endl;
+        std::cerr << "ERROR: Thumb Add/subtract invalid opcode field" << '\n';
     }
 
     return mnemonic;
@@ -55,24 +55,24 @@ void AddSubtract::doExecute(){
             RotateImm imm = RotateImm(rnOffset3, RotateImm::ConstructorType::FINAL_IMM_VAL);
             DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_ADD_VAL, 1, rs, rd, imm.getRawVal(), cpu);
             opArm.doExecute();
-            //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+            //std::cout << "<< ARM >> " << opArm.toString() << '\n';
         }else{
             ShiftRm shiftRm = ShiftRm(rnOffset3, true, 0, 0);
             DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_ADD_VAL, 1, rs, rd, shiftRm.getRawVal(), cpu);
             opArm.doExecute();
-            //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+            //std::cout << "<< ARM >> " << opArm.toString() << '\n';
         }
     }else if(opField == 1){
         if(i == 1){
             RotateImm imm = RotateImm(rnOffset3, RotateImm::ConstructorType::FINAL_IMM_VAL);
             DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, imm.getRawVal(), cpu);
             opArm.doExecute();
-            //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+            //std::cout << "<< ARM >> " << opArm.toString() << '\n';
         }else{
             ShiftRm shiftRm = ShiftRm(rnOffset3, true, 0, 0);
             DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, shiftRm.getRawVal(), cpu);
             opArm.doExecute();
-            //std::cout << "<< ARM >> " << opArm.toString() << std::endl;
+            //std::cout << "<< ARM >> " << opArm.toString() << '\n';
         }
     }else{
         throw std::runtime_error("ERROR: Invalid AddSubtract::doExecute opField value");

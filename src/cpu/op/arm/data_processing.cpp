@@ -172,7 +172,7 @@ std::string DataProcessing::getOperand2Mnemonic(){
 
 //   ALU, 1S, +1S+1N if R15 loaded, +1I if SHIFT(Rs)
 uint32_t DataProcessing::cyclesUsed() const {
-    //std::cerr << "TODO: DataProcessing::cyclesUsed" << std::endl;
+    //std::cerr << "TODO: DataProcessing::cyclesUsed" << '\n';
     return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE;
 }
 
@@ -406,7 +406,7 @@ void DataProcessing::doExecute(){
         }
         break;
     default:
-        std::cerr << "ERROR: Invalid Opcode in DataProcessing::doExecute" << std::endl;
+        throw std::runtime_error("ERROR: Invalid Opcode in DataProcessing::doExecute");
         break;
     }
 

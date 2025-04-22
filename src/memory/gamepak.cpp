@@ -58,21 +58,21 @@ int GamePak::calcComplementCheck() {
 }
 
 void GamePak::printHeader() {
-    std::cout << "Entry point: 0x" << std::hex << this->entryPoint << std::dec << std::endl;
-    //std::cout << "Nintendo Logo: " << this->nintendoLogo << std::endl;
-    std::cout << "Game Title: " << gameTitle << std::endl;
-    std::cout << "Game Code: " << gameCode << std::endl;
-    std::cout << "Maker Code: " << makerCode << std::endl;
-    std::cout << "Fixed Value: 0x" << std::hex << static_cast<int>(fixedValue) << std::dec << std::endl;
-    std::cout << "Main Unit Code: 0x" << std::hex << static_cast<int>(mainUnitCode) << std::dec << std::endl;
-    std::cout << "Device Type: 0x" << std::hex << static_cast<int>(deviceType) << std::dec << std::endl;
-    std::cout << "Reserved Area 1: 0x" << static_cast<int>(reservedArea1[0]) << std::dec << std::endl;
-    std::cout << "Software Version: 0x" << std::hex << static_cast<int>(softwareVersion) << std::dec << std::endl;
+    std::cout << "Entry point: 0x" << std::hex << this->entryPoint << std::dec << '\n';
+    //std::cout << "Nintendo Logo: " << this->nintendoLogo << '\n';
+    std::cout << "Game Title: " << gameTitle << '\n';
+    std::cout << "Game Code: " << gameCode << '\n';
+    std::cout << "Maker Code: " << makerCode << '\n';
+    std::cout << "Fixed Value: 0x" << std::hex << static_cast<int>(fixedValue) << std::dec << '\n';
+    std::cout << "Main Unit Code: 0x" << std::hex << static_cast<int>(mainUnitCode) << std::dec << '\n';
+    std::cout << "Device Type: 0x" << std::hex << static_cast<int>(deviceType) << std::dec << '\n';
+    std::cout << "Reserved Area 1: 0x" << static_cast<int>(reservedArea1[0]) << std::dec << '\n';
+    std::cout << "Software Version: 0x" << std::hex << static_cast<int>(softwareVersion) << std::dec << '\n';
     std::cout << "Complement Check: 0x" << std::hex << static_cast<int>(complementCheck) << std::dec << " ";
     int chk = calcComplementCheck();
     if (chk == complementCheck)
-        std::cout << "(CORRECT)" << std::endl;
+        std::cout << "(CORRECT)" << '\n';
     else
-        std::cout << "(INCORRECT)" << std::endl;
-    std::cout << "Reserved Area 2: 0x" << std::hex << static_cast<int>(this->reservedArea2[0]) << std::dec << std::endl;
+        std::cout << "(INCORRECT)" << '\n';
+    std::cout << "Reserved Area 2: 0x" << std::hex << static_cast<int>(this->reservedArea2[0]) << std::dec << '\n';
 }
