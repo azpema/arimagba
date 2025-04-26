@@ -209,15 +209,11 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
 
 void Renderer::renderScanlineMode0(){
     static bool bgxEnabled[4] = {true, true, true, true};
-    static bool removeBg0 = false;
 
     int32_t toPaint[PPU::BG_NUM][PPU::SCREEN_WIDTH * 1];
     // Get enabled backgrounds' data
     auto bgBlendOrder = ppu.getBgBlendOrder();
 
-    if(removeBg0){
-        bgBlendOrder.erase(std::remove(bgBlendOrder.begin(), bgBlendOrder.end(), 0), bgBlendOrder.end());
-    }
     for(const auto &bgNum : bgBlendOrder){
         if(bgxEnabled[bgNum]){
             getBackgroundScanline(bgNum, toPaint[bgNum]);
