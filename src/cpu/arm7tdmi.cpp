@@ -5,8 +5,7 @@
 #include "op/thumb_pool.hpp"
 #include <iostream>
 
-ARM7TDMI::ARM7TDMI(MemoryManager *memManager) : armPool(*this), thumbPool(*this){
-	mem = memManager;
+ARM7TDMI::ARM7TDMI(MemoryManager *memoryManager) : armPool(*this), thumbPool(*this), mem(memoryManager){
 	//cpsr = PSR();
 	for(size_t i = 0; i < REG_CNT; i++){
 		reg[i] = 0;
