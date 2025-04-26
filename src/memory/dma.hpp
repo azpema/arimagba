@@ -129,9 +129,9 @@ void DMA<N>::runCycle(const bool vblankNow, const bool hblankNow) const {
             }
         }
 
-        uint32_t bytes = transferSizeBytes * numTransfers;
-        std::cout << "DMA" << std::to_string(dmaNum) << " bytes " << bytes << '\n';
-        std::cout << "src: " << Utils::toHexString(readAddr) << " dst: " << Utils::toHexString(writeAddr) << " " << Utils::toHexString(*DMAxCNT_H) << ":" << Utils::toHexString(*DMAxCNT_L) << "\n"; 
+        //uint32_t bytes = transferSizeBytes * numTransfers;
+        //std::cout << "DMA" << std::to_string(dmaNum) << " bytes " << bytes << '\n';
+        //std::cout << "src: " << Utils::toHexString(readAddr) << " dst: " << Utils::toHexString(writeAddr) << " " << Utils::toHexString(*DMAxCNT_H) << ":" << Utils::toHexString(*DMAxCNT_L) << "\n"; 
 
         bool doTransferNow = false;
         switch(timingMode){
