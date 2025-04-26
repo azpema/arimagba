@@ -17,7 +17,7 @@ uint32_t Imm::getMnemonicVal(){
     return immVal;
 }
 
-uint32_t Imm::getOperandVal(ARM7TDMI &cpu){
+uint32_t Imm::getOperandVal(ARM7TDMI &/*cpu*/){
     return getMnemonicVal();
 }
 

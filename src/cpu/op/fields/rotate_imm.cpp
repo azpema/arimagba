@@ -67,7 +67,7 @@ uint32_t RotateImm::getMnemonicVal(){
     return operandVal;
 }
 
-uint32_t RotateImm::getOperandVal(ARM7TDMI &cpu){
+uint32_t RotateImm::getOperandVal(ARM7TDMI &/*cpu*/){
     return getMnemonicVal();
 }
 
