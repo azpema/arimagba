@@ -112,8 +112,8 @@ std::string SingleDataTransfer::toString(){
     std::string writeBack = getWFlagMnemonic();
     std::string address = "";
 
-    Imm* imm;
-    ShiftRm* shiftRm;
+    Imm* imm = nullptr;
+    ShiftRm* shiftRm = nullptr;
 
     if(I == 0){
         imm = static_cast<Imm*>(offsetField);
