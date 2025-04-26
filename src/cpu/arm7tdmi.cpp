@@ -510,9 +510,9 @@ uint32_t ARM7TDMI::executeNextInstruction(){
 
 		// Force extra read for OpenBus values
 		if(cpsr.isThumbMode()){
-			uint32_t ins = mem->readHalfWord(fetchPC + 4, true);
+			mem->readHalfWord(fetchPC + 4, true);
 		}else{
-			uint32_t ins = mem->readWord(fetchPC + 4, true);
+			mem->readWord(fetchPC + 4, true);
 		}
 
 		insFetchSet = true;
