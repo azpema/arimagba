@@ -142,36 +142,23 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t *toPaint){
 }
 
 bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
-    uint64_t rawObjAttributes = *reinterpret_cast<uint64_t *>(ppu.getOAM() + objNum*0x8);
-    ObjAttributes obj(rawObjAttributes);
+    auto obj = ppu.getObj(objNum);
 
-    switch(obj.getObjMode()){
-        case ObjMode::DISABLED:
-            return false;
-        case ObjMode::NORMAL:
-            break;
-        case ObjMode::AFFINE:
-            throw std::runtime_error("Unimplemented OBJ Mode AFFINE");
-            break;
-        case ObjMode::AFFINE_DOUBLE:
-            throw std::runtime_error("Unimplemented OBJ Mode AFFINE_DOUBLE");
-            break;
-        default:
-            throw std::runtime_error("Unrecognized OBJ Mode");
-            break;
+    if(!obj.has_value()){
+        return false;
     }
 
-    auto height = obj.getHeight();
-    auto width = obj.getWidth();
+    auto height = obj->getHeight();
+    auto width = obj->getWidth();
 
-    auto spriteX = obj.getXCoord();
-    auto spriteY = obj.getYCoord();
+    auto spriteX = obj->getXCoord();
+    auto spriteY = obj->getYCoord();
 
     uint8_t screenPixelY = ppu.getVcount();
-    bool colorMode256 = obj.getColorMode();
+    bool colorMode256 = obj->getColorMode();
 
     const uint16_t* paletteRAM = reinterpret_cast<const uint16_t*>(
-        ppu.getObjPaletteRAM() + (colorMode256 ? 0 : obj.getPaletteBank() * PPU::PALETTE_BANK_SIZE)
+        ppu.getObjPaletteRAM() + (colorMode256 ? 0 : obj->getPaletteBank() * PPU::PALETTE_BANK_SIZE)
     );
 
     // Sprite should be drawn in this scanline
@@ -185,15 +172,15 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t *toPaint){
             auto objRelativeX = screenPixelX - spriteX;
             auto objRelativeY = screenPixelY - spriteY;
 
-            if(obj.getHorizontalFlip()){
-                objRelativeX = obj.getWidth() - 1 - objRelativeX;
+            if(obj->getHorizontalFlip()){
+                objRelativeX = obj->getWidth() - 1 - objRelativeX;
             }
 
-            auto pixelOffset = obj.getPaletteIndex(objRelativeX, objRelativeY, ppu.getObjMapping1D());
+            auto pixelOffset = obj->getPaletteIndex(objRelativeX, objRelativeY, ppu.getObjMapping1D());
             auto tile = *(ppu.getOVRAM() + pixelOffset);
 
             bool reverseTile = false;
-            if(obj.getHorizontalFlip()){
+            if(obj->getHorizontalFlip()){
                 reverseTile = !reverseTile;
             }
             if(spriteX % 2 != 0){
@@ -259,16 +246,15 @@ void Renderer::renderScanlineMode0(){
         memset(toPaintEnd, backdropPixel, PPU::SCREEN_WIDTH * sizeof(uint16_t));
     }
 
+    // TODO interleave backgrounds and sprites
     // For now just draw the sprites over the backgrounds...
     if(ppu.getObjEnabled()){
         int32_t toPaintSprites[PPU::SCREEN_WIDTH];
         std::fill(std::begin(toPaintSprites), std::end(toPaintSprites), TRANSPARENT_PIXEL);
 
-        for(size_t i=0; i<PPU::MAX_SPRITE_NUM; i++){
-            bool ret = getObjScanline(i, toPaintSprites);
-            if(!ret){
-                break;
-            }
+        auto objList = ppu.getObjList();
+        for(const auto &obj : objList){
+            obj.getScanline(ppu, toPaintSprites);
         }
         
         for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){

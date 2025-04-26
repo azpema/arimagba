@@ -3,9 +3,14 @@
 #include "../../utils/utils.hpp"
 
 ObjAttributes::ObjAttributes(uint64_t rawVal) : 
+    rawVal(rawVal),
     objAttr0(Utils::getRegBits(rawVal & 0xFFFFFFFF, LO_ATTRIBUTES_0_MASK, LO_ATTRIBUTES_0_SHIFT)),
     objAttr1(Utils::getRegBits(rawVal & 0xFFFFFFFF, LO_ATTRIBUTES_1_MASK, LO_ATTRIBUTES_1_SHIFT)),
     objAttr2(Utils::getRegBits(rawVal >> 32, HI_ATTRIBUTES_2_MASK, HI_ATTRIBUTES_2_SHIFT)) {}
+
+uint64_t ObjAttributes::getRawVal() const{
+    return rawVal;
+}
 
 uint8_t ObjAttributes::getYCoord() const{
     return objAttr0.getYCoord();
@@ -92,4 +97,65 @@ uint32_t ObjAttributes::getPaletteIndex(const uint8_t coordX, const uint8_t coor
     }
     
     return pixelOffset;
+}
+
+bool ObjAttributes::getScanline(const PPU &ppu, int32_t *toPaint) const {
+    auto height = getHeight();
+    auto width = getWidth();
+
+    auto spriteX = getXCoord();
+    auto spriteY = getYCoord();
+
+    uint8_t screenPixelY = ppu.getVcount();
+    bool colorMode256 = getColorMode();
+
+    const uint16_t* paletteRAM = reinterpret_cast<const uint16_t*>(
+        ppu.getObjPaletteRAM() + (colorMode256 ? 0 : getPaletteBank() * PPU::PALETTE_BANK_SIZE)
+    );
+
+    // Sprite should be drawn in this scanline
+    for(size_t i=0; i<PPU::SCREEN_WIDTH; i++){
+        uint8_t screenPixelX = i;
+        if(spriteY <= screenPixelY && screenPixelY < spriteY + height && 
+           spriteX <= screenPixelX && screenPixelX < spriteX + width ){
+
+            // Determine tile
+            // Check REG_DISPCNT mapping: 2d or 1d
+            auto objRelativeX = screenPixelX - spriteX;
+            auto objRelativeY = screenPixelY - spriteY;
+
+            if(getHorizontalFlip()){
+                objRelativeX = width - 1 - objRelativeX;
+            }
+
+            auto pixelOffset = getPaletteIndex(objRelativeX, objRelativeY, ppu.getObjMapping1D());
+            auto tile = *(ppu.getOVRAM() + pixelOffset);
+
+            bool reverseTile = false;
+            if(getHorizontalFlip()){
+                reverseTile = !reverseTile;
+            }
+            if(spriteX % 2 != 0){
+                reverseTile = !reverseTile;
+            }
+            if(i % 2 != 0){
+                reverseTile = !reverseTile;
+            }
+
+            uint8_t paletteIndex;
+            if(colorMode256){
+                paletteIndex = tile;
+            }else{
+                paletteIndex = reverseTile ? (tile >> 4) : (tile & 0b1111);
+            }
+            
+            if(paletteIndex != 0){
+                uint16_t pixel = paletteRAM[paletteIndex];
+                
+                toPaint[i] = pixel;
+            }
+        }
+    }
+    
+    return true;
 }

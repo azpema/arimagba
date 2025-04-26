@@ -6,12 +6,16 @@
 #include "obj_attribute_1.hpp"
 #include "obj_attribute_2.hpp"
 
+class PPU;
+
 enum class ObjMode {NORMAL = 0b00, AFFINE = 0b01, DISABLED = 0b10, AFFINE_DOUBLE = 0b11};
 
 class ObjAttributes {
     public:
         ObjAttributes(uint64_t rawVal);
         ~ObjAttributes() = default;
+
+        uint64_t getRawVal() const;
 
         uint8_t getYCoord() const;
         ObjMode getObjMode() const;
@@ -35,10 +39,11 @@ class ObjAttributes {
         uint8_t getHeight() const;
 
         uint32_t getPaletteIndex(const uint8_t coordX, const uint8_t coordY, const bool mapping1D) const;
-
+        bool getScanline(const PPU &ppu, int32_t *toPaint) const;
         
         
     private:
+        uint64_t rawVal;
         ObjAttribute0 objAttr0;
         ObjAttribute1 objAttr1;
         ObjAttribute2 objAttr2;

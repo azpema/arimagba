@@ -4,9 +4,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "../cpu/arm7tdmi.hpp"
 #include "../memory/memory_manager.hpp"
+#include "obj/obj_attributes.hpp"
 #include "renderer.hpp"
 
 class Renderer;
@@ -40,6 +42,9 @@ class PPU {
 
         bool getObjMapping1D() const;
         bool getObjEnabled() const;
+        std::optional<ObjAttributes> getObj(int objNum) const;
+        std::vector<ObjAttributes> getObjList() const;
+        const static uint32_t OBJ_ATTRIBUTES_SIZE = 0x8;
 
         uint32_t getVcount() const;
         uint32_t getBgOffsetH(const uint8_t bg) const;

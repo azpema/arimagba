@@ -176,6 +176,53 @@ bool PPU::getObjEnabled() const {
     return Utils::getRegBits(*DISPCNT, REG_DISPCNT::DCNT_OBJ_MASK, REG_DISPCNT::DCNT_OBJ_SHIFT);
 }
 
+std::optional<ObjAttributes> PPU::getObj(int objNum) const{
+    uint64_t rawObjAttributes = *reinterpret_cast<uint64_t *>(getOAM() + objNum * OBJ_ATTRIBUTES_SIZE);
+    ObjAttributes obj(rawObjAttributes);
+
+    switch(obj.getObjMode()){
+        case ObjMode::DISABLED:
+            return std::nullopt;
+        case ObjMode::NORMAL:
+            break;
+        case ObjMode::AFFINE:
+            throw std::runtime_error("Unimplemented OBJ Mode AFFINE");
+            break;
+        case ObjMode::AFFINE_DOUBLE:
+            throw std::runtime_error("Unimplemented OBJ Mode AFFINE_DOUBLE");
+            break;
+        default:
+            throw std::runtime_error("Unrecognized OBJ Mode");
+            break;
+    }
+
+    return obj;
+}
+
+std::vector<ObjAttributes> PPU::getObjList() const{
+    std::vector<ObjAttributes> vec;
+    vec.reserve(PPU::MAX_SPRITE_NUM);
+
+    for(size_t i=0; i<PPU::MAX_SPRITE_NUM; i++){
+        auto obj = getObj(i);
+        if(!obj.has_value()){
+            break;
+        }
+
+        vec.push_back(std::move(*obj));
+    }
+
+    std::sort(vec.begin(), vec.end(), [](const ObjAttributes& a, const ObjAttributes& b) {
+        if (a.getPriority() != b.getPriority()) {
+            return a.getPriority() < b.getPriority();
+        } else {
+            return a.getRawVal() > b.getRawVal(); 
+        }
+    });
+
+    return vec;
+}
+
 uint32_t PPU::getPageFlipOffset() const{
     return getDCNT_PAGE() ? PAGE_FLIP_SECOND_OFFSET : 0;
 }
