@@ -18,6 +18,7 @@ void MultipleLoadStore::init(uint32_t op){
     rList = Utils::getRegBits(op, RLIST_MASK, RLIST_SHIFT);
 
     registerListVec = {};
+    registerListVec.reserve(ARM7TDMI::REG_CNT);
     for(size_t i = 0; i < 8; i++){
         if(((rList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);    

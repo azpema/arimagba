@@ -33,7 +33,7 @@ void BlockDataTransfer::init(uint32_t op){
     registerList = Utils::getRegBits(op, REGISTER_LIST_MASK, REGISTER_LIST_SHIFT);
 
     registerListVec = {};
-    registerListVec.reserve(16);
+    registerListVec.reserve(ARM7TDMI::REG_CNT);
     for(size_t i = 0; i < 16; i++){
         if(((registerList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);    
@@ -109,6 +109,7 @@ void BlockDataTransfer::doExecute(){
     }
 
     std::vector<uint32_t> regVals;
+    regVals.reserve(ARM7TDMI::REG_CNT);
     bool regListHasPc = false;
     if(std::find(registerListVec.begin(), registerListVec.end(), 15) != registerListVec.end()){
         regListHasPc = true;

@@ -61,7 +61,7 @@ class ARM7TDMI {
 		const static uint32_t CPU_CYCLES_PER_S_CYCLE = 1;
 		const static uint32_t CPU_CYCLES_PER_N_CYCLE = 1;
 		const static uint32_t CPU_CYCLES_PER_I_CYCLE = 1;
-
+		constexpr static int REG_CNT = 16;
 	private:
 		void generateArmDecodingLookup();
 		void generateThumbDecodingLookup();
@@ -103,7 +103,7 @@ class ARM7TDMI {
 
 		By convention, r13 is used as the Stack Pointer (SP).
 		*/
-		constexpr static int REG_CNT = 16;
+		
 		constexpr static int REG_SP = 13;
 		constexpr static int REG_LR = 14;
 		constexpr static int REG_PC = 15;

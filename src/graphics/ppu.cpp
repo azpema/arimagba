@@ -270,9 +270,10 @@ uint8_t PPU::getBgPriority(const uint8_t bgNum) const{
 // Will only return enabled backgrounds!
 std::vector<uint8_t> PPU::getBgsWithPriorityX(const uint8_t prio) const{
     std::vector<uint8_t> res = {};
+    res.reserve(PPU::BG_NUM);
     for(size_t bgNum=0; bgNum<BG_NUM; bgNum++){
         if(getBgPriority(bgNum) == prio && getBgEnabled(bgNum)){
-            res.emplace_back(bgNum);
+            res.push_back(bgNum);
         }
     }
 
@@ -282,6 +283,7 @@ std::vector<uint8_t> PPU::getBgsWithPriorityX(const uint8_t prio) const{
 // Descending order (from highest to lowest priority).
 std::vector<uint8_t> PPU::getBgBlendOrder() const {
     std::vector<uint8_t> res;
+    res.reserve(PPU::BG_NUM);
     int index = 0;
     for(size_t bgNum=0; bgNum<BG_NUM; bgNum++){
         auto bgs = getBgsWithPriorityX(bgNum);
