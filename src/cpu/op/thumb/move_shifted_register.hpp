@@ -1,35 +1,35 @@
-#ifndef _THUMB_OPCODE_MOVE_SHIFTED_REGISTER_ 
-#define _THUMB_OPCODE_MOVE_SHIFTED_REGISTER_ 
+#ifndef _THUMB_OPCODE_MOVE_SHIFTED_REGISTER_
+#define _THUMB_OPCODE_MOVE_SHIFTED_REGISTER_
 
 #include "thumb_opcode.hpp"
 
 class MoveShiftedRegister : public ThumbOpCode {
-	public:
-		MoveShiftedRegister(uint16_t op, ARM7TDMI &cpu);
-        MoveShiftedRegister(ARM7TDMI &cpu);
-        void init(uint32_t op) override;
-        std::string toString() override;
-        void doExecute() override;
-        void doDecode() override;
-        uint32_t cyclesUsed() const override;
+  public:
+    MoveShiftedRegister(uint16_t op, ARM7TDMI& cpu);
+    MoveShiftedRegister(ARM7TDMI& cpu);
+    void init(uint32_t op) override;
+    std::string toString() override;
+    void doExecute() override;
+    void doDecode() override;
+    uint32_t cyclesUsed() const override;
 
-    private:
-        uint16_t opField, offset5, rs, rd;
+  private:
+    uint16_t opField, offset5, rs, rd;
 
-        const static uint16_t OP_MASK = 0b0001100000000000; 
-        const static uint16_t OP_SHIFT = 11;
+    const static uint16_t OP_MASK = 0b0001100000000000;
+    const static uint16_t OP_SHIFT = 11;
 
-        const static uint16_t OFFSET5_MASK = 0b0000011111000000; 
-        const static uint16_t OFFSET5_SHIFT = 6;
+    const static uint16_t OFFSET5_MASK = 0b0000011111000000;
+    const static uint16_t OFFSET5_SHIFT = 6;
 
-        const static uint16_t RS_MASK = 0b0000000000111000; 
-        const static uint16_t RS_SHIFT = 3;
+    const static uint16_t RS_MASK = 0b0000000000111000;
+    const static uint16_t RS_SHIFT = 3;
 
-        const static uint16_t RD_MASK = 0b0000000000000111; 
-        const static uint16_t RD_SHIFT = 0; 
+    const static uint16_t RD_MASK = 0b0000000000000111;
+    const static uint16_t RD_SHIFT = 0;
 
-        const static std::string op2Mnemonic[3];
-        std::string getOpMnemonic();
+    const static std::string op2Mnemonic[3];
+    std::string getOpMnemonic();
 };
 
 #endif

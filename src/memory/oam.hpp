@@ -1,12 +1,12 @@
-#ifndef _OAM_ 
-#define _OAM_ 
+#ifndef _OAM_
+#define _OAM_
 
-#include <iostream>
 #include "generic_memory.hpp"
+#include <iostream>
 
-class OAM : public GenericMemory<OAM_SIZE>{
-    public:
-        OAM();        
+class OAM : public GenericMemory<OAM_SIZE> {
+  public:
+    OAM();
 };
 
 #endif

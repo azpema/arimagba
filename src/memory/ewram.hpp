@@ -1,12 +1,12 @@
-#ifndef _EWRAM_ 
-#define _EWRAM_ 
+#ifndef _EWRAM_
+#define _EWRAM_
 
-#include <iostream>
 #include "generic_memory.hpp"
+#include <iostream>
 
-class EWRAM : public GenericMemory<EWRAM_SIZE>{
-    public:
-        EWRAM();  
+class EWRAM : public GenericMemory<EWRAM_SIZE> {
+  public:
+    EWRAM();
 };
 
 #endif

@@ -1,34 +1,37 @@
 #include "single_data_transfer.hpp"
-#include "../fields/shift_rm.hpp"
-#include "../fields/imm.hpp"
 #include "../../arm7tdmi.hpp"
+#include "../fields/imm.hpp"
+#include "../fields/shift_rm.hpp"
 
 const std::string SingleDataTransfer::UFlag2Mnemonic[2] = {"-", ""};
 const std::string SingleDataTransfer::BFlag2Mnemonic[2] = {"", "b"};
 const std::string SingleDataTransfer::WFlag2Mnemonic[2] = {"", "!"};
 const std::string SingleDataTransfer::LFlag2Mnemonic[2] = {"str", "ldr"};
 
-SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu),
-                                                                    shiftRmOp2(0),
-                                                                    immOp2(0)
-{
+SingleDataTransfer::SingleDataTransfer(uint32_t op, ARM7TDMI& cpu) :
+    ArmOpcode::ArmOpcode(op, cpu), shiftRmOp2(0), immOp2(0) {
     init(op);
 }
 
-SingleDataTransfer::SingleDataTransfer(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu),
-                                                       shiftRmOp2(0),
-                                                       immOp2(0)
-{}
+SingleDataTransfer::SingleDataTransfer(ARM7TDMI& cpu) : ArmOpcode::ArmOpcode(cpu), shiftRmOp2(0), immOp2(0) {}
 
-SingleDataTransfer::SingleDataTransfer(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, 
-    uint8_t rn, uint8_t rd, uint16_t offset, ARM7TDMI &cpu, bool forcePcBit1To0) : ArmOpcode::ArmOpcode(cpu),
-                                                                                   shiftRmOp2(0),
-                                                                                   immOp2(0)
-{
-        init(i, p, u, b, w, l, rn, rd, offset, forcePcBit1To0);
+SingleDataTransfer::SingleDataTransfer(uint8_t i,
+                                       uint8_t p,
+                                       uint8_t u,
+                                       uint8_t b,
+                                       uint8_t w,
+                                       uint8_t l,
+                                       uint8_t rn,
+                                       uint8_t rd,
+                                       uint16_t offset,
+                                       ARM7TDMI& cpu,
+                                       bool forcePcBit1To0) :
+    ArmOpcode::ArmOpcode(cpu),
+    shiftRmOp2(0), immOp2(0) {
+    init(i, p, u, b, w, l, rn, rd, offset, forcePcBit1To0);
 }
 
-void SingleDataTransfer::init(uint32_t op){
+void SingleDataTransfer::init(uint32_t op) {
     ArmOpcode::init(op);
     I = Utils::getRegBits(op, I_MASK, I_SHIFT);
     P = Utils::getRegBits(op, P_MASK, P_SHIFT);
@@ -38,13 +41,13 @@ void SingleDataTransfer::init(uint32_t op){
     L = Utils::getRegBits(op, L_MASK, L_SHIFT);
     Rn = Utils::getRegBits(op, RN_MASK, RN_SHIFT);
     Rd = Utils::getRegBits(op, RD_MASK, RD_SHIFT);
-    
+
     uint16_t off = Utils::getRegBits(op, OFFSET_MASK, OFFSET_SHIFT);
 
-    if(I == 0){
+    if (I == 0) {
         immOp2.init(off);
         offsetField = &immOp2;
-    }else if(I == 1){
+    } else if (I == 1) {
         shiftRmOp2.init(off);
         offsetField = &shiftRmOp2;
     }
@@ -52,7 +55,16 @@ void SingleDataTransfer::init(uint32_t op){
     forcePcBit1To0 = false;
 }
 
-void SingleDataTransfer::init(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_t w, uint8_t l, uint8_t rn, uint8_t rd, uint16_t offset, bool forcePcBit1To0){
+void SingleDataTransfer::init(uint8_t i,
+                              uint8_t p,
+                              uint8_t u,
+                              uint8_t b,
+                              uint8_t w,
+                              uint8_t l,
+                              uint8_t rn,
+                              uint8_t rd,
+                              uint16_t offset,
+                              bool forcePcBit1To0) {
     this->I = i;
     this->P = p;
     this->U = u;
@@ -63,11 +75,10 @@ void SingleDataTransfer::init(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_
     this->Rd = rd;
     this->forcePcBit1To0 = forcePcBit1To0;
 
-
-    if(I == 0){
+    if (I == 0) {
         immOp2.init(offset);
         offsetField = &immOp2;
-    }else if(I == 1){
+    } else if (I == 1) {
         shiftRmOp2.init(offset);
         offsetField = &shiftRmOp2;
     }
@@ -86,67 +97,57 @@ void SingleDataTransfer::init(uint8_t i, uint8_t p, uint8_t u, uint8_t b, uint8_
     setRawVal(raw);
 }
 
+SingleDataTransfer::~SingleDataTransfer() {}
 
-SingleDataTransfer::~SingleDataTransfer(){
-}
+std::string SingleDataTransfer::getUFlagMnemonic() { return UFlag2Mnemonic[U]; }
 
-std::string SingleDataTransfer::getUFlagMnemonic(){
-    return UFlag2Mnemonic[U];
-}
+std::string SingleDataTransfer::getBFlagMnemonic() { return BFlag2Mnemonic[B]; }
 
-std::string SingleDataTransfer::getBFlagMnemonic(){
-    return BFlag2Mnemonic[B];
-}
+std::string SingleDataTransfer::getWFlagMnemonic() { return WFlag2Mnemonic[W]; }
 
-std::string SingleDataTransfer::getWFlagMnemonic(){
-    return WFlag2Mnemonic[W];
-}
+std::string SingleDataTransfer::getLFlagMnemonic() { return LFlag2Mnemonic[L]; }
 
-std::string SingleDataTransfer::getLFlagMnemonic(){
-    return LFlag2Mnemonic[L];
-}
-
-std::string SingleDataTransfer::toString(){
-    std::string base = getLFlagMnemonic() + getBFlagMnemonic() + getCondFieldMnemonic() \
-            + " " + OpCode::getRegMnemonic(Rd) + ",";
+std::string SingleDataTransfer::toString() {
+    std::string base =
+        getLFlagMnemonic() + getBFlagMnemonic() + getCondFieldMnemonic() + " " + OpCode::getRegMnemonic(Rd) + ",";
     std::string writeBack = getWFlagMnemonic();
     std::string address = "";
 
     Imm* imm = nullptr;
     ShiftRm* shiftRm = nullptr;
 
-    if(I == 0){
+    if (I == 0) {
         imm = static_cast<Imm*>(offsetField);
-    }else if(I == 1){
+    } else if (I == 1) {
         shiftRm = static_cast<ShiftRm*>(offsetField);
-    }else{
+    } else {
         throw std::runtime_error("Error: invalid I value for SingleDataTransfer::toString");
     }
 
-
     // Preindexing; add offset before transfer
-    if(P == 1){
+    if (P == 1) {
         // Offset is an immediate value
-        if(I == 0){
-            address = "[" + OpCode::getRegMnemonic(Rn) + "," + getUFlagMnemonic() + Utils::toHexString(imm->getMnemonicVal()) + "]" + writeBack;
-        // Offset is a register
-        }else if(I == 1){
-            address += "[" + OpCode::getRegMnemonic(Rn) + "," + getUFlagMnemonic() + OpCode::getRegMnemonic(shiftRm->getRm()) + "," + \
-                       shiftRm->getShiftTypeMnemonic() + " #" + Utils::toHexString(shiftRm->getShiftAmount()) + "]" + writeBack;
-        }else{
+        if (I == 0) {
+            address = "[" + OpCode::getRegMnemonic(Rn) + "," + getUFlagMnemonic() +
+                      Utils::toHexString(imm->getMnemonicVal()) + "]" + writeBack;
+            // Offset is a register
+        } else if (I == 1) {
+            address += "[" + OpCode::getRegMnemonic(Rn) + "," + getUFlagMnemonic() +
+                       OpCode::getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" +
+                       Utils::toHexString(shiftRm->getShiftAmount()) + "]" + writeBack;
+        } else {
             throw std::runtime_error("ERROR: SingleDataTransfer P=1");
         }
-        
-        
-    // Postindexing; add offset after transfer
-    }else if(P == 0){
+
+        // Postindexing; add offset after transfer
+    } else if (P == 0) {
         address = "[" + OpCode::getRegMnemonic(Rn) + "],";
-        if(I == 0){
+        if (I == 0) {
             address += getUFlagMnemonic() + Utils::toHexString(imm->getMnemonicVal());
-        }else if(I == 1){
-            address += getUFlagMnemonic() + OpCode::getRegMnemonic(shiftRm->getRm()) + "," + shiftRm->getShiftTypeMnemonic() + " #" + \
-                       Utils::toHexString(shiftRm->getShiftAmount());
-        }else{
+        } else if (I == 1) {
+            address += getUFlagMnemonic() + OpCode::getRegMnemonic(shiftRm->getRm()) + "," +
+                       shiftRm->getShiftTypeMnemonic() + " #" + Utils::toHexString(shiftRm->getShiftAmount());
+        } else {
             throw std::runtime_error("ERROR: SingleDataTransfer P=0");
         }
     }
@@ -154,9 +155,7 @@ std::string SingleDataTransfer::toString(){
     return base + address;
 }
 
-void SingleDataTransfer::doDecode(){
-
-}
+void SingleDataTransfer::doDecode() {}
 /*
 TODO:
 Mis-aligned STR,STRH,STM,LDM,LDRD,STRD,PUSH,POP (forced align)
@@ -170,87 +169,84 @@ Mis-aligned LDR,SWP (rotated read)
  That effect is internally used by LDRB and LDRH opcodes (which do then mask-out the unused bits).
 */
 
-void SingleDataTransfer::doExecute(){
+void SingleDataTransfer::doExecute() {
     uint32_t baseRegVal = cpu.getReg(Rn);
-    if(Rn == 15 && forcePcBit1To0)
+    if (Rn == 15 && forcePcBit1To0)
         baseRegVal &= 0xFFFFFFFD;
     uint32_t offsetVal = offsetField->getOperandVal(cpu);
     uint32_t loadVal = 0xDEADBEEF;
 
     // Pre-indexing
-    if(P == 1){
-        if(U == 0)
+    if (P == 1) {
+        if (U == 0)
             baseRegVal -= offsetVal;
-        else if(U == 1)
+        else if (U == 1)
             baseRegVal += offsetVal;
 
-        if(W == 1 && L == 1){
+        if (W == 1 && L == 1) {
             cpu.setReg(Rn, baseRegVal);
         }
     }
-    if(L == 0){
+    if (L == 0) {
         // Store to memory
         /* When R15 is the source register (Rd) of a register store (STR) instruction, the stored
            value will be address of the instruction plus 12. */
         uint32_t storeVal = cpu.getReg(Rd);
-        if(Rd == 15){
+        if (Rd == 15) {
             // PC is already 8 bytes ahead, so add 4 to reach 12bytes
             storeVal += 4;
         }
-            
-        if(B == 0){
+
+        if (B == 0) {
             // Word
             // STR Force alignment
             baseRegVal &= 0xFFFFFFFC;
             cpu.getMemManager().store(baseRegVal, storeVal, 4);
-        }else if(B == 1){
+        } else if (B == 1) {
             // Byte
             cpu.getMemManager().store(baseRegVal, storeVal & 0xFF, 1);
-        }else{
+        } else {
             throw std::runtime_error("Error: Invalid B value in SingleDataTransfer::doExecute");
         }
-    }else if(L == 1){
+    } else if (L == 1) {
         // Load from memory
-        if(Rd == 15){
+        if (Rd == 15) {
             cpu.setMustFlushPipeline(true);
         }
 
-        if(B == 0){
+        if (B == 0) {
             // Word
             // LDR Force alignment
             loadVal = cpu.getMemManager().readWord(baseRegVal & 0xFFFFFFFC);
-            if((baseRegVal & 0x3) != 0){
-                loadVal = Utils::rotateRight(loadVal, (baseRegVal & 0x3)*8);
+            if ((baseRegVal & 0x3) != 0) {
+                loadVal = Utils::rotateRight(loadVal, (baseRegVal & 0x3) * 8);
             }
-        }else if(B == 1){
+        } else if (B == 1) {
             loadVal = cpu.getMemManager().readByte(baseRegVal);
-        }else{
+        } else {
             throw std::runtime_error("Error: Invalid B value in SingleDataTransfer::doExecute");
         }
-    }else {
+    } else {
         throw std::runtime_error("Error: Invalid L value in SingleDataTransfer::doExecute");
     }
 
     // Post Indexing, Writeback
-    if(P == 0){
-        if(U == 0)
+    if (P == 0) {
+        if (U == 0)
             baseRegVal -= offsetVal;
-        else if(U == 1)
+        else if (U == 1)
             baseRegVal += offsetVal;
 
-         cpu.setReg(Rn, baseRegVal);
-    }
-
-    if(W == 1 && L == 0){
         cpu.setReg(Rn, baseRegVal);
     }
 
-    if(L == 1){
-        cpu.setReg(Rd, loadVal);
+    if (W == 1 && L == 0) {
+        cpu.setReg(Rn, baseRegVal);
     }
 
+    if (L == 1) {
+        cpu.setReg(Rd, loadVal);
+    }
 }
 
-uint32_t SingleDataTransfer::cyclesUsed() const {
-    return 1;
-}
+uint32_t SingleDataTransfer::cyclesUsed() const { return 1; }

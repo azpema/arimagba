@@ -1,47 +1,38 @@
 #include "psr_transfer_msr.hpp"
-#include <bitset>
-#include "../fields/rotate_imm.hpp"
-#include "../fields/rm.hpp"
 #include "../../../utils/utils.hpp"
 #include "../../arm7tdmi.hpp"
+#include "../fields/rm.hpp"
+#include "../fields/rotate_imm.hpp"
+#include <bitset>
 
 const std::string PSRTransferMSR::PSR2Mnemonic[2] = {"cpsr", "spsr"};
 
-PSRTransferMSR::PSRTransferMSR(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu),
-                                                            rmOp2(0),
-                                                            rotateImmOp2(0)
-{
+PSRTransferMSR::PSRTransferMSR(uint32_t op, ARM7TDMI& cpu) : ArmOpcode::ArmOpcode(op, cpu), rmOp2(0), rotateImmOp2(0) {
     init(op);
 }
 
-PSRTransferMSR::PSRTransferMSR(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu),
-                                               rmOp2(0),
-                                               rotateImmOp2(0)
-{}
+PSRTransferMSR::PSRTransferMSR(ARM7TDMI& cpu) : ArmOpcode::ArmOpcode(cpu), rmOp2(0), rotateImmOp2(0) {}
 
-void PSRTransferMSR::init(uint32_t op){
+void PSRTransferMSR::init(uint32_t op) {
     ArmOpcode::init(op);
     psr = Utils::getRegBits(op, PSR_MASK, PSR_SHIFT);
     I = Utils::getRegBits(op, I_MASK, I_SHIFT);
     c = Utils::getRegBits(op, C_MASK, C_SHIFT);
 
-    if(I == 0){
+    if (I == 0) {
         rmOp2.init(Utils::getRegBits(op, SOURCE_OPERAND_MASK, SOURCE_OPERAND_SHIFT));
         sourceOperand = &rmOp2;
-    }else if (I == 1){
+    } else if (I == 1) {
         rotateImmOp2.init(Utils::getRegBits(op, SOURCE_OPERAND_MASK, SOURCE_OPERAND_SHIFT));
         sourceOperand = &rotateImmOp2;
-    }else{
+    } else {
         throw std::runtime_error("ERROR: Invalid I field value");
     }
 }
 
-PSRTransferMSR::~PSRTransferMSR(){
-}
+PSRTransferMSR::~PSRTransferMSR() {}
 
-std::string PSRTransferMSR::getPSRMnemonic(){
-    return PSR2Mnemonic[psr];
-}
+std::string PSRTransferMSR::getPSRMnemonic() { return PSR2Mnemonic[psr]; }
 
 /*bool PSRTransferMSR::isFullTransfer(uint32_t op){
     return OpCode::checkOpCode(op, FULL_TRANSFER_MASK, FULL_TRANSFER_FORMAT);
@@ -51,64 +42,59 @@ bool PSRTransferMSR::isFlagBitsTransfer(uint32_t op){
     return OpCode::checkOpCode(op, FLAG_BITS_TRANSFER_MASK, FLAG_BITS_TRANSFER_FORMAT);
 }*/
 
-
-uint32_t PSRTransferMSR::cyclesUsed() const {
-    return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE;
-}
-
+uint32_t PSRTransferMSR::cyclesUsed() const { return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE; }
 
 std::string PSRTransferMSR::toString() {
     std::string srcOper = "";
-    if(sourceOperand->_type == Operand::RM){
+    if (sourceOperand->_type == Operand::RM) {
         Rm* rm = static_cast<Rm*>(sourceOperand);
         srcOper = OpCode::getRegMnemonic(rm->getRmVal());
-    }else if(sourceOperand->_type == Operand::ROTATE_IMM){
+    } else if (sourceOperand->_type == Operand::ROTATE_IMM) {
         RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand);
         srcOper = "#" + Utils::toHexString(rotImm->getMnemonicVal());
-    }else{
-        throw std::runtime_error("ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " + sourceOperand->_type);
+    } else {
+        throw std::runtime_error("ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " +
+                                 sourceOperand->_type);
     }
-    
+
     std::string cMnemonic = "";
-    if(c == 1){
+    if (c == 1) {
         cMnemonic = "c";
     }
 
     return "msr" + getCondFieldMnemonic() + " " + getPSRMnemonic() + "_f" + cMnemonic + "," + srcOper;
 }
 
-void PSRTransferMSR::doDecode(){
+void PSRTransferMSR::doDecode() {}
 
-}
-
-void PSRTransferMSR::doExecute(){
+void PSRTransferMSR::doExecute() {
     uint32_t newVal = cpu.getCPSR().getValue();
 
     uint32_t newFlags = 0;
-    if(sourceOperand->_type == Operand::RM){
+    if (sourceOperand->_type == Operand::RM) {
         Rm* rm = static_cast<Rm*>(sourceOperand);
         newFlags = cpu.getReg(rm->getRmVal());
-    }else if(sourceOperand->_type == Operand::ROTATE_IMM){
+    } else if (sourceOperand->_type == Operand::ROTATE_IMM) {
         RotateImm* rotImm = static_cast<RotateImm*>(sourceOperand);
         newFlags = rotImm->getMnemonicVal();
-    }else{
-        throw std::runtime_error("ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " + std::to_string(sourceOperand->_type));
+    } else {
+        throw std::runtime_error("ERROR: Invald PSRTransferMSRFlagBits::toString sourceOperand type " +
+                                 std::to_string(sourceOperand->_type));
     }
 
     // Corresponds to flag bits (NZCV)
     Utils::setRegBits(newVal, 0xF0000000, newFlags);
 
     // Set control bits
-    if(c == 1){
+    if (c == 1) {
         Utils::setRegBits(newVal, 0x000000FF, newFlags);
     }
 
-    if(psr == 0){
+    if (psr == 0) {
         cpu.getCPSR().setValue(newVal);
-    }else if(psr == 1){
+    } else if (psr == 1) {
         cpu.setSPSR(newVal);
-    }else{
+    } else {
         throw std::runtime_error("ERROR: Invalid PSR value in PSRTransferMSRFlagBits::doExecute");
     }
-    
 }

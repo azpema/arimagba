@@ -1,28 +1,33 @@
 #include "block_data_transfer.hpp"
-#include <algorithm>
 #include "../../../utils/utils.hpp"
 #include "../../arm7tdmi.hpp"
+#include <algorithm>
 
 const std::string BlockDataTransfer::SFlag2Mnemonic[2] = {"", "^"};
 const std::string BlockDataTransfer::WFlag2Mnemonic[2] = {"", "!"};
 const std::string BlockDataTransfer::opAddressingMode2Mnemonic[2][2][2] = {{{"stmed", "stmea"}, {"stmfd", "stmfa"}},
                                                                            {{"ldmfa", "ldmfd"}, {"ldmea", "ldmed"}}};
 
-BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {
+BlockDataTransfer::BlockDataTransfer(uint32_t op, ARM7TDMI& cpu) : ArmOpcode::ArmOpcode(op, cpu) {
     // TODO ArmOpCode is initialized twice!! Look in all the rest of opcodes too!!
     init(op);
 }
 
-BlockDataTransfer::BlockDataTransfer(uint16_t _p, uint16_t _u, uint16_t _s, uint16_t _w, uint16_t _l,
-  uint16_t _rn, uint16_t _registerList, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {
+BlockDataTransfer::BlockDataTransfer(uint16_t _p,
+                                     uint16_t _u,
+                                     uint16_t _s,
+                                     uint16_t _w,
+                                     uint16_t _l,
+                                     uint16_t _rn,
+                                     uint16_t _registerList,
+                                     ARM7TDMI& cpu) :
+    ArmOpcode::ArmOpcode(cpu) {
     init(_p, _u, _s, _w, _l, _rn, _registerList);
 }
 
-BlockDataTransfer::BlockDataTransfer(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu){
+BlockDataTransfer::BlockDataTransfer(ARM7TDMI& cpu) : ArmOpcode::ArmOpcode(cpu) {}
 
-}
-
-void BlockDataTransfer::init(uint32_t op){
+void BlockDataTransfer::init(uint32_t op) {
     ArmOpcode::init(op);
     p = Utils::getRegBits(op, P_MASK, P_SHIFT);
     u = Utils::getRegBits(op, U_MASK, U_SHIFT);
@@ -34,14 +39,14 @@ void BlockDataTransfer::init(uint32_t op){
 
     registerListVec = {};
     registerListVec.reserve(ARM7TDMI::REG_CNT);
-    for(size_t i = 0; i < 16; i++){
-        if(((registerList >> i) & 0x1) == 0x1)
-            registerListVec.push_back(i);    
+    for (size_t i = 0; i < 16; i++) {
+        if (((registerList >> i) & 0x1) == 0x1)
+            registerListVec.push_back(i);
     }
 }
 
-void BlockDataTransfer::init(uint16_t _p, uint16_t _u, uint16_t _s, uint16_t _w, uint16_t _l,
-  uint16_t _rn, uint16_t _registerList){
+void BlockDataTransfer::init(
+    uint16_t _p, uint16_t _u, uint16_t _s, uint16_t _w, uint16_t _l, uint16_t _rn, uint16_t _registerList) {
     p = _p;
     u = _u;
     s = _s;
@@ -51,50 +56,43 @@ void BlockDataTransfer::init(uint16_t _p, uint16_t _u, uint16_t _s, uint16_t _w,
     registerList = _registerList;
 
     registerListVec = {};
-    for(size_t i = 0; i < 16; i++){
-        if(((registerList >> i) & 0x1) == 0x1)
-            registerListVec.push_back(i);    
+    for (size_t i = 0; i < 16; i++) {
+        if (((registerList >> i) & 0x1) == 0x1)
+            registerListVec.push_back(i);
     }
 }
 
-std::string BlockDataTransfer::getSFlagMnemonic(){
-    return SFlag2Mnemonic[s];
-}
+std::string BlockDataTransfer::getSFlagMnemonic() { return SFlag2Mnemonic[s]; }
 
-std::string BlockDataTransfer::getWFlagMnemonic(){
-    return WFlag2Mnemonic[w];
-}
+std::string BlockDataTransfer::getWFlagMnemonic() { return WFlag2Mnemonic[w]; }
 
-std::string BlockDataTransfer::getRegisterListMnemonic(){
+std::string BlockDataTransfer::getRegisterListMnemonic() {
     std::string regs = "{";
-    for(size_t i = 0; i < registerListVec.size(); i++){
+    for (size_t i = 0; i < registerListVec.size(); i++) {
         regs += OpCode::getRegMnemonic(registerListVec[i]);
-        if(i < registerListVec.size() - 1)
+        if (i < registerListVec.size() - 1)
             regs += ",";
     }
     regs += "}";
     return regs;
 }
 
-std::string BlockDataTransfer::getOpAddressingModeMnemonic(){
-    return opAddressingMode2Mnemonic[l][p][u];
+std::string BlockDataTransfer::getOpAddressingModeMnemonic() { return opAddressingMode2Mnemonic[l][p][u]; }
+
+std::string BlockDataTransfer::toString() {
+    return getOpAddressingModeMnemonic() + getCondFieldMnemonic() + " " + OpCode::getRegMnemonic(rn) +
+           getWFlagMnemonic() + "," + getRegisterListMnemonic() + getSFlagMnemonic();
 }
 
-std::string BlockDataTransfer::toString(){
-    return getOpAddressingModeMnemonic() + getCondFieldMnemonic() + " " + OpCode::getRegMnemonic(rn) + getWFlagMnemonic() + "," + getRegisterListMnemonic() + getSFlagMnemonic();
-}
-
-void BlockDataTransfer::doDecode(){
-
-}
+void BlockDataTransfer::doDecode() {}
 
 // Optimizible!!
 // TODO Flush pipeline if PC is written!!!
-void BlockDataTransfer::doExecute(){
+void BlockDataTransfer::doExecute() {
     // Empty Rlist: R15 loaded/stored (ARMv4 only), and Rb=Rb+/-40h (ARMv4-v5).
     // TODO Rb=Rb+/-40h (ARMv4-v5).
     bool emptyList = false;
-    if(registerListVec.empty()){
+    if (registerListVec.empty()) {
         emptyList = true;
         registerListVec.push_back(15);
     }
@@ -102,169 +100,169 @@ void BlockDataTransfer::doExecute(){
     bool regListHasBase = false;
     bool baseRegFirst = false;
     auto baseRegIterator = std::find(registerListVec.begin(), registerListVec.end(), rn);
-    if(baseRegIterator != registerListVec.end()){
+    if (baseRegIterator != registerListVec.end()) {
         regListHasBase = true;
-        if(baseRegIterator - registerListVec.begin() == 0)
+        if (baseRegIterator - registerListVec.begin() == 0)
             baseRegFirst = true;
     }
 
     std::vector<uint32_t> regVals;
     regVals.reserve(ARM7TDMI::REG_CNT);
     bool regListHasPc = false;
-    if(std::find(registerListVec.begin(), registerListVec.end(), 15) != registerListVec.end()){
+    if (std::find(registerListVec.begin(), registerListVec.end(), 15) != registerListVec.end()) {
         regListHasPc = true;
     }
 
-    if(l == 0){
+    if (l == 0) {
         uint32_t endAddr = 0;
         uint32_t baseAddr = 0;
         int32_t emptyListOffset;
         // Pre calculate end address for possible writeback
         // STMDB / STMFD
-        if(p == 1 && u == 0){
+        if (p == 1 && u == 0) {
             emptyListOffset = emptyList ? -0x40 : -registerListVec.size() * 4;
             baseAddr = cpu.getReg(rn) + emptyListOffset;
             endAddr = baseAddr;
-        // STMIB / STMFA
-        }else if(p == 1 && u == 1){
+            // STMIB / STMFA
+        } else if (p == 1 && u == 1) {
             baseAddr = cpu.getReg(rn) + 4;
             endAddr = baseAddr + (registerListVec.size() - 1) * 4;
-        // STMED / STMDA
-        }else if(p == 0 && u == 0){
+            // STMED / STMDA
+        } else if (p == 0 && u == 0) {
             emptyListOffset = emptyList ? -0x3c : 0;
             baseAddr = cpu.getReg(rn) + emptyListOffset;
             endAddr = baseAddr - registerListVec.size() * 4;
             std::reverse(registerListVec.begin(), registerListVec.end());
-        // STMEA / STMIA
-        }else if(p == 0 && u == 1){
+            // STMEA / STMIA
+        } else if (p == 0 && u == 1) {
             baseAddr = cpu.getReg(rn);
             endAddr = baseAddr + registerListVec.size() * 4;
         }
 
-        for(const uint32_t regNum : registerListVec){
+        for (const uint32_t regNum : registerListVec) {
             uint32_t regVal = cpu.getReg(regNum, s == 1);
             /*
-            * Whenever R15 is stored to memory the stored value is the address of the STM
-            * instruction plus 12. PC is already 8 bytes ahead due to instruction pipelining
-            * in ARM mode.
-            */
-            
-            if(regListHasBase && !baseRegFirst){
-                if(regNum == rn){
+             * Whenever R15 is stored to memory the stored value is the address of the STM
+             * instruction plus 12. PC is already 8 bytes ahead due to instruction pipelining
+             * in ARM mode.
+             */
+
+            if (regListHasBase && !baseRegFirst) {
+                if (regNum == rn) {
                     regVal = endAddr;
                 }
             }
-            
-            if(regNum == 15){
+
+            if (regNum == 15) {
                 regVal += cpu.getCPSR().isThumbMode() ? 2 : 4;
             }
-                
+
             regVals.push_back(regVal);
         }
-        
+
         int8_t baseAddrSign = 1;
-        if(p == 0 && u == 0){
+        if (p == 0 && u == 0) {
             baseAddrSign = -1;
         }
 
-        for(const uint32_t regVal : regVals){
+        for (const uint32_t regVal : regVals) {
             cpu.getMemManager().store(baseAddr & 0xFFFFFFFC, regVal, 4);
-            baseAddr += baseAddrSign * 4; 
+            baseAddr += baseAddrSign * 4;
         }
 
         /*
-        Writeback with Rb included in Rlist: Store OLD base if Rb is FIRST entry in Rlist, otherwise store NEW base (STM/ARMv4), no writeback (LDM/ARMv4).
+        Writeback with Rb included in Rlist: Store OLD base if Rb is FIRST entry in Rlist, otherwise store NEW base
+        (STM/ARMv4), no writeback (LDM/ARMv4).
         */
-        if(w == 1 && s != 1 && !emptyList){
+        if (w == 1 && s != 1 && !emptyList) {
             cpu.setReg(rn, endAddr);
         }
 
-    }else if(l == 1){
-        for(size_t i=0; i < registerListVec.size(); i++){
+    } else if (l == 1) {
+        for (size_t i = 0; i < registerListVec.size(); i++) {
             // If PC value is modified, flush pipeline
-            if(registerListVec.at(i) == 15){
+            if (registerListVec.at(i) == 15) {
                 cpu.setMustFlushPipeline(true);
-            }   
+            }
         }
         // LDMFD / LDMIA
-        if(p == 0 && u == 1){
+        if (p == 0 && u == 1) {
             uint32_t baseAddr = cpu.getReg(rn);
             uint32_t endAddr = baseAddr;
-            for(size_t i=0; i < registerListVec.size(); i++){
+            for (size_t i = 0; i < registerListVec.size(); i++) {
                 uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
                 cpu.setReg(registerListVec.at(i), val, !regListHasPc && (s == 1));
                 endAddr += 4;
             }
 
-            if(w == 1 && !(regListHasPc && (s == 1)) && !emptyList && !regListHasBase){
+            if (w == 1 && !(regListHasPc && (s == 1)) && !emptyList && !regListHasBase) {
                 cpu.setReg(rn, endAddr);
             }
-        // LDMFA / LDMDA
-        }else if(p == 0 && u == 0){
+            // LDMFA / LDMDA
+        } else if (p == 0 && u == 0) {
             uint32_t endAddr = cpu.getReg(rn) - registerListVec.size() * 4;
             uint32_t baseAddr = endAddr + 4;
-            for(size_t i=0; i < registerListVec.size(); i++){
+            for (size_t i = 0; i < registerListVec.size(); i++) {
                 uint32_t val = cpu.getMemManager().readWord(baseAddr & 0xFFFFFFFC);
                 cpu.setReg(registerListVec.at(i), val, !regListHasPc && (s == 1));
                 baseAddr += 4;
             }
 
-            if(w == 1 && !(regListHasPc && (s == 1)) && !emptyList && !regListHasBase){
+            if (w == 1 && !(regListHasPc && (s == 1)) && !emptyList && !regListHasBase) {
                 cpu.setReg(rn, endAddr);
             }
-        // LDMEA / LDMDB
-        }else if(p == 1 && u == 0){
+            // LDMEA / LDMDB
+        } else if (p == 1 && u == 0) {
             uint32_t baseAddr = cpu.getReg(rn) - registerListVec.size() * 4;
             uint32_t endAddr = baseAddr;
-            for(size_t i=0; i < registerListVec.size(); i++){
+            for (size_t i = 0; i < registerListVec.size(); i++) {
                 uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
                 cpu.setReg(registerListVec.at(i), val, !regListHasPc && (s == 1));
                 endAddr += 4;
             }
 
-            if(w == 1 && !(regListHasPc && (s == 1)) && !emptyList && !regListHasBase){
+            if (w == 1 && !(regListHasPc && (s == 1)) && !emptyList && !regListHasBase) {
                 cpu.setReg(rn, baseAddr);
             }
-            
-        // LDMED / LDMIB 
-        }else if(p == 1 && u == 1){
+
+            // LDMED / LDMIB
+        } else if (p == 1 && u == 1) {
             uint32_t baseAddr = cpu.getReg(rn) + registerListVec.size() * 4;
             uint32_t endAddr = baseAddr;
 
-            for(int i=registerListVec.size()-1; i >= 0; i--){
+            for (int i = registerListVec.size() - 1; i >= 0; i--) {
                 uint32_t val = cpu.getMemManager().readWord(endAddr & 0xFFFFFFFC);
                 cpu.setReg(registerListVec.at(i), val, !regListHasPc && (s == 1));
                 endAddr -= 4;
             }
 
-            if(w == 1 && !(regListHasPc && (s == 1)) && !emptyList && !regListHasBase){
+            if (w == 1 && !(regListHasPc && (s == 1)) && !emptyList && !regListHasBase) {
                 cpu.setReg(rn, baseAddr);
             }
         }
 
         /*
-        * LDM with R15 in transfer list and S bit set (Mode changes)
-        * If the instruction is a LDM then SPSR_<mode> is transferred to CPSR at the same
-        * time as R15 is loaded.
-        */
-        if(regListHasPc && (s == 1)){
+         * LDM with R15 in transfer list and S bit set (Mode changes)
+         * If the instruction is a LDM then SPSR_<mode> is transferred to CPSR at the same
+         * time as R15 is loaded.
+         */
+        if (regListHasPc && (s == 1)) {
             cpu.setCPSR(cpu.getSPSR().getValue());
         }
-    }else{
+    } else {
         throw std::runtime_error("ERROR: BlockDataTransfer::doExecute: Invalid L=" + std::to_string(l) + " value");
     }
 
-    if(emptyList){
-        if(u == 0){
+    if (emptyList) {
+        if (u == 0) {
             cpu.setReg(rn, cpu.getReg(rn) - 0x40);
-        }else if(u == 1){
+        } else if (u == 1) {
             cpu.setReg(rn, cpu.getReg(rn) + 0x40);
         }
     }
-    
 }
 
 uint32_t BlockDataTransfer::cyclesUsed() const {
-    //std::cerr << "TODO: BlockDataTransfer::cyclesUsed" << '\n';
+    // std::cerr << "TODO: BlockDataTransfer::cyclesUsed" << '\n';
     return 1;
 }

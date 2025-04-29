@@ -1,60 +1,65 @@
-#ifndef _OPCODE_HALFWORD_DATA_TRANSFER_ 
+#ifndef _OPCODE_HALFWORD_DATA_TRANSFER_
 #define _OPCODE_HALFWORD_DATA_TRANSFER_
 
-#include <iostream>
 #include "arm_opcode.hpp"
-
+#include <iostream>
 
 class HalfwordDataTransfer : public ArmOpcode {
-    public:
-        std::string toString() override = 0;
-        void doExecute() override = 0;
-        void doDecode() override = 0;
-    protected:
-        HalfwordDataTransfer(uint32_t op, ARM7TDMI &cpu);
-        HalfwordDataTransfer(ARM7TDMI &cpu);
-        HalfwordDataTransfer(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn,
-            uint16_t rd, uint16_t s, uint16_t h, ARM7TDMI &cpu);
-        void init(uint32_t op) override;
-        void init(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn,
-            uint16_t rd, uint16_t s, uint16_t h);
-        void _doExecute(uint32_t offsetVal);
-        uint16_t p, u, w, l, rn, rd, s, h;
-        const static uint32_t P_FLAG_MASK = 0b00000001000000000000000000000000; 
-        const static uint32_t P_FLAG_SHIFT = 24;
+  public:
+    std::string toString() override = 0;
+    void doExecute() override = 0;
+    void doDecode() override = 0;
 
-        const static uint32_t U_FLAG_MASK = 0b00000000100000000000000000000000; 
-        const static uint32_t U_FLAG_SHIFT = 23;
-        const static std::string uFlag2Mnemonic[2];
-        std::string getUFlagMnemonic();
+  protected:
+    HalfwordDataTransfer(uint32_t op, ARM7TDMI& cpu);
+    HalfwordDataTransfer(ARM7TDMI& cpu);
+    HalfwordDataTransfer(uint16_t p,
+                         uint16_t u,
+                         uint16_t w,
+                         uint16_t l,
+                         uint16_t rn,
+                         uint16_t rd,
+                         uint16_t s,
+                         uint16_t h,
+                         ARM7TDMI& cpu);
+    void init(uint32_t op) override;
+    void init(uint16_t p, uint16_t u, uint16_t w, uint16_t l, uint16_t rn, uint16_t rd, uint16_t s, uint16_t h);
+    void _doExecute(uint32_t offsetVal);
+    uint16_t p, u, w, l, rn, rd, s, h;
+    const static uint32_t P_FLAG_MASK = 0b00000001000000000000000000000000;
+    const static uint32_t P_FLAG_SHIFT = 24;
 
-        const static uint32_t W_FLAG_MASK = 0b00000000001000000000000000000000; 
-        const static uint32_t W_FLAG_SHIFT = 21;
-        const static std::string wFlag2Mnemonic[2];
-        std::string getWFlagMnemonic();
+    const static uint32_t U_FLAG_MASK = 0b00000000100000000000000000000000;
+    const static uint32_t U_FLAG_SHIFT = 23;
+    const static std::string uFlag2Mnemonic[2];
+    std::string getUFlagMnemonic();
 
-        const static uint32_t L_FLAG_MASK = 0b00000000000100000000000000000000; 
-        const static uint32_t L_FLAG_SHIFT = 20;
+    const static uint32_t W_FLAG_MASK = 0b00000000001000000000000000000000;
+    const static uint32_t W_FLAG_SHIFT = 21;
+    const static std::string wFlag2Mnemonic[2];
+    std::string getWFlagMnemonic();
 
-        const static uint32_t RN_FLAG_MASK = 0b00000000000011110000000000000000; 
-        const static uint32_t RN_FLAG_SHIFT = 16;
+    const static uint32_t L_FLAG_MASK = 0b00000000000100000000000000000000;
+    const static uint32_t L_FLAG_SHIFT = 20;
 
-        const static uint32_t RD_FLAG_MASK = 0b00000000000000001111000000000000; 
-        const static uint32_t RD_FLAG_SHIFT = 12;
+    const static uint32_t RN_FLAG_MASK = 0b00000000000011110000000000000000;
+    const static uint32_t RN_FLAG_SHIFT = 16;
 
-        const static uint32_t S_FLAG_MASK = 0b00000000000000000000000001000000; 
-        const static uint32_t S_FLAG_SHIFT = 6;
-        const static std::string sFlag2Mnemonic[2];
-        std::string getSFlagMnemonic();
+    const static uint32_t RD_FLAG_MASK = 0b00000000000000001111000000000000;
+    const static uint32_t RD_FLAG_SHIFT = 12;
 
-        const static uint32_t H_FLAG_MASK = 0b00000000000000000000000000100000; 
-        const static uint32_t H_FLAG_SHIFT = 5;
-        const static std::string hFlag2Mnemonic[2];
-        std::string getHFlagMnemonic();
+    const static uint32_t S_FLAG_MASK = 0b00000000000000000000000001000000;
+    const static uint32_t S_FLAG_SHIFT = 6;
+    const static std::string sFlag2Mnemonic[2];
+    std::string getSFlagMnemonic();
 
-        const static std::string op2Mnemonic[2];
-        std::string getOpMnemonic();
+    const static uint32_t H_FLAG_MASK = 0b00000000000000000000000000100000;
+    const static uint32_t H_FLAG_SHIFT = 5;
+    const static std::string hFlag2Mnemonic[2];
+    std::string getHFlagMnemonic();
+
+    const static std::string op2Mnemonic[2];
+    std::string getOpMnemonic();
 };
-
 
 #endif

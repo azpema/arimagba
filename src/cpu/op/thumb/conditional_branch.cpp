@@ -1,22 +1,18 @@
 #include "conditional_branch.hpp"
-#include "../arm/branch.hpp"
 #include "../../../utils/utils.hpp"
 #include "../../arm7tdmi.hpp"
+#include "../arm/branch.hpp"
 
 using namespace Thumb;
 
-const std::string ConditionalBranch::cond2Mnemonic[16] = {"eq", "ne", "cs", "cc",
-                                                          "mi", "pl", "vs", "vc",
-                                                          "hi", "ls", "ge", "lt",
-                                                          "gt", "le", "ERR", "ERR"};
+const std::string ConditionalBranch::cond2Mnemonic[16] = {
+    "eq", "ne", "cs", "cc", "mi", "pl", "vs", "vc", "hi", "ls", "ge", "lt", "gt", "le", "ERR", "ERR"};
 
-ConditionalBranch::ConditionalBranch(uint16_t op, ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(op, cpu) {
-    init(op);
-}
+ConditionalBranch::ConditionalBranch(uint16_t op, ARM7TDMI& cpu) : ThumbOpCode::ThumbOpCode(op, cpu) { init(op); }
 
-ConditionalBranch::ConditionalBranch(ARM7TDMI &cpu): ThumbOpCode::ThumbOpCode(cpu) {}
+ConditionalBranch::ConditionalBranch(ARM7TDMI& cpu) : ThumbOpCode::ThumbOpCode(cpu) {}
 
-void ConditionalBranch::init(uint32_t op){
+void ConditionalBranch::init(uint32_t op) {
     ThumbOpCode::init(op);
     cond = Utils::getRegBits(op, COND_MASK, COND_SHIFT);
     sOffset8 = Utils::getRegBits(op, SOFFSET8_MASK, SOFFSET8_SHIFT);
@@ -25,17 +21,11 @@ void ConditionalBranch::init(uint32_t op){
     offsetVal = oldPC + signExtended + 4;
 }
 
-std::string ConditionalBranch::getCondMnemonic(){
-    return cond2Mnemonic[cond];
-}
+std::string ConditionalBranch::getCondMnemonic() { return cond2Mnemonic[cond]; }
 
-std::string ConditionalBranch::toString(){
-    return "b" + getCondMnemonic() +   " #" + Utils::toHexString(offsetVal);
-}
+std::string ConditionalBranch::toString() { return "b" + getCondMnemonic() + " #" + Utils::toHexString(offsetVal); }
 
-void ConditionalBranch::doDecode(){
-
-}
+void ConditionalBranch::doDecode() {}
 
 /*
 
@@ -89,7 +79,7 @@ bool ArmOpcode::execute(){
             execute = true;
             break;
     }
-        
+
     if(execute){
         doExecute();
         return true;
@@ -104,67 +94,65 @@ bool ArmOpcode::execute(){
 
 */
 
-void ConditionalBranch::doExecute(){
+void ConditionalBranch::doExecute() {
     bool execute = false;
-    switch(cond){
-        case ArmOpcode::EQ:
-            execute = cpu.getCPSR().getZFlag();
-            break;
-        case ArmOpcode::NE:
-            execute = !cpu.getCPSR().getZFlag();
-            break;
-        case ArmOpcode::CS:
-            execute = cpu.getCPSR().getCFlag();
-            break;
-        case ArmOpcode::CC:
-            execute = !cpu.getCPSR().getCFlag();
-            break;
-        case ArmOpcode::MI:
-            execute = cpu.getCPSR().getNFlag();
-            break;
-        case ArmOpcode::PL:
-            execute = !cpu.getCPSR().getNFlag();
-            break;
-        case ArmOpcode::VS:
-            execute = cpu.getCPSR().getVFlag();
-            break;
-        case ArmOpcode::VC:
-            execute = !cpu.getCPSR().getVFlag();
-            break;
-        case ArmOpcode::HI:
-            execute = (cpu.getCPSR().getCFlag()) && (!cpu.getCPSR().getZFlag());
-            break;
-        case ArmOpcode::LS:
-            execute = (!cpu.getCPSR().getCFlag()) || (cpu.getCPSR().getZFlag());
-            break;
-        case ArmOpcode::GE:
-            execute = (cpu.getCPSR().getNFlag() == cpu.getCPSR().getVFlag());
-            break;
-        case ArmOpcode::LT:
-            execute = (cpu.getCPSR().getNFlag() != cpu.getCPSR().getVFlag());
-            break;
-        case ArmOpcode::GT:
-            execute = (!cpu.getCPSR().getZFlag()) && (cpu.getCPSR().getNFlag() == cpu.getCPSR().getVFlag());
-            break;
-        case ArmOpcode::LE:
-            execute = (cpu.getCPSR().getZFlag()) || (cpu.getCPSR().getNFlag() != cpu.getCPSR().getVFlag());
-            break;
-        case ArmOpcode::AL:
-            execute = true;
-            break;
+    switch (cond) {
+    case ArmOpcode::EQ:
+        execute = cpu.getCPSR().getZFlag();
+        break;
+    case ArmOpcode::NE:
+        execute = !cpu.getCPSR().getZFlag();
+        break;
+    case ArmOpcode::CS:
+        execute = cpu.getCPSR().getCFlag();
+        break;
+    case ArmOpcode::CC:
+        execute = !cpu.getCPSR().getCFlag();
+        break;
+    case ArmOpcode::MI:
+        execute = cpu.getCPSR().getNFlag();
+        break;
+    case ArmOpcode::PL:
+        execute = !cpu.getCPSR().getNFlag();
+        break;
+    case ArmOpcode::VS:
+        execute = cpu.getCPSR().getVFlag();
+        break;
+    case ArmOpcode::VC:
+        execute = !cpu.getCPSR().getVFlag();
+        break;
+    case ArmOpcode::HI:
+        execute = (cpu.getCPSR().getCFlag()) && (!cpu.getCPSR().getZFlag());
+        break;
+    case ArmOpcode::LS:
+        execute = (!cpu.getCPSR().getCFlag()) || (cpu.getCPSR().getZFlag());
+        break;
+    case ArmOpcode::GE:
+        execute = (cpu.getCPSR().getNFlag() == cpu.getCPSR().getVFlag());
+        break;
+    case ArmOpcode::LT:
+        execute = (cpu.getCPSR().getNFlag() != cpu.getCPSR().getVFlag());
+        break;
+    case ArmOpcode::GT:
+        execute = (!cpu.getCPSR().getZFlag()) && (cpu.getCPSR().getNFlag() == cpu.getCPSR().getVFlag());
+        break;
+    case ArmOpcode::LE:
+        execute = (cpu.getCPSR().getZFlag()) || (cpu.getCPSR().getNFlag() != cpu.getCPSR().getVFlag());
+        break;
+    case ArmOpcode::AL:
+        execute = true;
+        break;
     }
-        
-    if(execute){
-        //ARM::Branch opArm = ARM::Branch(sOffset8, offsetVal, cond, cpu);
-        ARM::Branch *opArm = static_cast<ARM::Branch*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BRANCH));
+
+    if (execute) {
+        // ARM::Branch opArm = ARM::Branch(sOffset8, offsetVal, cond, cpu);
+        ARM::Branch* opArm = static_cast<ARM::Branch*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::BRANCH));
         opArm->init(sOffset8, offsetVal, cond);
         opArm->doExecute();
-        //std::cout << "<< ARM >> " << opArm.toString() << '\n';
-    }else{
-        //std::cout << "Condition not met; skipping instruction" << '\n';
+        // std::cout << "<< ARM >> " << opArm.toString() << '\n';
+    } else {
+        // std::cout << "Condition not met; skipping instruction" << '\n';
     }
 }
 
-uint32_t ConditionalBranch::cyclesUsed() const {
-    return 1;
-}
+uint32_t ConditionalBranch::cyclesUsed() const { return 1; }

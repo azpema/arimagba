@@ -1,25 +1,15 @@
 #include "undefined.hpp"
 
-Undefined::Undefined(uint32_t op, ARM7TDMI &cpu): ArmOpcode::ArmOpcode(op, cpu) {}
+Undefined::Undefined(uint32_t op, ARM7TDMI& cpu) : ArmOpcode::ArmOpcode(op, cpu) {}
 
-Undefined::Undefined(ARM7TDMI &cpu): ArmOpcode::ArmOpcode(cpu) {}
+Undefined::Undefined(ARM7TDMI& cpu) : ArmOpcode::ArmOpcode(cpu) {}
 
-void Undefined::init(uint32_t op){
-    ArmOpcode::init(op);
-}
+void Undefined::init(uint32_t op) { ArmOpcode::init(op); }
 
-std::string Undefined::toString(){
-    return "Undefined";
-}
+std::string Undefined::toString() { return "Undefined"; }
 
-void Undefined::doDecode(){
+void Undefined::doDecode() {}
 
-}
+void Undefined::doExecute() { throw std::runtime_error("Error: Unimplemented instruction: Undefined"); }
 
-void Undefined::doExecute(){
-    throw std::runtime_error("Error: Unimplemented instruction: Undefined");
-}
-
-uint32_t Undefined::cyclesUsed() const {
-    return 1;
-}
+uint32_t Undefined::cyclesUsed() const { return 1; }

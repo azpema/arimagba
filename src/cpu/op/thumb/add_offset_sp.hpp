@@ -1,30 +1,30 @@
-#ifndef _THUMB_OPCODE_ADD_OFFSET_SP_ 
-#define _THUMB_OPCODE_ADD_OFFSET_SP_ 
+#ifndef _THUMB_OPCODE_ADD_OFFSET_SP_
+#define _THUMB_OPCODE_ADD_OFFSET_SP_
 
 #include "thumb_opcode.hpp"
 
 class AddOffsetSP : public ThumbOpCode {
-    public:
-		AddOffsetSP(uint16_t op, ARM7TDMI &cpu);
-        AddOffsetSP(ARM7TDMI &cpu);
-        void init(uint32_t op) override;
-        std::string toString() override;
-        void doExecute() override;
-        void doDecode() override;
-        uint32_t cyclesUsed() const override;
-    private:
-        uint16_t s, sWord7, offsetStr;
-        int16_t offsetVal;
-        
-        const static uint16_t S_MASK = 0b0000000010000000; 
-        const static uint16_t S_SHIFT = 7;
+  public:
+    AddOffsetSP(uint16_t op, ARM7TDMI& cpu);
+    AddOffsetSP(ARM7TDMI& cpu);
+    void init(uint32_t op) override;
+    std::string toString() override;
+    void doExecute() override;
+    void doDecode() override;
+    uint32_t cyclesUsed() const override;
 
-        const static uint16_t SWORD7_MASK = 0b0000000001111111; 
-        const static uint16_t SWORD7_SHIFT = 0;
+  private:
+    uint16_t s, sWord7, offsetStr;
+    int16_t offsetVal;
 
-        const static std::string s2Mnemonic[2];
-        std::string getSMnemonic();
+    const static uint16_t S_MASK = 0b0000000010000000;
+    const static uint16_t S_SHIFT = 7;
 
+    const static uint16_t SWORD7_MASK = 0b0000000001111111;
+    const static uint16_t SWORD7_SHIFT = 0;
+
+    const static std::string s2Mnemonic[2];
+    std::string getSMnemonic();
 };
 
 #endif

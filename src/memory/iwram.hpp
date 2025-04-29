@@ -1,12 +1,12 @@
-#ifndef _IWRAM_ 
-#define _IWRAM_ 
+#ifndef _IWRAM_
+#define _IWRAM_
 
-#include <iostream>
 #include "generic_memory.hpp"
+#include <iostream>
 
-class IWRAM : public GenericMemory<IWRAM_SIZE>{
-    public:
-        IWRAM();          
+class IWRAM : public GenericMemory<IWRAM_SIZE> {
+  public:
+    IWRAM();
 };
 
 #endif

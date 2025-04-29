@@ -1,12 +1,12 @@
-#ifndef _SRAM_ 
-#define _SRAM_ 
+#ifndef _SRAM_
+#define _SRAM_
 
-#include <iostream>
 #include "generic_memory.hpp"
+#include <iostream>
 
-class SRAM : public GenericMemory<SRAM_SIZE>{
-    public:
-        SRAM();             
+class SRAM : public GenericMemory<SRAM_SIZE> {
+  public:
+    SRAM();
 };
 
 #endif

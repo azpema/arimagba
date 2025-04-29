@@ -1,9 +1,9 @@
 #include "gamepak.hpp"
 #include "../utils/utils.hpp"
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
-GamePak::GamePak(const std::string &filePath) {
+GamePak::GamePak(const std::string& filePath) {
     std::ifstream fileStream = std::ifstream(filePath, std::ios::binary | std::ifstream::ate);
     if (!fileStream) {
         throw std::runtime_error("ERROR: GamePak Failed to open the file.");
@@ -14,17 +14,17 @@ GamePak::GamePak(const std::string &filePath) {
 
     if (!fileStream.is_open()) {
         throw std::runtime_error("ERROR: GamePak Failed to open the file.");
-    }else {
-        fileStream.read(reinterpret_cast<char *>(mem.get()), fileSize);
+    } else {
+        fileStream.read(reinterpret_cast<char*>(mem.get()), fileSize);
         if (!fileStream) {
             throw std::runtime_error("ERROR: GamePak reading");
         }
     }
 
     /* Precalculate Out-of-bounds ROM reads */
-    for(size_t addr = fileSize; addr < ROM_SIZE; addr += 2){
-        mem[addr]     = addr >> 1;          // lower nibble
-        mem[addr + 1] = addr >> (8 + 1);    // upper nibble
+    for (size_t addr = fileSize; addr < ROM_SIZE; addr += 2) {
+        mem[addr] = addr >> 1;           // lower nibble
+        mem[addr + 1] = addr >> (8 + 1); // upper nibble
     }
 
     entryPoint = Utils::readUint32(&mem[GamePak::ENTRY_POINT_OFF]);
@@ -42,7 +42,6 @@ GamePak::GamePak(const std::string &filePath) {
     softwareVersion = mem[GamePak::SOFTWARE_VERSION_OFF];
     complementCheck = mem[GamePak::COMPLEMENT_CHECK_OFF];
     std::memcpy(reservedArea2, &mem[GamePak::RESERVED_AREA_2_OFF], GamePak::RESERVED_AREA_2_SIZE);
-
 }
 
 int GamePak::calcComplementCheck() {
@@ -52,14 +51,14 @@ int GamePak::calcComplementCheck() {
         val = mem[i];
         chk = chk - val;
     }
-    
+
     chk = (chk - 0x19) & 0x0FF;
     return chk;
 }
 
 void GamePak::printHeader() {
     std::cout << "Entry point: 0x" << std::hex << this->entryPoint << std::dec << '\n';
-    //std::cout << "Nintendo Logo: " << this->nintendoLogo << '\n';
+    // std::cout << "Nintendo Logo: " << this->nintendoLogo << '\n';
     std::cout << "Game Title: " << gameTitle << '\n';
     std::cout << "Game Code: " << gameCode << '\n';
     std::cout << "Maker Code: " << makerCode << '\n';
