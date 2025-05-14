@@ -2,6 +2,7 @@
 #include "../memory/memory_manager.hpp"
 #include "obj/obj_attributes.hpp"
 #include "screen_entry.hpp"
+#include <algorithm>
 
 // TODO delete later, for std::memcpy
 #include <cstring>
