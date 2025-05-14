@@ -3,6 +3,7 @@
 
 class ARM7TDMI;
 
+#include <cstdint>
 #include <iostream>
 
 class OpCode {

@@ -1,6 +1,7 @@
 #ifndef _SCREEN_ENTRY_
 #define _SCREEN_ENTRY_
 
+#include <cstdint>
 #include <iostream>
 
 class ScreenEntry {

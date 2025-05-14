@@ -2,6 +2,7 @@
 #define _CPSR_
 
 #include <iostream>
+#include <cstdint>
 #include <unordered_map>
 
 class PSR {

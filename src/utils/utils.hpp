@@ -3,6 +3,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <cstdint>
 #include <sstream>
 
 class Utils {
