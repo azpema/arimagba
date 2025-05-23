@@ -16,7 +16,7 @@ void PSR::reset() {
     this->setFFlag(true);
     this->setIFlag(true);
     std::cout << "TODO: Set proper initial CPU mode" << '\n';
-    this->setMode(System);
+    this->setMode(Mode::System);
 }
 
 void PSR::setCPSRFlags(PSR::Flag flag, bool val) {
@@ -101,20 +101,20 @@ bool PSR::getFFlag() { return Utils::getRegBits(value, F_FLAG_MASK, F_FLAG_SHIFT
 
 bool PSR::getTFlag() { return Utils::getRegBits(value, T_FLAG_MASK, T_FLAG_SHIFT); }
 
-void PSR::setNFlag(bool val) { setCPSRFlags(N, val); }
+void PSR::setNFlag(bool val) { setCPSRFlags(Flag::N, val); }
 
-void PSR::setZFlag(bool val) { setCPSRFlags(Z, val); }
+void PSR::setZFlag(bool val) { setCPSRFlags(Flag::Z, val); }
 
-void PSR::setCFlag(bool val) { setCPSRFlags(C, val); }
+void PSR::setCFlag(bool val) { setCPSRFlags(Flag::C, val); }
 
-void PSR::setVFlag(bool val) { setCPSRFlags(V, val); }
+void PSR::setVFlag(bool val) { setCPSRFlags(Flag::V, val); }
 
-void PSR::setIFlag(bool val) { setCPSRFlags(I, val); }
+void PSR::setIFlag(bool val) { setCPSRFlags(Flag::I, val); }
 
-void PSR::setFFlag(bool val) { setCPSRFlags(F, val); }
+void PSR::setFFlag(bool val) { setCPSRFlags(Flag::F, val); }
 
-void PSR::setTFlag(bool val) { setCPSRFlags(T, val); }
+void PSR::setTFlag(bool val) { setCPSRFlags(Flag::T, val); }
 
-void PSR::setMode(Mode mode) { Utils::setRegBits(value, MODE_FLAG_MASK, mode); }
+void PSR::setMode(Mode mode) { Utils::setRegBits(value, MODE_FLAG_MASK, static_cast<uint32_t>(mode)); }
 
 bool PSR::isThumbMode() { return Utils::getRegBits(value, T_FLAG_MASK, T_FLAG_SHIFT) == 1; }

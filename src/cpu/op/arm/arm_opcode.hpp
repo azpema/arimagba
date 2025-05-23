@@ -33,7 +33,7 @@ class ArmOpcode : public OpCode {
 
     static bool checkOpCode(uint32_t op, uint32_t mask, uint32_t format);
 
-    enum Condition {
+    enum class Condition {
         EQ = 0b0000,
         NE = 0b0001,
         CS = 0b0010,

@@ -45,14 +45,14 @@ class ExceptionHandler {
 
     ARM7TDMI& cpu;
 
-    std::unordered_map<Exception, PSR::Mode> except2Mode = {{Exception::RESET, PSR::Supervisor},
-                                                            {Exception::UNDEF, PSR::Undefined},
-                                                            {Exception::SWI, PSR::Supervisor},
-                                                            {Exception::PREFETCH_ABORT, PSR::Abort},
-                                                            {Exception::DATA_ABORT, PSR::Abort},
-                                                            {Exception::ADDRESS_EXCEED, PSR::Supervisor},
-                                                            {Exception::FIQ, PSR::FIQ},
-                                                            {Exception::IRQ, PSR::IRQ}};
+    std::unordered_map<Exception, PSR::Mode> except2Mode = {{Exception::RESET, PSR::Mode::Supervisor},
+                                                            {Exception::UNDEF, PSR::Mode::Undefined},
+                                                            {Exception::SWI, PSR::Mode::Supervisor},
+                                                            {Exception::PREFETCH_ABORT, PSR::Mode::Abort},
+                                                            {Exception::DATA_ABORT, PSR::Mode::Abort},
+                                                            {Exception::ADDRESS_EXCEED, PSR::Mode::Supervisor},
+                                                            {Exception::FIQ, PSR::Mode::FIQ},
+                                                            {Exception::IRQ, PSR::Mode::IRQ}};
 
     std::unordered_map<Exception, uint32_t> exceptionVector = {
         {Exception::RESET, 0x00000000},

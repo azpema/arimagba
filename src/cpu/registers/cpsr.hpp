@@ -8,7 +8,7 @@
 class PSR {
   public:
     PSR();
-    enum Flag { N, Z, C, V, I, F, T };
+    enum class Flag { N, Z, C, V, I, F, T };
 
     const static uint32_t MODE_FLAG_USR_VAL = 0b00000000000000000000000000010000;
     const static uint32_t MODE_FLAG_FIQ_VAL = 0b00000000000000000000000000010001;
@@ -18,7 +18,7 @@ class PSR {
     const static uint32_t MODE_FLAG_UND_VAL = 0b00000000000000000000000000011011;
     const static uint32_t MODE_FLAG_SYS_VAL = 0b00000000000000000000000000011111;
 
-    enum Mode {
+    enum class Mode {
         User = MODE_FLAG_USR_VAL,
         FIQ = MODE_FLAG_FIQ_VAL,
         IRQ = MODE_FLAG_IRQ_VAL,

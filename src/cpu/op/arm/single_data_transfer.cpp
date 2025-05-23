@@ -83,7 +83,7 @@ void SingleDataTransfer::init(uint8_t i,
         offsetField = &shiftRmOp2;
     }
 
-    uint32_t raw = Condition::AL << COND_FIELD_SHIFT;
+    uint32_t raw = static_cast<uint32_t>(Condition::AL) << COND_FIELD_SHIFT;
     Utils::setRegBits(raw, I_MASK, i << I_SHIFT);
     Utils::setRegBits(raw, P_MASK, p << P_SHIFT);
     Utils::setRegBits(raw, U_MASK, u << U_SHIFT);

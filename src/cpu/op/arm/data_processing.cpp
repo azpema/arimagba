@@ -82,7 +82,7 @@ void DataProcessing::init(uint8_t i,
         throw std::runtime_error("ERROR: Invalid i value in DataProcessing::DataProcessing");
     }
 
-    uint32_t raw = Condition::AL << COND_FIELD_SHIFT;
+    uint32_t raw = static_cast<uint32_t>(Condition::AL) << COND_FIELD_SHIFT;
     Utils::setRegBits(raw, OPCODE_MASK, opCode << OPCODE_SHIFT);
     Utils::setRegBits(raw, IMMEDIATE_OPERAND_MASK, i << IMMEDIATE_OPERAND_SHIFT);
     Utils::setRegBits(raw, SET_CONDITION_MASK, s << SET_CONDITION_SHIFT);

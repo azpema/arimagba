@@ -29,7 +29,7 @@ ArmOpcode::ArmOpcode(uint32_t op, ARM7TDMI& cpu) : OpCode::OpCode(op, cpu) {
 
 ArmOpcode::ArmOpcode(ARM7TDMI& cpu) : OpCode::OpCode(cpu) {
     // Set some default values
-    opcode = Condition::AL << COND_FIELD_SHIFT;
+    opcode = static_cast<uint32_t>(Condition::AL) << COND_FIELD_SHIFT;
     condRaw = Utils::getRegBits(opcode, COND_FIELD_MASK, COND_FIELD_SHIFT);
     if (condRaw <= 14) {
         cond = static_cast<Condition>(condRaw);
@@ -55,49 +55,49 @@ bool ArmOpcode::execute() {
     // Execute only if conditions are met
     bool execute = false;
     switch (cond) {
-    case EQ:
+    case Condition::EQ:
         execute = cpu.getCPSR().getZFlag();
         break;
-    case NE:
+    case Condition::NE:
         execute = !cpu.getCPSR().getZFlag();
         break;
-    case CS:
+    case Condition::CS:
         execute = cpu.getCPSR().getCFlag();
         break;
-    case CC:
+    case Condition::CC:
         execute = !cpu.getCPSR().getCFlag();
         break;
-    case MI:
+    case Condition::MI:
         execute = cpu.getCPSR().getNFlag();
         break;
-    case PL:
+    case Condition::PL:
         execute = !cpu.getCPSR().getNFlag();
         break;
-    case VS:
+    case Condition::VS:
         execute = cpu.getCPSR().getVFlag();
         break;
-    case VC:
+    case Condition::VC:
         execute = !cpu.getCPSR().getVFlag();
         break;
-    case HI:
+    case Condition::HI:
         execute = (cpu.getCPSR().getCFlag()) && (!cpu.getCPSR().getZFlag());
         break;
-    case LS:
+    case Condition::LS:
         execute = (!cpu.getCPSR().getCFlag()) || (cpu.getCPSR().getZFlag());
         break;
-    case GE:
+    case Condition::GE:
         execute = (cpu.getCPSR().getNFlag() == cpu.getCPSR().getVFlag());
         break;
-    case LT:
+    case Condition::LT:
         execute = (cpu.getCPSR().getNFlag() != cpu.getCPSR().getVFlag());
         break;
-    case GT:
+    case Condition::GT:
         execute = (!cpu.getCPSR().getZFlag()) && (cpu.getCPSR().getNFlag() == cpu.getCPSR().getVFlag());
         break;
-    case LE:
+    case Condition::LE:
         execute = (cpu.getCPSR().getZFlag()) || (cpu.getCPSR().getNFlag() != cpu.getCPSR().getVFlag());
         break;
-    case AL:
+    case Condition::AL:
         execute = true;
         break;
     }
@@ -166,4 +166,4 @@ bool ArmOpcode::isDataProcessing(uint32_t op) {
 
 ArmOpcode::Condition ArmOpcode::getCondField() { return cond; }
 
-std::string ArmOpcode::getCondFieldMnemonic() { return condCode2Suffix[cond]; }
+std::string ArmOpcode::getCondFieldMnemonic() { return condCode2Suffix[static_cast<uint32_t>(cond)]; }

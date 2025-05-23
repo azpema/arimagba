@@ -96,50 +96,50 @@ bool ArmOpcode::execute(){
 
 void ConditionalBranch::doExecute() {
     bool execute = false;
-    switch (cond) {
-    case ArmOpcode::EQ:
+    switch (static_cast<ArmOpcode::Condition>(cond)) {
+    case ArmOpcode::Condition::EQ:
         execute = cpu.getCPSR().getZFlag();
         break;
-    case ArmOpcode::NE:
+    case ArmOpcode::Condition::NE:
         execute = !cpu.getCPSR().getZFlag();
         break;
-    case ArmOpcode::CS:
+    case ArmOpcode::Condition::CS:
         execute = cpu.getCPSR().getCFlag();
         break;
-    case ArmOpcode::CC:
+    case ArmOpcode::Condition::CC:
         execute = !cpu.getCPSR().getCFlag();
         break;
-    case ArmOpcode::MI:
+    case ArmOpcode::Condition::MI:
         execute = cpu.getCPSR().getNFlag();
         break;
-    case ArmOpcode::PL:
+    case ArmOpcode::Condition::PL:
         execute = !cpu.getCPSR().getNFlag();
         break;
-    case ArmOpcode::VS:
+    case ArmOpcode::Condition::VS:
         execute = cpu.getCPSR().getVFlag();
         break;
-    case ArmOpcode::VC:
+    case ArmOpcode::Condition::VC:
         execute = !cpu.getCPSR().getVFlag();
         break;
-    case ArmOpcode::HI:
+    case ArmOpcode::Condition::HI:
         execute = (cpu.getCPSR().getCFlag()) && (!cpu.getCPSR().getZFlag());
         break;
-    case ArmOpcode::LS:
+    case ArmOpcode::Condition::LS:
         execute = (!cpu.getCPSR().getCFlag()) || (cpu.getCPSR().getZFlag());
         break;
-    case ArmOpcode::GE:
+    case ArmOpcode::Condition::GE:
         execute = (cpu.getCPSR().getNFlag() == cpu.getCPSR().getVFlag());
         break;
-    case ArmOpcode::LT:
+    case ArmOpcode::Condition::LT:
         execute = (cpu.getCPSR().getNFlag() != cpu.getCPSR().getVFlag());
         break;
-    case ArmOpcode::GT:
+    case ArmOpcode::Condition::GT:
         execute = (!cpu.getCPSR().getZFlag()) && (cpu.getCPSR().getNFlag() == cpu.getCPSR().getVFlag());
         break;
-    case ArmOpcode::LE:
+    case ArmOpcode::Condition::LE:
         execute = (cpu.getCPSR().getZFlag()) || (cpu.getCPSR().getNFlag() != cpu.getCPSR().getVFlag());
         break;
-    case ArmOpcode::AL:
+    case ArmOpcode::Condition::AL:
         execute = true;
         break;
     }
