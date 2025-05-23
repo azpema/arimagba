@@ -115,7 +115,7 @@ uint32_t ALU::eor(uint32_t op1, uint32_t op2) {
 }
 
 uint32_t ALU::mul(uint32_t op1, uint32_t op2) {
-    uint64_t res = op1 * op2;
+    uint64_t res = static_cast<uint64_t>(op1) * static_cast<uint64_t>(op2);
     res &= 0xFFFFFFFF;
 
     n = (Utils::getRegBits(res, MSB_MASK, MSB_SHIFT) == 1);
