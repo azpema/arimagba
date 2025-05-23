@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "obj/obj_attributes.hpp"
-#include "renderer.hpp"
 
 class ARM7TDMI;
 class Renderer;
@@ -25,9 +24,9 @@ class PPU {
     uint8_t* getVRAM() const;
     uint8_t* getOVRAM() const;
     uint8_t* getOAM() const;
-    const static uint8_t BG_NUM = 4;
-    const static uint8_t MAX_SPRITE_NUM = 128;
-    const static uint8_t TILE_SIZE = 0x20;
+    constexpr static uint8_t BG_NUM = 4;
+    constexpr static uint8_t MAX_SPRITE_NUM = 128;
+    constexpr static uint8_t TILE_SIZE = 0x20;
 
     uint32_t getPageFlipOffset() const;
     uint8_t getBgCharacterBaseBlock(const uint8_t bgNum) const;
@@ -51,12 +50,12 @@ class PPU {
     uint32_t getBgOffsetH(const uint8_t bg) const;
     uint32_t getBgOffsetV(const uint8_t bg) const;
 
-    const static uint32_t SCREEN_WIDTH = 240;
-    const static uint32_t SCREEN_HEIGHT = 160;
-    const static uint32_t PAGE_FLIP_SECOND_OFFSET = 0xA000;
-    const static uint32_t TILE_WIDTH_HEIGHT = 8;
+    constexpr static uint32_t SCREEN_WIDTH = 240;
+    constexpr static uint32_t SCREEN_HEIGHT = 160;
+    constexpr static uint32_t PAGE_FLIP_SECOND_OFFSET = 0xA000;
+    constexpr static uint32_t TILE_WIDTH_HEIGHT = 8;
 
-    const static uint8_t PALETTE_BANK_SIZE = 0x20;
+    constexpr static uint8_t PALETTE_BANK_SIZE = 0x20;
 
   private:
     ARM7TDMI& cpu;
@@ -75,7 +74,7 @@ class PPU {
     uint16_t* BGxVOFS[BG_NUM];
 
     // ***************** VCOUNT *****************
-    const static uint8_t VCOUNT_START_VBLANK = 160;
+    const static uint8_t VCOUNT_START_VBLANK = SCREEN_HEIGHT;
     const static uint8_t VCOUNT_END_VBLANK = 227;
     const static uint32_t VCOUNT_INITIAL_VALUE = 0x7e;
 

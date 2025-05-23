@@ -32,7 +32,7 @@ class Renderer {
     SDL_Renderer* renderer = nullptr;
     SDL_Texture* textureScanline = nullptr;
     SDL_Texture* textureFrame = nullptr;
-    uint16_t pixelsFrame[160][240] = {{0}};
+    uint16_t pixelsFrame[PPU::SCREEN_HEIGHT][PPU::SCREEN_WIDTH] = {{0}};
     const PPU& ppu;
 
     constexpr static int32_t TRANSPARENT_PIXEL = -1;

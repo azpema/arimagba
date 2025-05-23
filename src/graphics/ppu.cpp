@@ -3,6 +3,7 @@
 #include "../memory/vram.hpp"
 #include "../memory/palette_ram.hpp"
 #include "../memory/io_registers.hpp"
+#include "renderer.hpp"
 #include "screen_entry.hpp"
 
 PPU::PPU(const std::string& title, ARM7TDMI& cpu, MemoryManager* memManager) :
