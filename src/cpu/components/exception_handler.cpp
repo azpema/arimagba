@@ -34,14 +34,13 @@ void ExceptionHandler::doHandleException() {
         //returnPC += 2;
     }*/
     if (cpu.getCPSR().getTFlag()) {
-        if (ex == Exception::SWI)
-            returnPC -= 2; // OK
-
+        if (ex == Exception::SWI){
+            returnPC -= 2;
+        } else {
+            // Do nothing for now
+        }
     } else {
-        if (ex == Exception::SWI)
-            returnPC -= 4; // OK
-        else
-            returnPC -= 4; // OK
+        returnPC -= 4;
     }
     // This is a copy
     PSR oldCPSR = cpu.getCPSR();
@@ -77,8 +76,6 @@ void ExceptionHandler::doHandleException() {
         break;
     case Exception::FIQ:
         throw std::runtime_error("TODO: Unimplemented exception FIQ in ExceptionHandler::raiseException");
-        break;
-    case Exception::IRQ:
         break;
     default:
         break;
