@@ -201,7 +201,7 @@ std::vector<ObjAttributes> PPU::getObjList() const {
             break;
         }
 
-        vec.push_back(std::move(*obj));
+        vec.push_back(*obj);
     }
 
     std::sort(vec.begin(), vec.end(), [](const ObjAttributes& a, const ObjAttributes& b) {
