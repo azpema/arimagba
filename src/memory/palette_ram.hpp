@@ -4,7 +4,7 @@
 #include "generic_memory.hpp"
 #include <iostream>
 
-class PaletteRAM : public GenericMemory<PALETTERAM_SIZE> {
+class PaletteRAM : public GenericMemory {
   public:
     PaletteRAM();
     const static uint32_t BG_OFFSET = 0;

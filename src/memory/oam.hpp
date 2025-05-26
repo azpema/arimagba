@@ -4,7 +4,7 @@
 #include "generic_memory.hpp"
 #include <iostream>
 
-class OAM : public GenericMemory<OAM_SIZE> {
+class OAM : public GenericMemory {
   public:
     OAM();
 };

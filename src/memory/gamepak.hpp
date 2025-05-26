@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-class GamePak : public GenericMemory<ROM_SIZE> {
+class GamePak : public GenericMemory {
   public:
     GamePak(const std::string& filePath);
     ~GamePak() = default;

@@ -1,3 +1,3 @@
 #include "vram.hpp"
 
-VRAM::VRAM() { std::cerr << "TODO Set proper initial values at VRAM" << '\n'; }
+VRAM::VRAM() : GenericMemory(VRAM_SIZE) { std::cerr << "TODO Set proper initial values at VRAM" << '\n'; }

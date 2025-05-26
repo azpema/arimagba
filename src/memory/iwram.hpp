@@ -4,7 +4,7 @@
 #include "generic_memory.hpp"
 #include <iostream>
 
-class IWRAM : public GenericMemory<IWRAM_SIZE> {
+class IWRAM : public GenericMemory {
   public:
     IWRAM();
 };

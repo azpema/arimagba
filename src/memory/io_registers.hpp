@@ -100,7 +100,7 @@ constexpr static uint32_t HALTCNT = REG_ADDR::HALTCNT + REG_SIZE::HALTCNT;
 constexpr static uint32_t KEYINPUT = REG_ADDR::KEYINPUT + REG_SIZE::KEYINPUT;
 } // namespace REG_ADDR_END
 
-class IOregisters : public GenericMemory<IOREGISTERS_SIZE> {
+class IOregisters : public GenericMemory {
   public:
     IOregisters();
     void storeWrapper(uint32_t addr, uint32_t val, uint8_t bytes);

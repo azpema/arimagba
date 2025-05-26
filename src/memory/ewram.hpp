@@ -4,7 +4,7 @@
 #include "generic_memory.hpp"
 #include <iostream>
 
-class EWRAM : public GenericMemory<EWRAM_SIZE> {
+class EWRAM : public GenericMemory {
   public:
     EWRAM();
 };

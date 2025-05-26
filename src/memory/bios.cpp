@@ -2,7 +2,7 @@
 #include "../utils/utils.hpp"
 #include <fstream>
 
-BIOS::BIOS(const std::string& filePath) {
+BIOS::BIOS(const std::string& filePath) : GenericMemory(BIOS_SIZE) {
     std::ifstream fileStream = std::ifstream(filePath, std::ios::binary | std::ifstream::ate);
     if (!fileStream) {
         throw std::runtime_error("ERROR: BIOS Failed to open the file.");

@@ -1,7 +1,7 @@
 #include "io_registers.hpp"
 #include "dma.hpp"
 
-IOregisters::IOregisters() : mustHaltCpu(false) {
+IOregisters::IOregisters() : GenericMemory(IOREGISTERS_SIZE), mustHaltCpu(false) {
     std::cerr << "TODO Set proper initial values at IOregisters" << '\n';
 
     for (size_t n = 0; n < DMA_CNT; n++) {

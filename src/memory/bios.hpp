@@ -4,7 +4,7 @@
 #include "generic_memory.hpp"
 #include <iostream>
 
-class BIOS : public GenericMemory<BIOS_SIZE> {
+class BIOS : public GenericMemory {
   public:
     BIOS(const std::string& filePath);
     uint32_t readWrapper(uint32_t addr, uint8_t bytes, bool isPcInBios);

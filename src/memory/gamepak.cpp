@@ -3,7 +3,7 @@
 #include <cstring>
 #include <iostream>
 
-GamePak::GamePak(const std::string& filePath) {
+GamePak::GamePak(const std::string& filePath) : GenericMemory(ROM_SIZE) {
     std::ifstream fileStream = std::ifstream(filePath, std::ios::binary | std::ifstream::ate);
     if (!fileStream) {
         throw std::runtime_error("ERROR: GamePak Failed to open the file.");

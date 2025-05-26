@@ -4,7 +4,7 @@
 #include "generic_memory.hpp"
 #include <iostream>
 
-class SRAM : public GenericMemory<SRAM_SIZE> {
+class SRAM : public GenericMemory {
   public:
     SRAM();
 };
