@@ -6,16 +6,34 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 class GamePak : public GenericMemory {
   public:
     GamePak(const std::string& filePath);
     ~GamePak() = default;
 
+    enum class SaveType { EEPROM, SRAM, FLASH_64KB, FLASH_128KB, UNKNOWN };
+
+    const std::unordered_map<std::string, SaveType> regexToSaveType = { { R"(EEPROM_V\d\d\d)", SaveType::EEPROM },
+                                                                  { R"(SRAM_V\d\d\d)", SaveType::SRAM },
+                                                                  { R"(FLASH_V\d\d\d)", SaveType::FLASH_64KB },
+                                                                  { R"(FLASH512_V\d\d\d)", SaveType::FLASH_64KB },
+                                                                  { R"(FLASH1M_V\d\d\d)", SaveType::FLASH_128KB } };
+
+    const std::unordered_map<SaveType, std::string> saveTypeToStr = { { SaveType::EEPROM, "EEPROM" },
+                                                                      { SaveType::SRAM, "SRAM" },
+                                                                      { SaveType::FLASH_64KB, "FLASH_64KB" },
+                                                                      { SaveType::FLASH_128KB, "FLASH_128KB" },
+                                                                      { SaveType::UNKNOWN, "Unknown" } };
+
     int calcComplementCheck();
-    void printHeader();
+    void printInfo();
 
   private:
+    SaveType detectSaveType();
+    size_t size;
+
     const static int ENTRY_POINT_OFF = 0x000;
     const static int ENTRY_POINT_SIZE = 4;
     const static int NINTENDO_LOGO_OFF = 0x004;
@@ -53,6 +71,7 @@ class GamePak : public GenericMemory {
     uint8_t softwareVersion;
     uint8_t complementCheck;
     uint8_t reservedArea2[GamePak::RESERVED_AREA_2_SIZE];
+    SaveType saveType;
 
     // TODO: Multiboot header
 };

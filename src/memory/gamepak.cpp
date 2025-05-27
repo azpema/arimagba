@@ -2,6 +2,7 @@
 #include "../utils/utils.hpp"
 #include <cstring>
 #include <iostream>
+#include <regex>
 
 GamePak::GamePak(const std::string& filePath) : GenericMemory(ROM_SIZE) {
     std::ifstream fileStream = std::ifstream(filePath, std::ios::binary | std::ifstream::ate);
@@ -10,6 +11,8 @@ GamePak::GamePak(const std::string& filePath) : GenericMemory(ROM_SIZE) {
     }
 
     uint32_t fileSize = fileStream.tellg();
+    size = fileSize;
+
     fileStream.seekg(0, std::ios::beg);
 
     if (!fileStream.is_open()) {
@@ -42,6 +45,23 @@ GamePak::GamePak(const std::string& filePath) : GenericMemory(ROM_SIZE) {
     softwareVersion = mem[GamePak::SOFTWARE_VERSION_OFF];
     complementCheck = mem[GamePak::COMPLEMENT_CHECK_OFF];
     std::memcpy(reservedArea2, &mem[GamePak::RESERVED_AREA_2_OFF], GamePak::RESERVED_AREA_2_SIZE);
+
+    saveType = detectSaveType();
+}
+
+GamePak::SaveType GamePak::detectSaveType() {
+    std::string memStr(reinterpret_cast<const char*>(mem.get()), size);
+
+    for(const auto& pair : regexToSaveType) {
+        std::regex pattern(pair.first);
+        std::smatch match;
+
+        if (std::regex_search(memStr, match, pattern)) {
+            return regexToSaveType.at(pair.first);
+        } 
+    }
+
+    return SaveType::UNKNOWN;
 }
 
 int GamePak::calcComplementCheck() {
@@ -56,7 +76,7 @@ int GamePak::calcComplementCheck() {
     return chk;
 }
 
-void GamePak::printHeader() {
+void GamePak::printInfo() {
     std::cout << "Entry point: 0x" << std::hex << this->entryPoint << std::dec << '\n';
     // std::cout << "Nintendo Logo: " << this->nintendoLogo << '\n';
     std::cout << "Game Title: " << gameTitle << '\n';
@@ -74,4 +94,5 @@ void GamePak::printHeader() {
     else
         std::cout << "(INCORRECT)" << '\n';
     std::cout << "Reserved Area 2: 0x" << std::hex << static_cast<int>(this->reservedArea2[0]) << std::dec << '\n';
+    std::cout << "Detected save data type: " << saveTypeToStr.at(saveType) << '\n';
 }

@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
     bool vblankNow = false;
     bool hblankNow = false;
 
-    gamepak.printHeader();
+    gamepak.printInfo();
 
     while (run) {
         // Handle events
