@@ -10,7 +10,7 @@ ExceptionHandler::ExceptionHandler(ARM7TDMI& cpu) :
 
 void ExceptionHandler::raiseException(Exception excep, Interrupt inter) {
     this->ex = excep;
-    // this->mustHandleException = true;
+    this->mustHandleException = true;
     // this->inter = inter;
 
     if (excep == Exception::IRQ) {
@@ -25,6 +25,7 @@ void ExceptionHandler::raiseException(Exception excep, Interrupt inter) {
 }
 
 void ExceptionHandler::doHandleException() {
+    mustHandleException = false;
     PSR::Mode newMode = except2Mode[ex];
     uint32_t newPC = exceptionVector[ex];
     uint32_t returnPC = cpu.getPC();
@@ -83,7 +84,7 @@ void ExceptionHandler::doHandleException() {
 }
 
 void ExceptionHandler::handleException() {
-    if ((*IF & *IE) != 0) {
+    if (mustHandleException && (*IF & *IE) != 0) {
         // TODO check if CPSR irq enabled!!¿?¿¿?
         // if(ex != Exception::IRQ || (isMasterInterruptEnabled() &&
         // isSpecificInterruptEnabled(inter))){

@@ -41,7 +41,7 @@ class ExceptionHandler {
 
     // Interrupt inter;
     Exception ex;
-    // bool mustHandleException;
+    bool mustHandleException = false;
 
     ARM7TDMI& cpu;
 
