@@ -15,7 +15,7 @@ uint32_t Utils::setRegBits(uint32_t& reg, const uint32_t mask, const uint32_t va
 
 uint32_t Utils::getRegBits(uint32_t reg, const uint32_t mask, const uint32_t shift) { return (reg & mask) >> shift; }
 
-bool Utils::getRegSingleBit(uint32_t reg, uint8_t pos) { return (reg >> pos) & 0x1; }
+bool Utils::getRegSingleBit(uint64_t reg, uint8_t pos) { return (reg >> pos) & 0x1; }
 
 uint32_t Utils::rotateRight(uint32_t reg, uint32_t nTimes) {
     uint32_t res = reg;
@@ -27,12 +27,12 @@ uint32_t Utils::rotateRight(uint32_t reg, uint32_t nTimes) {
     return res;
 }
 
-std::string Utils::toHexString(uint32_t val, uint32_t paddingNum) {
+std::string Utils::toHexString(uint32_t val, int paddingNum) {
     std::stringstream stream;
     if (paddingNum == 0) {
-        stream << "0x" << std::uppercase << std::hex << val;
+        stream << "0x" << std::uppercase << std::hex << val << std::dec;
     } else {
-        stream << "0x" << std::uppercase << std::setfill('0') << std::setw(paddingNum) << std::hex << val;
+        stream << "0x" << std::uppercase << std::setfill('0') << std::setw(paddingNum) << std::hex << val << std::dec;
     }
 
     return stream.str();
@@ -61,4 +61,10 @@ uint32_t Utils::readUint32(uint8_t* data) {
     uint32_t val;
     std::memcpy(&val, data, sizeof(uint32_t));
     return std::endian::native == std::endian::little ? val : byteSwap32(val);
+}
+
+uint64_t Utils::readUint64(uint8_t* data) {
+    uint64_t val;
+    std::memcpy(&val, data, sizeof(uint64_t));
+    return std::endian::native == std::endian::little ? val : std::byteswap(val);
 }
