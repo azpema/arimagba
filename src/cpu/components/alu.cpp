@@ -2,8 +2,6 @@
 
 ALU::ALU() : n(false), z(false), c(false), v(false) {}
 
-// 32 BIT ALU!!!
-
 uint32_t ALU::add(uint32_t op1, uint32_t op2) {
     uint32_t res = op1 + op2;
 
