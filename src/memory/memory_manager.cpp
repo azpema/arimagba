@@ -9,6 +9,8 @@
 #include "palette_ram.hpp"
 #include "sram.hpp"
 #include "vram.hpp"
+#include "persistent/eeprom.hpp"
+#include <filesystem>
 
 MemoryManager::MemoryManager(BIOS& bios,
                              GamePak& gamepak,
@@ -18,9 +20,12 @@ MemoryManager::MemoryManager(BIOS& bios,
                              SRAM& sram,
                              OAM& oam,
                              PaletteRAM& paletteRam,
-                             IOregisters& io) :
+                             IOregisters& io,
+                             std::filesystem::path& savePath,
+                             std::function<void(std::unique_ptr<EEPROM>)> initEEPROM ) :
     bios(bios),
-    gamepak(gamepak), vram(vram), ewram(ewram), iwram(iwram), sram(sram), oam(oam), paletteRam(paletteRam), io(io) {}
+    gamepak(gamepak), vram(vram), ewram(ewram), iwram(iwram), sram(sram), oam(oam), paletteRam(paletteRam), io(io),
+    savePath(savePath), lazyInitEEPROM(std::move(initEEPROM)), eeprom(nullptr) {}
 
 uint32_t MemoryManager::readWord(uint32_t addr, bool opPreFetch) { return read(addr, 4, opPreFetch); }
 
@@ -97,7 +102,14 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes, bool opPreFetch) {
         break;
     case Region::GAMEPAK_WAIT_2_REGION_1:
     case Region::GAMEPAK_WAIT_2_REGION_2:
-        val = gamepak.read(addr - GAMEPAK_WAIT_2_OFFSET_START, bytes);
+        if (Utils::inRange<>(addr, EEPROM_OFFSET_START, EEPROM_OFFSET_END)){
+            val = eeprom->serialRead();
+        } else if (addr == 0x0D000000) {
+            return 1;
+        } else {
+            val = gamepak.read(addr - GAMEPAK_WAIT_2_OFFSET_START, bytes);
+        }
+
         break;
     case Region::SRAM:
     case Region::SRAM_MIRROR:
@@ -226,6 +238,14 @@ void MemoryManager::store(uint32_t addr, uint32_t val, uint8_t bytes) {
     case Region::GAMEPAK_WAIT_1_REGION_2:
     case Region::GAMEPAK_WAIT_2_REGION_1:
     case Region::GAMEPAK_WAIT_2_REGION_2:
+        // With eeprom, ROM is restricted to 8000000h-9FFFeFFh (max. 1FFFF00h bytes = 32MB minus 256 bytes).
+        // On carts with 16MB or smaller ROM, eeprom can be alternately accessed anywhere at D000000h-DFFFFFFh.
+
+        // TODO: check if EEPROM is present
+        // TODO: this write is only valid if it's coming from DMA3
+        if(Utils::inRange<>(addr, EEPROM_OFFSET_START, EEPROM_OFFSET_END)){
+            eeprom->serialWrite(static_cast<bool>(val & 0x1));
+        }
         // Do nothing
         break;
     case Region::SRAM:
@@ -258,4 +278,20 @@ void MemoryManager::addCpu(ARM7TDMI* cpu) { this->cpu = cpu; }
 
 bool MemoryManager::isAddrInRom(uint32_t addr) {
     return addr >= GAMEPAK_WAIT_0_OFFSET_START && addr <= GAMEPAK_WAIT_2_OFFSET_END;
+}
+
+bool MemoryManager::isEEPROMReady() {
+    return eeprom != nullptr;
+}
+
+void MemoryManager::initEEPROM(int dmaNumTransfers) {
+    auto size = numTransfersToSize.at(dmaNumTransfers);
+    std::cout << "Initializing EEPROM size " << EEPROM::sizeToBytes.at(size) << " bytes" << '\n';
+    if (!eeprom) {
+        auto moveEEPROM = std::make_unique<EEPROM>(size, savePath);
+        eeprom = moveEEPROM.get();
+        lazyInitEEPROM(std::move(moveEEPROM));
+    } else {
+        throw std::runtime_error("EEPROM has already been initialized!");
+    }
 }

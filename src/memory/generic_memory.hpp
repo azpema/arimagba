@@ -16,10 +16,10 @@ const static uint32_t VRAM_SIZE = 0x18000;
 
 class GenericMemory {
   public:
-    GenericMemory(size_t size);
+    GenericMemory(size_t size, bool fillWith1s = false);
     ~GenericMemory() = default;
-    uint32_t read(uint32_t addr, uint8_t bytes);
-    void store(uint32_t addr, uint32_t val, uint8_t bytes);
+    uint64_t read(uint32_t addr, uint8_t bytes);
+    void store(uint32_t addr, uint64_t val, uint8_t bytes);
     uint8_t* getRawMemory();
 
   protected:

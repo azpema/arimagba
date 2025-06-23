@@ -87,7 +87,7 @@ template <int N> void DMA<N>::runCycle(const bool vblankNow, const bool hblankNo
     if (isDmaEnabled()) {
         static uint32_t readAddr;
         static uint32_t writeAddr;
-        static uint32_t numTransfers;
+        static int numTransfers;
 
         SrcAdj sourceAdjustment = getSourceAdjustment();
         DstAdj destAdjustment = getDestAdjustment();
@@ -160,13 +160,33 @@ template <int N> void DMA<N>::runCycle(const bool vblankNow, const bool hblankNo
 
         if (doTransferNow) {
 
-            if (dmaNum != 3 && MemoryManager::isAddrInRom(*DMAxDAD)) {
-                throw std::runtime_error("DMA dest address must not be in ROM address space");
+            // TODO: check EEPROM addr
+            if (MemoryManager::isAddrInRom(*DMAxDAD)) {
+                if (dmaNum == 3) {
+                    if (!mem.isEEPROMReady()) {
+                        std::cout << "EEPROM write size " << numTransfers << " detected!" << '\n';
+
+                        mem.initEEPROM(numTransfers);
+                    }
+                    std::cout << "Sending command to EEPROM" << '\n';
+                    std::cout << "Command size " << numTransfers << '\n';
+                } else {
+                    throw std::runtime_error("DMA dest address must not be in ROM address space");
+                }
+            }
+
+            if (MemoryManager::isAddrInRom(*DMAxSAD)) {
+                if (dmaNum == 3) {
+                    std::cout << "Reading back from EEPROM" << '\n';
+                    std::cout << "Command size " << numTransfers << '\n';
+                } else {
+                    throw std::runtime_error("DMA source address must not be in ROM address space");
+                }
             }
 
             uint32_t iterReadAddr = readAddr;
             uint32_t iterWriteAddr = writeAddr;
-            for (size_t i = 0; i < numTransfers; i++) {
+            for (int i = 0; i < numTransfers; i++) {
                 // Force alignment
                 uint32_t alignedReadAddress;
                 uint32_t alignedWriteAddress;

@@ -2,7 +2,10 @@
 #define _MEMORY_MANAGER_
 
 #include "../utils/utils.hpp"
+#include "persistent/eeprom.hpp"
 #include <iostream>
+#include <functional>
+#include <memory>
 #include <stdexcept>
 class BIOS;
 class GamePak;
@@ -74,7 +77,9 @@ class MemoryManager {
                   SRAM& sram,
                   OAM& oam,
                   PaletteRAM& paletteRam,
-                  IOregisters& io);
+                  IOregisters& io,
+                  std::filesystem::path& savePath,
+                  std::function<void(std::unique_ptr<EEPROM>)> lazyInitEEPROM);
     uint32_t readWord(uint32_t addr, bool opPreFetch = false);
     uint16_t readHalfWord(uint32_t addr, bool opPreFetch = false);
     uint8_t readByte(uint32_t addr);
@@ -90,6 +95,8 @@ class MemoryManager {
     void addCpu(ARM7TDMI* cpu);
 
     static bool isAddrInRom(uint32_t addr);
+    bool isEEPROMReady();
+    void initEEPROM(int dmaNumTransfers);
 
     // General Internal Memory
     const static uint32_t BIOS_OFFSET_START = 0x00000000;
@@ -135,6 +142,11 @@ class MemoryManager {
     const static uint32_t GAMEPAK_WAIT_2_OFFSET_START = 0x0C000000;
     const static uint32_t GAMEPAK_WAIT_2_OFFSET_END = 0x0DFFFFFF;
 
+    // The eeprom can be addressed at DFFFF00h..DFFFFFFh.
+    // On carts with 16MB or smaller ROM, eeprom can be alternately accessed anywhere at D000000h-DFFFFFFh.
+    const static uint32_t EEPROM_OFFSET_START = 0x0DFFFF00;
+    const static uint32_t EEPROM_OFFSET_END = 0x0DFFFFFF;
+
     const static uint32_t GAMEPAK_SRAM_OFFSET_START = 0x0E000000;
     const static uint32_t GAMEPAK_SRAM_OFFSET_END = 0x0E00FFFF;
     const static uint32_t GAMEPAK_SRAM_MIRROR_OFFSET_END = 0x0FFFFFFF;
@@ -156,6 +168,9 @@ class MemoryManager {
     OAM& oam;
     PaletteRAM& paletteRam;
     IOregisters& io;
+    std::filesystem::path savePath;
+    std::function<void(std::unique_ptr<EEPROM>)> lazyInitEEPROM;
+    EEPROM* eeprom;
 
     ARM7TDMI* cpu;
     uint32_t openBusVal = 0;
@@ -177,6 +192,9 @@ class MemoryManager {
         SRAM = 0xE,
         SRAM_MIRROR = 0xF
     };
+
+    std::unordered_map<int, EEPROM::Size> numTransfersToSize = {{ 9 , EEPROM::Size::_512_BYTES },
+                                                                { 17, EEPROM::Size::_8_KBYTES  }};
 };
 
 #endif

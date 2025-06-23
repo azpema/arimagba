@@ -11,6 +11,7 @@
 #include "memory/palette_ram.hpp"
 #include "memory/sram.hpp"
 #include "memory/vram.hpp"
+#include "memory/persistent/eeprom.hpp"
 #include "utils/utils.hpp"
 #include <bitset>
 #include <filesystem>
@@ -21,10 +22,13 @@ void decodeAllInstructionsArm(ARM7TDMI& cpu);
 int main(int argc, char** argv) {
     std::cout << "Current path is " << std::filesystem::current_path() << '\n';
 
-    std::string gamePath = "../files/irq_demo.gba";
+    std::string gamePath = "../files/shinchan.gba";
     if (argc >= 2) {
         gamePath = std::string(argv[1]);
     }
+
+    std::filesystem::path savePath = std::filesystem::absolute(gamePath);
+    savePath.replace_extension(".sav");
 
     BIOS bios("../files/bios.bin");
     GamePak gamepak(gamePath);
@@ -35,7 +39,12 @@ int main(int argc, char** argv) {
     OAM oam;
     PaletteRAM paletteram;
     IOregisters io;
-    MemoryManager mem(bios, gamepak, vram, ewram, iwram, sram, oam, paletteram, io);
+    // Gamepak may or may not have an EEPROM; we do not know its size either
+    std::unique_ptr<EEPROM> eeprom = nullptr;
+    MemoryManager mem(bios, gamepak, vram, ewram, iwram, sram, oam, paletteram, io, savePath,
+        [&eeprom](std::unique_ptr<EEPROM> obj) {
+        eeprom = std::move(obj);
+    });
 
     Keys keys(&mem);
     ARM7TDMI cpu(&mem);
