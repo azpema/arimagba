@@ -120,7 +120,7 @@ void BlockDataTransfer::doExecute() {
         // Pre calculate end address for possible writeback
         // STMDB / STMFD
         if (p == 1 && u == 0) {
-            emptyListOffset = emptyList ? -0x40 : -registerListVec.size() * 4;
+            emptyListOffset = emptyList ? static_cast<int32_t>(-0x40) : -static_cast<int32_t>(registerListVec.size()) * 4;
             baseAddr = cpu.getReg(rn) + emptyListOffset;
             endAddr = baseAddr;
             // STMIB / STMFA
