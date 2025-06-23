@@ -378,7 +378,7 @@ void ARM7TDMI::printStatus() {
 
 void ARM7TDMI::printRegisterValues() {
     for (size_t i = 0; i < REG_CNT; i++) {
-        std::cout << std::uppercase << std::setfill('0') << std::setw(8) << std::hex << getReg(i) << " ";
+        std::cout << std::uppercase << std::setfill('0') << std::setw(8) << std::hex << getReg(i) << " " << std::dec;
     }
 }
 
@@ -438,7 +438,7 @@ uint32_t ARM7TDMI::executeNextInstruction() {
             // printStatus();
             // std::cout << "<<<" << '\n';
             printRegisterValues();
-            std::cout << "cpsr: " << std::uppercase << std::setfill('0') << std::setw(8) << std::hex << cpsr.getValue();
+            std::cout << "cpsr: " << std::uppercase << std::setfill('0') << std::setw(8) << std::hex << cpsr.getValue() << std::dec;
             std::cout << " | " << opString << '\n';
         }
 
