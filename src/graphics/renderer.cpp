@@ -34,17 +34,17 @@ Renderer::Renderer(const PPU& ppu, const std::string& title) : ppu(ppu) {
 }
 
 Renderer::~Renderer() {
-    if (renderer != nullptr)
-        SDL_DestroyRenderer(renderer);
-
-    if (window != nullptr)
-        SDL_DestroyWindow(window);
-
     if (textureScanline != nullptr)
         SDL_DestroyTexture(textureScanline);
 
     if (textureFrame != nullptr)
         SDL_DestroyTexture(textureFrame);
+
+    if (renderer != nullptr)
+        SDL_DestroyRenderer(renderer);
+
+    if (window != nullptr)
+        SDL_DestroyWindow(window);
 }
 
 void Renderer::getBackgroundScanline(const uint8_t bg, int32_t* toPaint) {
