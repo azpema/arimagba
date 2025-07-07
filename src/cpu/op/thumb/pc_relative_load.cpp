@@ -28,9 +28,9 @@ void PCRelativeLoad::doExecute() {
     uint8_t w = 0;
     uint8_t l = 1;
     bool forcePcBit1To0 = true;
-    SingleDataTransfer opArm = SingleDataTransfer(i, p, u, b, w, l, 15, rd, offset, cpu, forcePcBit1To0);
-    // std::cout << "<< ARM >> " << opArm.toString() << '\n';
-    opArm.doExecute();
+    SingleDataTransfer* opArm = static_cast<SingleDataTransfer*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::SINGLE_DATA_TRANSFER));
+    opArm->init(i, p, u, b, w, l, 15, rd, offset, forcePcBit1To0);
+    opArm->doExecute();
 }
 
 uint32_t PCRelativeLoad::cyclesUsed() const { return 1; }

@@ -33,9 +33,9 @@ void SPLoadStore::doExecute() {
     uint8_t u = 1;
     uint8_t b = 0;
     uint8_t w = 0;
-    SingleDataTransfer opArm = SingleDataTransfer(i, p, u, b, w, l, 13, rd, offsetVal, cpu);
-    // std::cout << "<< ARM >> " << opArm.toString() << '\n';
-    opArm.doExecute();
+    SingleDataTransfer* opArm = static_cast<SingleDataTransfer*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::SINGLE_DATA_TRANSFER));
+    opArm->init(i, p, u, b, w, l, 13, rd, offsetVal);
+    opArm->doExecute();
 }
 
 uint32_t SPLoadStore::cyclesUsed() const { return 1; }
