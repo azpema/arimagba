@@ -4,13 +4,17 @@
 
 ## Build
 
-You will need `cmake`version 3.10 or later, `SDL2` and `SDL2_Image`.
-
-To build the emulator, run these:
+You will need `cmake` version 3.10 or later, `SDL2` and `SDL2_Image`. On a Debian based system these can be installed with these commands:
 ```bash
-mkdir build
-cd build
-cmake ..
+sudo apt update
+sudo apt install cmake libsdl2-2.0-0 libsdl2-dev libsdl2-image-2.0-0 libsdl2-image-dev
+```
+
+To build the emulator in release mode, run these:
+```bash
+mkdir release
+cd release
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 ```
 
@@ -49,14 +53,23 @@ The following table lists the key bindings used in the emulator:
   </tr>
 </table>
 
+## Features
+These GBA features are implemented and working:
+
+* ARM7TDMI Arm & Thumb instructions
+* Interrupts
+* DMA transfers
+* EEPROM game saves
+* Graphical modes 0, 3, 4, 5 & 6
 
 ## Not implemented
 
 The following GBA features are still a work in progress and have not yet been implemented:
 
 * Sound
-* Game saves
 * Timers
+* SRAM & Flash game saves
+* Affine sprites
 * Graphical modes 1, 2 & 7
 
 ## Known bugs
@@ -71,6 +84,7 @@ The following GBA features are still a work in progress and have not yet been im
 https://www.coranac.com/tonc/text/
 https://gbadev.net/tonc/setup.html
 https://rust-console.github.io/gbatek-gbaonly/
+http://belogic.com/gba/directsound.shtml
 
 ### Articles
 
@@ -82,11 +96,8 @@ https://densinh.github.io/DenSinH/emulation/2021/02/01/gba-eeprom.html
 * #### CPU
 
     https://github.com/jsmolka/gba-tests/tree/master
-
     https://github.com/nba-emu/hw-test/tree/master
-
     https://github.com/jsmolka/gba-tests/blob/master/memory/memory.gba
-    
     https://github.com/mgba-emu/suite
 
 * #### DMA
@@ -105,6 +116,6 @@ https://densinh.github.io/DenSinH/emulation/2021/02/01/gba-eeprom.html
     https://discord.com/channels/465585922579103744/465586361731121162/921932070366883961
     https://discord.com/channels/465585922579103744/465586361731121162/871655745169526844
 
-* #### Sound
+* #### EEPROM & Flash
 
-    http://belogic.com/gba/directsound.shtml
+    https://github.com/DenSinH/GBARoms/tree/master
