@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
     while (run) {
         // Handle events
-        if (cpuCycles % 100 == 0) {
+        if (cpuCycles % 500 == 0) {
             SDL_Event e;
             while (SDL_PollEvent(&e)) {
                 switch (e.type) {
