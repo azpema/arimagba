@@ -49,7 +49,7 @@ GamePak::GamePak(const std::string& filePath) : GenericMemory(ROM_SIZE) {
     saveType = detectSaveType();
 }
 
-GamePak::SaveType GamePak::detectSaveType() {
+GamePak::SaveType GamePak::detectSaveType() const {
     std::string memStr(reinterpret_cast<const char*>(mem.get()), size);
 
     for(const auto& pair : regexToSaveType) {
@@ -64,7 +64,9 @@ GamePak::SaveType GamePak::detectSaveType() {
     return SaveType::UNKNOWN;
 }
 
-int GamePak::calcComplementCheck() {
+size_t GamePak::getSize() const { return size; }
+
+int GamePak::calcComplementCheck() const {
     int chk = 0;
     for (int i = 0x0A0; i < 0x0BC; i++) {
         int val;
@@ -76,7 +78,7 @@ int GamePak::calcComplementCheck() {
     return chk;
 }
 
-void GamePak::printInfo() {
+void GamePak::printInfo() const {
     std::cout << "Entry point: 0x" << std::hex << this->entryPoint << std::dec << '\n';
     // std::cout << "Nintendo Logo: " << this->nintendoLogo << '\n';
     std::cout << "Game Title: " << gameTitle << '\n';

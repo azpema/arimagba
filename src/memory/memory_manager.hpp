@@ -144,7 +144,7 @@ class MemoryManager {
 
     // The eeprom can be addressed at DFFFF00h..DFFFFFFh.
     // On carts with 16MB or smaller ROM, eeprom can be alternately accessed anywhere at D000000h-DFFFFFFh.
-    const static uint32_t EEPROM_OFFSET_START = 0x0DFFFF00;
+    const uint32_t EEPROM_OFFSET_START;
     const static uint32_t EEPROM_OFFSET_END = 0x0DFFFFFF;
 
     const static uint32_t GAMEPAK_SRAM_OFFSET_START = 0x0E000000;

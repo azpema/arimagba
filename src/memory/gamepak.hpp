@@ -13,6 +13,10 @@ class GamePak : public GenericMemory {
     GamePak(const std::string& filePath);
     ~GamePak() = default;
 
+    int calcComplementCheck() const;
+    void printInfo() const;
+    size_t getSize() const;
+
     enum class SaveType { EEPROM, SRAM, FLASH_64KB, FLASH_128KB, UNKNOWN };
 
     const std::unordered_map<std::string, SaveType> regexToSaveType = { { R"(EEPROM_V\d\d\d)", SaveType::EEPROM },
@@ -27,11 +31,8 @@ class GamePak : public GenericMemory {
                                                                       { SaveType::FLASH_128KB, "FLASH_128KB" },
                                                                       { SaveType::UNKNOWN, "Unknown" } };
 
-    int calcComplementCheck();
-    void printInfo();
-
   private:
-    SaveType detectSaveType();
+    SaveType detectSaveType() const;
     size_t size;
 
     const static int ENTRY_POINT_OFF = 0x000;

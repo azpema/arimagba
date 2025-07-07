@@ -23,7 +23,7 @@ MemoryManager::MemoryManager(BIOS& bios,
                              IOregisters& io,
                              std::filesystem::path& savePath,
                              std::function<void(std::unique_ptr<EEPROM>)> initEEPROM ) :
-    bios(bios),
+    EEPROM_OFFSET_START(gamepak.getSize() > 0x01000000 ? 0x0DFFFF00 : 0x0D000000), bios(bios),
     gamepak(gamepak), vram(vram), ewram(ewram), iwram(iwram), sram(sram), oam(oam), paletteRam(paletteRam), io(io),
     savePath(savePath), lazyInitEEPROM(std::move(initEEPROM)), eeprom(nullptr) {}
 
@@ -104,8 +104,6 @@ uint32_t MemoryManager::read(uint32_t addr, uint8_t bytes, bool opPreFetch) {
     case Region::GAMEPAK_WAIT_2_REGION_2:
         if (Utils::inRange<>(addr, EEPROM_OFFSET_START, EEPROM_OFFSET_END)){
             val = eeprom->serialRead();
-        } else if (addr == 0x0D000000) {
-            return 1;
         } else {
             val = gamepak.read(addr - GAMEPAK_WAIT_2_OFFSET_START, bytes);
         }
