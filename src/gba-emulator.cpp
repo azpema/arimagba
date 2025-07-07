@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
     Keys keys(&mem);
     ARM7TDMI cpu(&mem);
     mem.addCpu(&cpu);
-    PPU ppu("GBA", cpu, &mem);
+    PPU ppu("ArimaGBA", cpu, &mem);
     DMA<0> dma0(cpu, mem);
     DMA<1> dma1(cpu, mem);
     DMA<2> dma2(cpu, mem);
