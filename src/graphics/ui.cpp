@@ -38,9 +38,6 @@ void UI::render(SDL_Texture* texture) const
 {
     ImGui::NewFrame();
 
-    ImVec2 initialSize(480, 320);
-    ImGui::SetNextWindowSize(initialSize, ImGuiCond_FirstUseEver);
-
     ImGui::Begin("GBA");
     ImGui::Image((void*)texture, ImGui::GetContentRegionAvail());
     ImGui::End();

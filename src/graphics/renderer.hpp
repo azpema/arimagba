@@ -35,8 +35,8 @@ class Renderer {
     const PPU& ppu;
     std::unique_ptr<UI> ui;
 
-    constexpr static int WINDOW_WIDTH = 600;
-    constexpr static int WINDOW_HEIGHT = 400;
+    constexpr static int WINDOW_WIDTH = 1200;
+    constexpr static int WINDOW_HEIGHT = 800;
     constexpr static int32_t TRANSPARENT_PIXEL = -1;
 };
 

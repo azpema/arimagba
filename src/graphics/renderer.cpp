@@ -15,7 +15,7 @@ Renderer::Renderer(const PPU& ppu, const std::string& title) : ppu(ppu) {
                               SDL_WINDOWPOS_UNDEFINED,
                               WINDOW_WIDTH,
                               WINDOW_HEIGHT,
-                              SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+                              SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
 
     if (window == nullptr) {
         throw std::runtime_error("SDL: Window could not be created: " + std::string(SDL_GetError()));
