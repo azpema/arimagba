@@ -13,9 +13,9 @@ Renderer::Renderer(const PPU& ppu, const std::string& title) : ppu(ppu) {
     window = SDL_CreateWindow(title.c_str(),
                               SDL_WINDOWPOS_UNDEFINED,
                               SDL_WINDOWPOS_UNDEFINED,
-                              PPU::SCREEN_WIDTH,
-                              PPU::SCREEN_HEIGHT,
-                              SDL_WINDOW_SHOWN);
+                              WINDOW_WIDTH,
+                              WINDOW_HEIGHT,
+                              SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
     if (window == nullptr) {
         throw std::runtime_error("SDL: Window could not be created: " + std::string(SDL_GetError()));
@@ -27,16 +27,13 @@ Renderer::Renderer(const PPU& ppu, const std::string& title) : ppu(ppu) {
         throw std::runtime_error("SDL: Renderer could not be created: " + std::string(SDL_GetError()));
     }
 
-    textureScanline =
-        SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, 1);
     textureFrame = SDL_CreateTexture(
         renderer, SDL_PIXELFORMAT_BGR555, SDL_TEXTUREACCESS_STREAMING, PPU::SCREEN_WIDTH, PPU::SCREEN_HEIGHT);
+
+    ui = std::make_unique<UI>(renderer, window);
 }
 
 Renderer::~Renderer() {
-    if (textureScanline != nullptr)
-        SDL_DestroyTexture(textureScanline);
-
     if (textureFrame != nullptr)
         SDL_DestroyTexture(textureFrame);
 
@@ -168,8 +165,8 @@ bool Renderer::getObjScanline(const uint8_t objNum, int32_t* toPaint) {
     // Sprite should be drawn in this scanline
     for (size_t i = 0; i < PPU::SCREEN_WIDTH; i++) {
         uint8_t screenPixelX = i;
-        if (spriteY <= screenPixelY && screenPixelY < spriteY + height && spriteX <= screenPixelX &&
-            screenPixelX < spriteX + width) {
+        if ((spriteY <= screenPixelY || screenPixelY < spriteY + height) || (spriteX <= screenPixelX ||
+            screenPixelX < spriteX + width)) {
 
             // Determine tile
             // Check REG_DISPCNT mapping: 2d or 1d
@@ -264,66 +261,22 @@ void Renderer::renderScanlineMode0() {
         }
     }
 
-#ifdef RENDER_SCANLINE
-    SDL_UpdateTexture(textureScanline, NULL, toPaintEnd, PPU::SCREEN_WIDTH * sizeof(uint16_t));
-    SDL_Rect rect;
-
-    rect.x = 0;
-    rect.y = ppu.getVcount();
-    rect.w = PPU::SCREEN_WIDTH;
-    rect.h = 1;
-
-    SDL_RenderCopy(renderer, textureScanline, NULL, &rect);
-
-#else
     if (ppu.getVcount() == PPU::SCREEN_HEIGHT - 1) {
-        SDL_UpdateTexture(textureFrame, NULL, pixelsFrame, 240 * sizeof(uint16_t));
-        SDL_Rect rect;
-
-        rect.x = 0;
-        rect.y = 0;
-        rect.w = PPU::SCREEN_WIDTH;
-        rect.h = PPU::SCREEN_HEIGHT;
-
-        SDL_RenderCopy(renderer, textureFrame, NULL, &rect);
-        SDL_RenderPresent(renderer);
+        SDL_UpdateTexture(textureFrame, NULL, pixelsFrame, PPU::SCREEN_WIDTH * sizeof(uint16_t));
+        ui->render(textureFrame);
     }
-#endif
 }
 
 // test this
 void Renderer::renderScanlineMode3() {
-#ifdef RENDER_SCANLINE
-    SDL_UpdateTexture(textureScanline,
-                      NULL,
-                      ppu.getVRAM() + 2 * PPU::SCREEN_WIDTH * (ppu.getVcount()),
-                      PPU::SCREEN_WIDTH * sizeof(uint16_t));
-
-    SDL_Rect rect;
-    rect.x = 0;
-    rect.y = ppu.getVcount();
-    rect.w = PPU::SCREEN_WIDTH;
-    rect.h = 1;
-    SDL_RenderCopy(renderer, textureScanline, NULL, &rect);
-    SDL_RenderPresent(renderer);
-#else
     auto vCount = ppu.getVcount();
     std::memcpy(pixelsFrame[vCount],
                 ppu.getVRAM() + 2 * PPU::SCREEN_WIDTH * (ppu.getVcount()),
                 PPU::SCREEN_WIDTH * sizeof(uint16_t));
     if (vCount == PPU::SCREEN_HEIGHT - 1) {
         SDL_UpdateTexture(textureFrame, NULL, pixelsFrame, 240 * sizeof(uint16_t));
-        SDL_Rect rect;
-
-        rect.x = 0;
-        rect.y = 0;
-        rect.w = PPU::SCREEN_WIDTH;
-        rect.h = PPU::SCREEN_HEIGHT;
-
-        SDL_RenderCopy(renderer, textureFrame, NULL, &rect);
-        SDL_RenderPresent(renderer);
+        ui->render(textureFrame);
     }
-#endif
 }
 
 void Renderer::renderScanlineMode4() {
@@ -339,30 +292,10 @@ void Renderer::renderScanlineMode4() {
 
     std::transform(VRAM, VRAM + PPU::SCREEN_WIDTH, toPaint, [&](uint8_t val) { return paletteRAM[val]; });
 
-#ifdef RENDER_SCANLINE
-    SDL_UpdateTexture(textureScanline, NULL, toPaint, PPU::SCREEN_WIDTH * sizeof(uint16_t));
-
-    SDL_Rect rect;
-    rect.x = 0;
-    rect.y = ppu.getVcount();
-    rect.w = PPU::SCREEN_WIDTH;
-    rect.h = 1;
-    SDL_RenderCopy(renderer, textureScanline, NULL, &rect);
-    SDL_RenderPresent(renderer);
-#else
     if (ppu.getVcount() == PPU::SCREEN_HEIGHT - 1) {
         SDL_UpdateTexture(textureFrame, NULL, pixelsFrame, 240 * sizeof(uint16_t));
-        SDL_Rect rect;
-
-        rect.x = 0;
-        rect.y = 0;
-        rect.w = PPU::SCREEN_WIDTH;
-        rect.h = PPU::SCREEN_HEIGHT;
-
-        SDL_RenderCopy(renderer, textureFrame, NULL, &rect);
-        SDL_RenderPresent(renderer);
+        ui->render(textureFrame);
     }
-#endif
 }
 
 uint32_t Renderer::getBgRelativeTileX(uint8_t bg, uint32_t tileX) const {

@@ -5,6 +5,7 @@
 #include "../memory/io_registers.hpp"
 #include "renderer.hpp"
 #include "screen_entry.hpp"
+#include "imgui.h"
 
 PPU::PPU(const std::string& title, ARM7TDMI& cpu, MemoryManager* memManager) :
     cpu(cpu), mem(memManager), rend(std::make_unique<Renderer>(*this, title)), io(mem->getIOregisters()),
@@ -73,7 +74,8 @@ void PPU::renderScanline(bool& vblankNow, bool& hblankNow) {
             break;
         case 1:
             // BG0 regular - BG1 regular - BG2 affine - BG3 disabled
-            throw std::runtime_error("ERROR: Unsupported PPU Mode: 1");
+            rend->renderScanlineMode0();
+            //throw std::runtime_error("ERROR: Unsupported PPU Mode: 1");
             break;
         case 2:
             // BG0 disabled - BG1 disabled - BG2 affine - BG3 affine
@@ -178,13 +180,13 @@ std::optional<ObjAttributes> PPU::getObj(int objNum) const {
     case ObjMode::NORMAL:
         break;
     case ObjMode::AFFINE:
-        throw std::runtime_error("Unimplemented OBJ Mode AFFINE");
+        //throw std::runtime_error("Unimplemented OBJ Mode AFFINE");
         break;
     case ObjMode::AFFINE_DOUBLE:
-        throw std::runtime_error("Unimplemented OBJ Mode AFFINE_DOUBLE");
+        //throw std::runtime_error("Unimplemented OBJ Mode AFFINE_DOUBLE");
         break;
     default:
-        throw std::runtime_error("Unrecognized OBJ Mode");
+        //throw std::runtime_error("Unrecognized OBJ Mode");
         break;
     }
 

@@ -4,9 +4,9 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
+#include "ui.hpp"
 #include "ppu.hpp"
 
-//#define RENDER_SCANLINE
 class PPU;
 
 class Renderer {
@@ -30,11 +30,13 @@ class Renderer {
 
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
-    SDL_Texture* textureScanline = nullptr;
     SDL_Texture* textureFrame = nullptr;
     uint16_t pixelsFrame[PPU::SCREEN_HEIGHT][PPU::SCREEN_WIDTH] = {{0}};
     const PPU& ppu;
+    std::unique_ptr<UI> ui;
 
+    constexpr static int WINDOW_WIDTH = 600;
+    constexpr static int WINDOW_HEIGHT = 400;
     constexpr static int32_t TRANSPARENT_PIXEL = -1;
 };
 

@@ -26,7 +26,28 @@ pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image>=2.0.0)
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 
 # Create executable
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+add_executable(${PROJECT_NAME}
+ ${SOURCES}
+ ${HEADERS})
  
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} imgui)
 
+add_library(imgui STATIC
+    libs/imgui-1.92.1/imgui_draw.cpp
+    libs/imgui-1.92.1/imgui_tables.cpp
+    libs/imgui-1.92.1/imgui_widgets.cpp
+    libs/imgui-1.92.1/imgui.cpp
+
+    libs/imgui-1.92.1/backends/imgui_impl_sdl2.cpp
+    libs/imgui-1.92.1/backends/imgui_impl_sdlrenderer2.cpp
+
+    libs/imgui-1.92.1/misc/cpp/imgui_stdlib.cpp
+)
+
+target_include_directories(
+    imgui 
+    PUBLIC 
+    libs/imgui-1.92.1/ 
+    libs/imgui-1.92.1/backends/
+    libs/imgui-1.92.1/misc/cpp/
+)

@@ -16,6 +16,8 @@
 #include <bitset>
 #include <filesystem>
 
+#include "imgui_impl_sdl2.h"
+
 void decodeAllInstructionsThumb(ARM7TDMI& cpu);
 void decodeAllInstructionsArm(ARM7TDMI& cpu);
 
@@ -72,6 +74,7 @@ int main(int argc, char** argv) {
         if (cpuCycles % 500 == 0) {
             SDL_Event e;
             while (SDL_PollEvent(&e)) {
+                ImGui_ImplSDL2_ProcessEvent(&e);
                 switch (e.type) {
                 case SDL_QUIT:
                     run = false;
