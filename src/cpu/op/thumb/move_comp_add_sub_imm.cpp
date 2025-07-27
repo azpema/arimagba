@@ -26,45 +26,17 @@ void MoveCompAddSubImm::doDecode() {}
 
 void MoveCompAddSubImm::doExecute() {
     // RotateImm imm = RotateImm(rnOffset3, RotateImm::ConstructorType::FINAL_IMM_VAL);
-    uint32_t opDataProcessing[4] = {DataProcessing::OPCODE_MOV_VAL,
-                                    DataProcessing::OPCODE_CMP_VAL,
-                                    DataProcessing::OPCODE_ADD_VAL,
-                                    DataProcessing::OPCODE_SUB_VAL};
+    static const uint32_t opDataProcessing[4] = {DataProcessing::OPCODE_MOV_VAL,
+                                                 DataProcessing::OPCODE_CMP_VAL,
+                                                 DataProcessing::OPCODE_ADD_VAL,
+                                                 DataProcessing::OPCODE_SUB_VAL};
 
-    DataProcessing opArm = DataProcessing(1, opDataProcessing[opField], 1, rd, rd, offset8, cpu);
-    opArm.doExecute();
+    DataProcessing* opArm =
+        static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));
+
+    opArm->init(1, opDataProcessing[opField], 1, rd, rd, offset8);
+    opArm->doExecute();
     // std::cout << "<< ARM >> " << opArm.toString() << '\n';
-
-    /*uint8_t op = static_cast<MoveCompAddSubImm::Op>(opField);
-    uint32_t val = 0;
-    switch (op)
-    {
-    case MOV:
-        cpu.setReg(rd, offset8);
-        break;
-    case CMP:
-        cpu.getALU().sub(cpu.getReg(rd), offset8);
-        break;
-    case ADD:
-        val = cpu.getALU().add(cpu.getReg(rd), offset8);
-        cpu.setReg(rd, val);
-        break;
-    case SUB:
-        val = cpu.getALU().sub(cpu.getReg(rd), offset8);
-        cpu.setReg(rd, val);
-        break;
-    default:
-        throw std::runtime_error("Error: Unknown OpCode in: MoveCompAddSubImm");
-        break;
-    }
-
-    // Set CPSR flags
-    cpu.getCPSR().setNFlag(cpu.getALU().getN());
-    cpu.getCPSR().setZFlag(cpu.getALU().getZ());
-    if(op != MOV){
-        cpu.getCPSR().setCFlag(cpu.getALU().getC());
-        cpu.getCPSR().setVFlag(cpu.getALU().getV());
-    }*/
 }
 
 uint32_t MoveCompAddSubImm::cyclesUsed() const { return 1; }
