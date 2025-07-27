@@ -20,9 +20,11 @@ void SoftwareInterrupt::doDecode() {}
 
 void SoftwareInterrupt::doExecute() {
     uint32_t opcode = 0b11101111000000000000000000000000 | value8;
-    ARM::SoftwareInterrupt opArm = ARM::SoftwareInterrupt(opcode, cpu);
+    ARM::SoftwareInterrupt* opArm = static_cast<ARM::SoftwareInterrupt*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::SOFTWARE_INTERRUPT));
+
+    opArm->init(opcode);
+    opArm->doExecute();
     // std::cout << "<< ARM >> " << opArm.toString() << '\n';
-    opArm.doExecute();
 }
 
 uint32_t SoftwareInterrupt::cyclesUsed() const { return 1; }
