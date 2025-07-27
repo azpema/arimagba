@@ -1,5 +1,6 @@
 #include "add_subtract.hpp"
 #include "../arm/data_processing.hpp"
+#include "../../arm7tdmi.hpp"
 #include "../fields/rotate_imm.hpp"
 #include "../fields/shift_rm.hpp"
 
@@ -42,36 +43,31 @@ std::string AddSubtract::toString() {
 void AddSubtract::doDecode() {}
 
 void AddSubtract::doExecute() {
-
+    DataProcessing* opArm =
+                static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));
     if (opField == 0) {
         if (i == 1) {
             RotateImm imm = RotateImm(rnOffset3, RotateImm::ConstructorType::FINAL_IMM_VAL);
-            DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_ADD_VAL, 1, rs, rd, imm.getRawVal(), cpu);
-            opArm.doExecute();
-            // std::cout << "<< ARM >> " << opArm.toString() << '\n';
+            opArm->init(i, DataProcessing::OPCODE_ADD_VAL, 1, rs, rd, imm.getRawVal());
         } else {
             ShiftRm shiftRm = ShiftRm(rnOffset3, true, 0, 0);
-            DataProcessing opArm =
-                DataProcessing(0, DataProcessing::OPCODE_ADD_VAL, 1, rs, rd, shiftRm.getRawVal(), cpu);
-            opArm.doExecute();
-            // std::cout << "<< ARM >> " << opArm.toString() << '\n';
+            opArm->init(0, DataProcessing::OPCODE_ADD_VAL, 1, rs, rd, shiftRm.getRawVal());
         }
     } else if (opField == 1) {
         if (i == 1) {
             RotateImm imm = RotateImm(rnOffset3, RotateImm::ConstructorType::FINAL_IMM_VAL);
-            DataProcessing opArm = DataProcessing(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, imm.getRawVal(), cpu);
-            opArm.doExecute();
-            // std::cout << "<< ARM >> " << opArm.toString() << '\n';
+            opArm->init(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, imm.getRawVal());
         } else {
             ShiftRm shiftRm = ShiftRm(rnOffset3, true, 0, 0);
-            DataProcessing opArm =
-                DataProcessing(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, shiftRm.getRawVal(), cpu);
-            opArm.doExecute();
-            // std::cout << "<< ARM >> " << opArm.toString() << '\n';
+            opArm->init(i, DataProcessing::OPCODE_SUB_VAL, 1, rs, rd, shiftRm.getRawVal());
         }
     } else {
         throw std::runtime_error("ERROR: Invalid AddSubtract::doExecute opField value");
     }
+
+    opArm->doExecute();
+    // std::cout << "<< ARM >> " << opArm.toString() << '\n';
+
 }
 
 uint32_t AddSubtract::cyclesUsed() const { return 1; }
