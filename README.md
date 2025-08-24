@@ -60,7 +60,7 @@ These GBA features are implemented and working:
 * Interrupts
 * DMA transfers
 * EEPROM game saves
-* Graphical modes 0, 3, 4, 5 & 6
+* Graphical modes 0, 3, 4
 
 ## Not implemented
 
@@ -70,7 +70,7 @@ The following GBA features are still a work in progress and have not yet been im
 * Timers
 * SRAM & Flash game saves
 * Affine sprites
-* Graphical modes 1, 2 & 7
+* Graphical modes 1, 2, 5, 6 & 7
 
 ## Known bugs
 
