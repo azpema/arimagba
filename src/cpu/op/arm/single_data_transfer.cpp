@@ -249,4 +249,20 @@ void SingleDataTransfer::doExecute() {
     }
 }
 
-uint32_t SingleDataTransfer::cyclesUsed() const { return 1; }
+uint32_t SingleDataTransfer::cyclesUsed() const {
+    uint32_t cyclesUsed;
+    if (L == 0) {
+        // STR instructions take 2N incremental cycles to execute.
+        cyclesUsed = 2 * ARM7TDMI::CPU_CYCLES_PER_N_CYCLE;
+    } else {
+        if (Rn == 15 || Rd == 15)
+        {
+            // LDR PC take 2S + 2N +1I incremental
+            cyclesUsed = 2 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + 2 * ARM7TDMI::CPU_CYCLES_PER_N_CYCLE + ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+        } else {
+            // Normal LDR instructions take 1S + 1N + 1I
+            cyclesUsed = ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + ARM7TDMI::CPU_CYCLES_PER_N_CYCLE + ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+        }
+    }
+    return cyclesUsed;
+}

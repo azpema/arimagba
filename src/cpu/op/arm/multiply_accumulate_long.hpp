@@ -16,6 +16,7 @@ class MultiplyAccumulateLong : public ArmOpcode {
 
   private:
     uint16_t u, a, s, rdHi, rdLo, rs, rm;
+    uint32_t rsVal;
 
     const static uint32_t U_FLAG_MASK = 0b00000000010000000000000000000000;
     const static uint32_t U_FLAG_SHIFT = 22;

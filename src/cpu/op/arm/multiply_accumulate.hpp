@@ -18,6 +18,8 @@ class MultiplyAccumulate : public ArmOpcode {
 
   private:
     uint16_t a, s, rd, rn, rs, rm;
+    uint32_t rsVal;
+    
     const static uint32_t A_FLAG_MASK = 0b00000000001000000000000000000000;
     const static uint32_t A_FLAG_SHIFT = 21;
 

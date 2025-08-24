@@ -169,8 +169,17 @@ std::string DataProcessing::getOperand2Mnemonic() {
 
 //   ALU, 1S, +1S+1N if R15 loaded, +1I if SHIFT(Rs)
 uint32_t DataProcessing::cyclesUsed() const {
-    // std::cerr << "TODO: DataProcessing::cyclesUsed" << '\n';
-    return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE;
+    uint32_t cyclesUsed = ARM7TDMI::CPU_CYCLES_PER_S_CYCLE;
+
+    if (rn == 15) {
+        cyclesUsed += ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + ARM7TDMI::CPU_CYCLES_PER_N_CYCLE;
+    }
+
+    if (i == 0) {
+        cyclesUsed += ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+    }
+
+    return cyclesUsed;
 }
 
 void DataProcessing::doExecuteCmp(ARM7TDMI& cpu) { cpu.getALU().sub(op1, op2); }

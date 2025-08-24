@@ -49,8 +49,21 @@ std::string HalfwordDataTransferRegister::toString() {
 
 // Depends on load or store
 uint32_t HalfwordDataTransferRegister::cyclesUsed() const {
-    // std::cerr << "TODO: HalfwordDataTransferRegister::cyclesUsed" << '\n';
-    return 1;
+    uint32_t cyclesUsed;
+    if (l == 0) {
+        // STRH instructions take 2N incremental cycles to execute.
+        cyclesUsed = 2 * ARM7TDMI::CPU_CYCLES_PER_N_CYCLE;
+    } else {
+        if (rn == 15 || rd == 15) {
+            // LDR(H,SH,SB) PC take 2S + 2N + 1I incremental cycles.
+            cyclesUsed = 2 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + 2 * ARM7TDMI::CPU_CYCLES_PER_N_CYCLE + ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+        } else {
+            // Normal LDR(H,SH,SB) instructions take 1S + 1N + 1I
+            cyclesUsed = ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + ARM7TDMI::CPU_CYCLES_PER_N_CYCLE + ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+        }
+    }
+
+    return cyclesUsed;
 }
 
 void HalfwordDataTransferRegister::doDecode() {}

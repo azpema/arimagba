@@ -24,6 +24,5 @@ void BranchAndExchange::doExecute() {
 
 // A Branch and Exchange operation takes 3 cycles and is similar to a Branch
 uint32_t BranchAndExchange::cyclesUsed() const {
-    // std::cerr << "TODO: BranchAndExchange::cyclesUsed" << '\n';
     return 3;
 }

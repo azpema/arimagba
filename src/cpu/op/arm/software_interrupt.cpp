@@ -21,4 +21,7 @@ void SoftwareInterrupt::doDecode() {}
 
 void SoftwareInterrupt::doExecute() { cpu.getExceptionHandler().raiseException(ExceptionHandler::Exception::SWI); }
 
-uint32_t SoftwareInterrupt::cyclesUsed() const { return 1; }
+uint32_t SoftwareInterrupt::cyclesUsed() const { 
+    // Software interrupt instructions take 2S + 1N incremental cycles 
+    return 2 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + ARM7TDMI::CPU_CYCLES_PER_N_CYCLE;
+}

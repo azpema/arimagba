@@ -63,10 +63,14 @@ void MultiplyAccumulate::doExecute() {
     }
 
     uint32_t res = 0xDEAD;
+
+    rsVal = cpu.getReg(rs);
+    uint32_t rmVal = cpu.getReg(rm);
+    uint32_t rnVal = cpu.getReg(rn);
     if (a == 0) {
-        res = cpu.getALU().mul(cpu.getReg(rm), cpu.getReg(rs));
+        res = cpu.getALU().mul(rmVal, rsVal);
     } else if (a == 1) {
-        res = cpu.getALU().mla(cpu.getReg(rm), cpu.getReg(rs), cpu.getReg(rn));
+        res = cpu.getALU().mla(rmVal, rsVal, rnVal);
     }
 
     cpu.setReg(rd, res);
@@ -77,9 +81,37 @@ void MultiplyAccumulate::doExecute() {
     }
 }
 
-// MUL              1S+ml
-// MLA              1S+(m+1)I
 uint32_t MultiplyAccumulate::cyclesUsed() const {
-    // std::cerr << "TODO: MultiplyAccumulate::cyclesUsed" << '\n';
-    return 1 * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + (0 + 1) * ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+    uint32_t cyclesUsed;
+    uint8_t m;
+
+    constexpr uint32_t mask1 = 0xFFFFFF00;
+    constexpr uint32_t mask2 = 0xFFFF0000;
+    constexpr uint32_t mask3 = 0xFF000000;
+
+    // Unsigned
+    // 1    if bits [31:8] of the multiplier operand are all zero or all one.
+    // 2    if bits [31:16] of the multiplier operand are all zero or all one.
+    // 3    if bits [31:24] of the multiplier operand are all zero or all one.
+    // 4    in all other cases.
+    if ((rsVal & mask1) == 0 || ((rsVal & mask1) == mask1)) {
+        m = 1;
+    } else if ((rsVal & mask2) == 0 || ((rsVal & mask2) == mask2)) {
+        m = 2;
+    } else if ((rsVal & mask3) == 0 || ((rsVal & mask3) == mask3)) {
+        m = 3;
+    } else {
+        m = 4;
+    }
+
+    if (a == 0) {
+        // MUL              1S+mI
+        cyclesUsed = ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + m * ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+    } else {
+        // MLA              1S+(m+1)I
+        cyclesUsed = ARM7TDMI::CPU_CYCLES_PER_S_CYCLE + (m + 1) * ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+    }
+
+    return cyclesUsed;
+
 }
