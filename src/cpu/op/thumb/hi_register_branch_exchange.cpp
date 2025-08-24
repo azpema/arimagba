@@ -40,25 +40,27 @@ void HiRegisterBranchExchange::doDecode() {}
 void HiRegisterBranchExchange::doExecute() {
     uint8_t op = static_cast<HiRegisterBranchExchange::OP>(opField);
     uint32_t rsVal = cpu.getReg(rs);
+
+    DataProcessing* opArm =
+        static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));
+
     switch (op) {
     case ADD: {
         ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
-        DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_ADD_VAL, 0, rd, rd, shiftRm.getRawVal(), cpu);
-        opArm.doExecute();
-        // std::cout << "<< ARM >> " << opArm.toString() << '\n';
+        opArm->init(0, DataProcessing::OPCODE_ADD_VAL, 0, rd, rd, shiftRm.getRawVal());
+        opArm->doExecute();
     } break;
     case CMP: {
         ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
-        DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_CMP_VAL, 1, rd, rd, shiftRm.getRawVal(), cpu);
-        opArm.doExecute();
-        // std::cout << "<< ARM >> " << opArm.toString() << '\n';
+        opArm->init(0, DataProcessing::OPCODE_CMP_VAL, 1, rd, rd, shiftRm.getRawVal());
+        opArm->doExecute();
     } break;
     case MOV: {
         // cpu.setReg(rd, rsVal);
         ShiftRm shiftRm = ShiftRm(rs, true, 0, 0);
-        DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 0, rs, rd, shiftRm.getRawVal(), cpu);
-        opArm.doExecute();
-        // std::cout << "<< ARM >> " << opArm.toString() << '\n';
+        opArm->init(0, DataProcessing::OPCODE_MOV_VAL, 0, rs, rd, shiftRm.getRawVal());
+        opArm->doExecute();
+        
     } break;
     case BX:
         if (h1 == 1) {
