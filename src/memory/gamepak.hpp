@@ -62,9 +62,9 @@ class GamePak : public GenericMemory {
 
     uint32_t entryPoint;
     uint8_t nintendoLogo[GamePak::NINTENDO_LOGO_SIZE];
-    uint8_t gameTitle[GamePak::GAME_TITLE_SIZE + 1];
-    uint8_t gameCode[GamePak::GAME_CODE_SIZE + 1];
-    uint8_t makerCode[GamePak::MAKER_CODE_OFF + 1];
+    uint8_t gameTitle[GamePak::GAME_TITLE_SIZE];
+    uint8_t gameCode[GamePak::GAME_CODE_SIZE];
+    uint8_t makerCode[GamePak::MAKER_CODE_OFF];
     uint8_t fixedValue;
     uint8_t mainUnitCode;
     uint8_t deviceType;
@@ -72,6 +72,9 @@ class GamePak : public GenericMemory {
     uint8_t softwareVersion;
     uint8_t complementCheck;
     uint8_t reservedArea2[GamePak::RESERVED_AREA_2_SIZE];
+
+    std::string gameTitleStr;
+    std::string gameCodeStr;
     SaveType saveType;
 
     // TODO: Multiboot header

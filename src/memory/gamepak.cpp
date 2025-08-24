@@ -33,7 +33,9 @@ GamePak::GamePak(const std::string& filePath) : GenericMemory(ROM_SIZE) {
     entryPoint = Utils::readUint32(&mem[GamePak::ENTRY_POINT_OFF]);
     std::memcpy(nintendoLogo, &mem[GamePak::NINTENDO_LOGO_OFF], GamePak::NINTENDO_LOGO_SIZE);
     std::memcpy(gameTitle, &mem[GamePak::GAME_TITLE_OFF], GamePak::GAME_TITLE_SIZE);
+    gameTitleStr = std::string(reinterpret_cast<char*>(gameTitle), GamePak::GAME_TITLE_SIZE);
     std::memcpy(gameCode, &mem[GamePak::GAME_CODE_OFF], GamePak::GAME_CODE_SIZE);
+    gameCodeStr = std::string(reinterpret_cast<char*>(gameCode), GamePak::GAME_CODE_SIZE);
 
     std::memcpy(makerCode, &mem[GamePak::MAKER_CODE_OFF], GamePak::MAKER_CODE_SIZE);
 
@@ -81,8 +83,8 @@ int GamePak::calcComplementCheck() const {
 void GamePak::printInfo() const {
     std::cout << "Entry point: 0x" << std::hex << this->entryPoint << std::dec << '\n';
     // std::cout << "Nintendo Logo: " << this->nintendoLogo << '\n';
-    std::cout << "Game Title: " << gameTitle << '\n';
-    std::cout << "Game Code: " << gameCode << '\n';
+    std::cout << "Game Title: " << gameTitleStr << '\n';
+    std::cout << "Game Code: " << gameCodeStr << '\n';
     std::cout << "Maker Code: " << makerCode << '\n';
     std::cout << "Fixed Value: 0x" << std::hex << static_cast<int>(fixedValue) << std::dec << '\n';
     std::cout << "Main Unit Code: 0x" << std::hex << static_cast<int>(mainUnitCode) << std::dec << '\n';
