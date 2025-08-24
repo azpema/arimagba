@@ -13,13 +13,15 @@ Renderer::Renderer(const PPU& ppu, const std::string& title) : ppu(ppu) {
     window = SDL_CreateWindow(title.c_str(),
                               SDL_WINDOWPOS_UNDEFINED,
                               SDL_WINDOWPOS_UNDEFINED,
-                              WINDOW_WIDTH,
-                              WINDOW_HEIGHT,
-                              SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
+                              PPU::SCREEN_WIDTH * 4,
+                              PPU::SCREEN_HEIGHT * 4,
+                              SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
 
     if (window == nullptr) {
         throw std::runtime_error("SDL: Window could not be created: " + std::string(SDL_GetError()));
     }
+
+    SDL_SetWindowMinimumSize(window, PPU::SCREEN_WIDTH, PPU::SCREEN_HEIGHT);
 
     renderer = SDL_CreateRenderer(window, -1, 0);
 

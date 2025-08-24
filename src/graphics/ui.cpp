@@ -36,9 +36,22 @@ UI::~UI()
 
 void UI::render(SDL_Texture* texture) const
 {
+	int windowWidth, windowHeight;
+	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
     ImGui::NewFrame();
 
-    ImGui::Begin("GBA");
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(ImVec2((float)windowWidth, (float)windowHeight));
+
+	ImGui::Begin("GBA",
+		nullptr,
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoResize   |
+		ImGuiWindowFlags_NoMove     |
+		ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoBringToFrontOnFocus
+	);
     ImGui::Image((void*)texture, ImGui::GetContentRegionAvail());
     ImGui::End();
 
