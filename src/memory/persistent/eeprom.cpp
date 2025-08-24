@@ -20,7 +20,6 @@ const std::unordered_map<EEPROM::Cmd, std::string> EEPROM::cmdToStr = {
 EEPROM::EEPROM(Size eepromSize, const std::filesystem::path& filePath) : GenericMemory(sizeToBytes.at(eepromSize), true), size(eepromSize),
   savePath(filePath), bytes(sizeToBytes.at(eepromSize)), maxAddr(sizeToBytes.at(eepromSize) / 8),
   sizeAddr(sizeToAddrBits.at(eepromSize)) { 
-    std::cerr << "TODO Set proper initial values at EEPROM" << '\n';
     readFromFile();
 }
 
@@ -47,7 +46,7 @@ void EEPROM::serialWrite(bool val) {
     static int dataCount = 64 - 1;
     static uint64_t receivedData = 0;
     uint8_t valBit = static_cast<uint8_t>(val);
-    std::cout << static_cast<int>(val) << '\n';
+    //std::cout << static_cast<int>(val) << '\n';
     switch(status) 
     {
         case State::IDLE:
@@ -77,7 +76,7 @@ void EEPROM::serialWrite(bool val) {
             }
             break;
         case State::RECEIVING_DATA:
-            std::cout << "EEPROM receiving data bit num "<< std::to_string(dataCount) << '\n';
+            //std::cout << "EEPROM receiving data bit num "<< std::to_string(dataCount) << '\n';
             if ( dataCount == 0 ) {
                 status = State::RECEIVING_END_BIT;
                 dataCount = 64;
@@ -89,17 +88,17 @@ void EEPROM::serialWrite(bool val) {
             
         case State::RECEIVING_END_BIT:
             //if (valBit == 0) {
-                std::cout << "EEPROM command OK, proceed" << '\n';
-                std::cout << "CMD: " << cmdToStr.at(static_cast<Cmd>(cmd)) << '\n';
-                std::cout << "Addr: 0x" << std::hex << addr << std::dec <<'\n';
+                //std::cout << "EEPROM command OK, proceed" << '\n';
+                //std::cout << "CMD: " << cmdToStr.at(static_cast<Cmd>(cmd)) << '\n';
+                //std::cout << "Addr: 0x" << std::hex << addr << std::dec <<'\n';
                 if (static_cast<Cmd>(cmd) == Cmd::READ) {
                     status = State::SENDING_PADDING;
                 } else {
-                    std::cout << "Data: 0x" << std::hex << receivedData << std::dec <<'\n';
+                    //std::cout << "Data: 0x" << std::hex << receivedData << std::dec <<'\n';
                     // Actually write the data here
                     writeDataBlock(addr, receivedData);
                     saveToFile();
-                    std::cout << "Saving to EEPROM file" << '\n';
+                    //std::cout << "Saving to EEPROM file" << '\n';
                     status = State::SENDING_END_BIT;
                     receivedData = 0;
                 } 
@@ -131,13 +130,13 @@ bool EEPROM::serialRead() {
                 status = State::SENDING_DATA;
                 paddingCount = 0;
             }
-            std::cout << "EEPROM read padding" << '\n';
+            //std::cout << "EEPROM read padding" << '\n';
             return false;
             break;
 
         case State::SENDING_DATA:
         {
-            std::cout << "EEPROM sending data bit num "<< std::to_string(dataCount) << '\n';
+            //std::cout << "EEPROM sending data bit num "<< std::to_string(dataCount) << '\n';
             if ( dataCount == 0 ) {
                 status = State::IDLE;
                 dataCount = 64;
