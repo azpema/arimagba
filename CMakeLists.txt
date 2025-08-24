@@ -4,6 +4,9 @@ project(arimagba VERSION 0.0.1)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_C_FLAGS_DEBUG "-g")
+
 if (MSVC)
     add_compile_options(/W4)
 else()
@@ -24,6 +27,12 @@ pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image>=2.0.0)
 
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+
+# find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
+
+# if(CLANG_TIDY_EXE)
+#     set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
+# endif()
 
 # Create executable
 add_executable(${PROJECT_NAME}
