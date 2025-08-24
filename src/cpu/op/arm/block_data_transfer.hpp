@@ -32,6 +32,7 @@ class BlockDataTransfer : public ArmOpcode {
 
     uint16_t p, u, s, w, l, rn, registerList;
     std::vector<uint32_t> registerListVec;
+    bool regListHasPc = false;
 
     const static uint32_t P_MASK = 0b00000001000000000000000000000000;
     const static uint32_t P_SHIFT = 24;

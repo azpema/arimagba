@@ -43,6 +43,10 @@ void BlockDataTransfer::init(uint32_t op) {
         if (((registerList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);
     }
+
+    if (std::find(registerListVec.begin(), registerListVec.end(), 15) != registerListVec.end()) {
+        regListHasPc = true;
+    }
 }
 
 void BlockDataTransfer::init(
@@ -59,6 +63,10 @@ void BlockDataTransfer::init(
     for (size_t i = 0; i < 16; i++) {
         if (((registerList >> i) & 0x1) == 0x1)
             registerListVec.push_back(i);
+    }
+
+    if (std::find(registerListVec.begin(), registerListVec.end(), 15) != registerListVec.end()) {
+        regListHasPc = true;
     }
 }
 
@@ -108,10 +116,6 @@ void BlockDataTransfer::doExecute() {
 
     std::vector<uint32_t> regVals;
     regVals.reserve(ARM7TDMI::REG_CNT);
-    bool regListHasPc = false;
-    if (std::find(registerListVec.begin(), registerListVec.end(), 15) != registerListVec.end()) {
-        regListHasPc = true;
-    }
 
     if (l == 0) {
         uint32_t endAddr = 0;
@@ -262,7 +266,30 @@ void BlockDataTransfer::doExecute() {
     }
 }
 
+// 
+// 
+// STM instructions take (n-1)S + 2N incremental cycles to execute, 
 uint32_t BlockDataTransfer::cyclesUsed() const {
-    // std::cerr << "TODO: BlockDataTransfer::cyclesUsed" << '\n';
-    return 1;
+    // STM
+    uint32_t cyclesUsed;
+    int n = registerListVec.size();
+    if (n == 0)
+    {
+        throw std::runtime_error("Block data transfer register list empty");
+    }
+
+    if (l == 0){
+        cyclesUsed = ((n - 1) * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE) + (2 * ARM7TDMI::CPU_CYCLES_PER_N_CYCLE);
+    } else {
+        if (regListHasPc) {
+            // LDM PC takes (n+1)S + 2N + 1I
+            cyclesUsed = ((n + 1) * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE) + (2 * ARM7TDMI::CPU_CYCLES_PER_N_CYCLE) + ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+        } else {
+            // Normal LDM instructions take nS + 1N + 1I 
+            cyclesUsed = (n * ARM7TDMI::CPU_CYCLES_PER_S_CYCLE) + ARM7TDMI::CPU_CYCLES_PER_N_CYCLE + ARM7TDMI::CPU_CYCLES_PER_I_CYCLE;
+        }   
+    }
+
+    return cyclesUsed;
+
 }
