@@ -40,8 +40,10 @@ void MoveShiftedRegister::doExecute() {
     ShiftRm shiftRm = ShiftRm(rs, true, offset5, opField);
     // uint32_t operand2 = (((offset5 << 3) | (opField << 1)) << 3) | rs
     uint32_t rawVal = shiftRm.getRawVal();
-    DataProcessing opArm = DataProcessing(0, DataProcessing::OPCODE_MOV_VAL, 1, 0, rd, rawVal, cpu);
-    opArm.doExecute();
+    DataProcessing* opArm =
+        static_cast<DataProcessing*>(cpu.getArmPool().getArmInstance(ArmOpcode::OpCodeEnum::DATA_PROCESSING));
+    opArm->init(0, DataProcessing::OPCODE_MOV_VAL, 1, 0, rd, rawVal);
+    opArm->doExecute();
     // std::cout << "<< ARM >> " << opArm.toString() << '\n';
 }
 
