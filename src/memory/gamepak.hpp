@@ -75,6 +75,7 @@ class GamePak : public GenericMemory {
 
     std::string gameTitleStr;
     std::string gameCodeStr;
+    std::string makerCodeStr;
     SaveType saveType;
 
     // TODO: Multiboot header

@@ -38,6 +38,7 @@ GamePak::GamePak(const std::string& filePath) : GenericMemory(ROM_SIZE) {
     gameCodeStr = std::string(reinterpret_cast<char*>(gameCode), GamePak::GAME_CODE_SIZE);
 
     std::memcpy(makerCode, &mem[GamePak::MAKER_CODE_OFF], GamePak::MAKER_CODE_SIZE);
+    makerCodeStr = std::string(reinterpret_cast<char*>(makerCode), GamePak::MAKER_CODE_SIZE);
 
     fixedValue = mem[GamePak::FIXED_VALUE_OFF];
     mainUnitCode = mem[GamePak::MAIN_UNIT_CODE_OFF];
@@ -85,7 +86,7 @@ void GamePak::printInfo() const {
     // std::cout << "Nintendo Logo: " << this->nintendoLogo << '\n';
     std::cout << "Game Title: " << gameTitleStr << '\n';
     std::cout << "Game Code: " << gameCodeStr << '\n';
-    std::cout << "Maker Code: " << makerCode << '\n';
+    std::cout << "Maker Code: " << makerCodeStr << '\n';
     std::cout << "Fixed Value: 0x" << std::hex << static_cast<int>(fixedValue) << std::dec << '\n';
     std::cout << "Main Unit Code: 0x" << std::hex << static_cast<int>(mainUnitCode) << std::dec << '\n';
     std::cout << "Device Type: 0x" << std::hex << static_cast<int>(deviceType) << std::dec << '\n';
