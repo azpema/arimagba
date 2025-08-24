@@ -168,8 +168,8 @@ template <int N> void DMA<N>::runCycle(const bool vblankNow, const bool hblankNo
 
                         mem.initEEPROM(numTransfers);
                     }
-                    std::cout << "Sending command to EEPROM addr " << std::hex << *DMAxDAD << std::dec << '\n';
-                    std::cout << "Command size " << numTransfers << '\n';
+                    //std::cout << "Sending command to EEPROM addr " << std::hex << *DMAxDAD << std::dec << '\n';
+                    //std::cout << "Command size " << numTransfers << '\n';
                 } else {
                     throw std::runtime_error("DMA dest address must not be in ROM address space");
                 }
@@ -177,8 +177,8 @@ template <int N> void DMA<N>::runCycle(const bool vblankNow, const bool hblankNo
 
             if (MemoryManager::isAddrInRom(*DMAxSAD)) {
                 if (dmaNum == 3) {
-                    std::cout << "Reading back from EEPROM" << '\n';
-                    std::cout << "Command size " << numTransfers << '\n';
+                    //std::cout << "Reading back from EEPROM" << '\n';
+                    //std::cout << "Command size " << numTransfers << '\n';
                 } else {
                     throw std::runtime_error("DMA source address must not be in ROM address space");
                 }
