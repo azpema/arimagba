@@ -7,7 +7,7 @@
 You will need a C++23 compatible compiler like GCC 13, `cmake` version 3.10 or later, `SDL2` and `SDL2_Image`. On a Debian based system these can be installed with these commands:
 ```bash
 sudo apt update
-sudo apt install gcc g++ cmake libsdl2-2.0-0 libsdl2-dev libsdl2-image-2.0-0 libsdl2-image-dev
+sudo apt install g++ cmake pkg-config libsdl2-2.0-0 libsdl2-dev libsdl2-image-2.0-0 libsdl2-image-dev
 ```
 
 To build the emulator in release mode, run these:
