@@ -84,6 +84,12 @@ The following GBA features are still a work in progress and have not yet been im
 * Several graphical bugs (e.g. sprite priorities)
 * Inaccurate multiplication results
 
+## Future improvements
+
+* Add missing GBA features
+* Add an event scheduler to more accurately sync GBA hw (CPU, PPU, DMA, etc)
+* Add debugging utilities
+  
 ## Useful links
 
 ### General GBA information
