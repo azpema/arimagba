@@ -1,6 +1,6 @@
 # ArimaGBA – A GameBoy Advance Emulator
 
-**ArimaGBA** is a GameBoy Advance Emulator written in **modern C++**.
+**ArimaGBA** is a GameBoy Advance Emulator written in **modern C++**, featuring [SDL2](https://www.libsdl.org/) for rendering and [Dear ImGui](https://github.com/ocornut/imgui) for an interactive GUI.
 
 ## Build
 
@@ -88,7 +88,7 @@ The following GBA features are still a work in progress and have not yet been im
 
 * Add missing GBA features
 * Add an event scheduler to more accurately sync GBA hw (CPU, PPU, DMA, etc)
-* Add debugging utilities
+* Add interactive debugging utilities
   
 ## Useful links
 
