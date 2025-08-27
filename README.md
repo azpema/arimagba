@@ -19,6 +19,13 @@ make -j$(nproc)
 ```
 
 This will generate the main executable `arimagba`.
+
+Alternatively, build and run the provided `Dockerfile` which will automatically generate the release binary:
+```bash
+docker build -t arimagba-builder .
+docker run --rm -v .:/app -u $(id -u):$(id -g) arimagba-builder
+```
+
 ## Running
 Run your chosen ROM file easily with:
 ```bash
