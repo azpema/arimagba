@@ -2,6 +2,19 @@
 
 **ArimaGBA** is a GameBoy Advance Emulator written in **modern C++**, featuring [SDL2](https://www.libsdl.org/) for rendering and [Dear ImGui](https://github.com/ocornut/imgui) for an interactive GUI.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="./.github/images/shin-chan.png" alt="Shin chan: Contra los Muñecos de Shock Gahn" width="400"/></td>
+    <td><img src="./.github/images/mario-vs-donkey-kong.png" alt="Mario vs. Donkey Kong" width="400"/></td>
+  </tr>
+  <tr>
+    <td><img src="./.github/images/harvest-moon.png" alt="Harvest Moon : Friends of Mineral Town" width="400"/></td>
+    <td><img src="./.github/images/sponge-bob.png" alt="SpongeBob SquarePants - Battle for Bikini Bottom" width="400"/></td>
+  </tr>
+</table>
+
 ## Build
 
 You will need a C++23 compatible compiler like GCC 13, `cmake` version 3.10 or later, `SDL2` and `SDL2_Image`. On a Debian based system these can be installed with these commands:
@@ -46,19 +59,6 @@ The following table lists the key bindings used in the emulator:
 | **Down Arrow**  | Down Button (Down)    |
 | **S**           | Right Shoulder (R)    |
 | **A**           | Left Shoulder (L)     |
-
-## Screenshots
-
-<table>
-  <tr>
-    <td><img src="./.github/images/shin-chan.png" alt="Shin chan: Contra los Muñecos de Shock Gahn" width="400"/></td>
-    <td><img src="./.github/images/mario-vs-donkey-kong.png" alt="Mario vs. Donkey Kong" width="400"/></td>
-  </tr>
-  <tr>
-    <td><img src="./.github/images/harvest-moon.png" alt="Harvest Moon : Friends of Mineral Town" width="400"/></td>
-    <td><img src="./.github/images/sponge-bob.png" alt="SpongeBob SquarePants - Battle for Bikini Bottom" width="400"/></td>
-  </tr>
-</table>
 
 ## Features
 These GBA features are implemented and working:
