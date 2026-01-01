@@ -90,9 +90,7 @@ void Renderer::getBackgroundScanline(const uint8_t bg, int32_t* toPaint) {
         uint16_t tileIndex = screenEntry.getTileIndex();
         uint32_t debug1 = tileSetStartOffset + tileIndex * tileSize;
 
-        uint8_t debugTileData[32];
         uint8_t* tileSetRaw = reinterpret_cast<uint8_t*>(ppu.getVRAM() + debug1);
-        std::memcpy(debugTileData, reinterpret_cast<const uint8_t*>(ppu.getVRAM() + debug1), 32);
 
         // check BG_8BPP to determine palette
         uint32_t paletteOffset = colorMode256 ? 0 : tileSize * screenEntry.getPaletteBank();
