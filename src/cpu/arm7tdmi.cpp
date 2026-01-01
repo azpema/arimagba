@@ -427,7 +427,7 @@ uint32_t ARM7TDMI::executeNextInstruction() {
     // execute
     if (insDecodeSet) {
         // print status
-        std::string opString;
+        static std::string opString;
         if (printDebug) {
             opString = opExecute->toString();
             // std::cout << opExecute->toString() <<  " - " << opExecute->toHexString() << '\n';
