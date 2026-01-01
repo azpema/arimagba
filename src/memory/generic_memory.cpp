@@ -1,5 +1,6 @@
 #include "generic_memory.hpp"
 #include <cstring>
+#include <string>
 
 GenericMemory::GenericMemory(size_t size, bool fillWith1s) : n(size), mem(std::make_unique<uint8_t[]>(n)) { 
     if (fillWith1s) {
