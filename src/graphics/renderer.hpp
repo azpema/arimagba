@@ -3,41 +3,28 @@
 
 #include <SDL2/SDL.h>
 #include <iostream>
-
+#include <memory>
 #include "ui.hpp"
-#include "ppu.hpp"
-
-class PPU;
 
 class Renderer {
   public:
-    Renderer(const PPU& ppu, const std::string& title);
+    Renderer(const std::string& title, const uint16_t* frameBuffer, int width, int height);
     ~Renderer();
-
-    void renderScanlineMode0();
-    void renderScanlineMode3();
-    void renderScanlineMode4();
+    void drawFrame();
 
   private:
-    void getBackgroundScanline(const uint8_t bg, int32_t* toPaint);
-    void getSpriteScanline(const uint8_t bg, int32_t* toPaint);
-
-    bool getObjScanline(const uint8_t objNum, int32_t* toPaint);
-
-    uint32_t getBgRelativeTileX(uint8_t bg, uint32_t tileX) const;
-    uint32_t getBgRelativeTileY(uint8_t bg, uint32_t tileY) const;
-    uint32_t getSbcOffset(uint8_t bg, uint32_t pixelX, uint32_t pixelY) const;
+    const uint16_t* frameBuffer;
+    const int frameWidth;
+    const int frameHeight;
 
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
     SDL_Texture* textureFrame = nullptr;
-    uint16_t pixelsFrame[PPU::SCREEN_HEIGHT][PPU::SCREEN_WIDTH] = {{0}};
-    const PPU& ppu;
+    
     std::unique_ptr<UI> ui;
 
     constexpr static int WINDOW_WIDTH = 1200;
     constexpr static int WINDOW_HEIGHT = 800;
-    constexpr static int32_t TRANSPARENT_PIXEL = -1;
 };
 
 #endif

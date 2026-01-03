@@ -15,7 +15,7 @@ class MemoryManager;
 
 class PPU {
   public:
-    PPU(const std::string& title, ARM7TDMI& cpu, MemoryManager* memManager);
+    PPU(ARM7TDMI& cpu, MemoryManager* memManager);
     ~PPU();
     void renderScanline(bool& vblankNow, bool& hblankNow);
 
@@ -24,9 +24,21 @@ class PPU {
     uint8_t* getVRAM() const;
     uint8_t* getOVRAM() const;
     uint8_t* getOAM() const;
-    constexpr static uint8_t BG_NUM = 4;
-    constexpr static uint8_t MAX_SPRITE_NUM = 128;
-    constexpr static uint8_t TILE_SIZE = 0x20;
+
+    void getBackgroundScanline(const uint8_t bg, int32_t* toPaint);
+    uint32_t getBgRelativeTileX(uint8_t bg, uint32_t tileX) const;
+    uint32_t getBgRelativeTileY(uint8_t bg, uint32_t tileY) const;
+    uint32_t getSbcOffset(uint8_t bg, uint32_t pixelX, uint32_t pixelY) const;
+
+    void getSpriteScanline(const uint8_t bg, int32_t* toPaint);
+    bool getObjScanline(const uint8_t objNum, int32_t* toPaint);
+
+    void renderScanlineMode0();
+    void renderScanlineMode3();
+    void renderScanlineMode4();
+
+    int getScreenWidth() const;
+    int getScreenHeight() const;
 
     uint32_t getPageFlipOffset() const;
     uint8_t getBgCharacterBaseBlock(const uint8_t bgNum) const;
@@ -44,11 +56,18 @@ class PPU {
     bool getObjEnabled() const;
     std::optional<ObjAttributes> getObj(int objNum) const;
     std::vector<ObjAttributes> getObjList() const;
-    const static uint32_t OBJ_ATTRIBUTES_SIZE = 0x8;
+    constexpr static uint32_t OBJ_ATTRIBUTES_SIZE = 0x8;
 
     uint32_t getVcount() const;
     uint32_t getBgOffsetH(const uint8_t bg) const;
     uint32_t getBgOffsetV(const uint8_t bg) const;
+
+    bool isVblank() const;
+    const uint16_t* getFrameBuffer() const;
+
+    constexpr static uint8_t BG_NUM = 4;
+    constexpr static uint8_t MAX_SPRITE_NUM = 128;
+    constexpr static uint8_t TILE_SIZE = 0x20;
 
     constexpr static uint32_t SCREEN_WIDTH = 240;
     constexpr static uint32_t SCREEN_HEIGHT = 160;
@@ -57,12 +76,13 @@ class PPU {
 
     constexpr static uint8_t PALETTE_BANK_SIZE = 0x20;
 
+    constexpr static int32_t TRANSPARENT_PIXEL = -1;
   private:
     ARM7TDMI& cpu;
     MemoryManager* mem;
-    std::unique_ptr<Renderer> rend;
-
     uint8_t* io;
+
+    uint16_t pixelsFrame[SCREEN_HEIGHT][SCREEN_WIDTH] = {{0}};
 
     uint16_t* DISPCNT;
     uint16_t* GREEN_SWAP;

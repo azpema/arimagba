@@ -1,5 +1,6 @@
 ﻿#include "cpu/arm7tdmi.hpp"
 #include "graphics/ppu.hpp"
+#include "graphics/renderer.hpp"
 #include "memory/bios.hpp"
 #include "memory/dma.hpp"
 #include "memory/ewram.hpp"
@@ -51,7 +52,10 @@ int main(int argc, char** argv) {
     Keys keys(&mem);
     ARM7TDMI cpu(&mem);
     mem.addCpu(&cpu);
-    PPU ppu("ArimaGBA", cpu, &mem);
+
+    PPU ppu(cpu, &mem);
+    Renderer rend("ArimaGBA", ppu.getFrameBuffer(), ppu.getScreenWidth(), ppu.getScreenHeight());
+
     DMA<0> dma0(cpu, mem);
     DMA<1> dma1(cpu, mem);
     DMA<2> dma2(cpu, mem);
@@ -104,8 +108,11 @@ int main(int argc, char** argv) {
         cpuCycles += lastCpuCycles;
         totalCpuCycles += lastCpuCycles;
         // Render scanline if necessary cycles have been consumed
-        if (cpuCycles >= 200) { // 1006?
+        if (cpuCycles >= 1006) { 
             ppu.renderScanline(vblankNow, hblankNow);
+            if(ppu.isVblank()) {
+                rend.drawFrame();
+            }
             cpuCycles = 0;
         }
 
